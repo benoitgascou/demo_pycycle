@@ -466,10 +466,10 @@ if select_theme == 'Machine Learning':
 	st.title('Modèle de Machine Learning')
 
 
-	select_modele = st.sidebar.radio(
+	select_pred_ml = st.sidebar.radio(
 	    "Sélectionner la période à prédire :",
-	    ('Derniers jours de chaque mois',
-	    'Derniers mois de la période'))
+	    (machine_learning1,
+	    machine_learning2))
 
 
 
