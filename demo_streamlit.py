@@ -37,9 +37,7 @@ plan_df_2019 = pd.read_csv('plan_df_2019.csv', sep=';')
 #fichier sources cartographies, flitrés par sites, doublons url photos déjà traités
 
 
-dates = pd.read_csv('dates.csv', sep=';', index_col = 0)
-
-
+dates = pd.read_csv('dates.csv', sep=';')
 
 ######################
 ###Plan de l'appli####
@@ -190,21 +188,11 @@ if select_theme == 'Data Visualisation':
 		st.sidebar.subheader(select_dataviz)
 		st.title(dataviz1)
 		st.header(select_dataviz)
-
-		# fig = plt.figure(figsize = (30, 10))
-		# plt.plot_date(dates.index, dates, 'b-', label = "Nombre moyen de vélos par jour")
-		# plt.xlabel('Date', fontsize = 12)
-		# plt.ylabel('Nombre moyen de vélos / jour', fontsize = 12)
-		# plt.xticks(['2019-09', '2019-11', '2020-01', '2020-03', '2020-05', '2020-07', '2020-09', '2020-11', '2021-01' ], ['Sep 2019', 'Nov 2019', 'Jan 2020', 'Mars 2020', 'Mai 2020', 'Juil 2020', 'Sep 2020', 'Nov 2020', 'Jan 2021'])
-		# plt.title('Trafic cycliste à Paris entre septembre 2019 et décembre 2020', fontsize = 18)
-		# plt.xticks(rotation = 0, fontsize = 18)
-
-		#modif Josephine
+		dates['Date'] = pd.to_datetime(dates['Date'], errors='coerce')
+		dates.set_index('Date',inplace=True)
 		fig = plt.figure(figsize = (20, 10))
 		st.line_chart(dates)
-		plt.xlabel('Date', fontsize = 12)
-		plt.ylabel('Nombre moyen de vélos / jour', fontsize = 12)
-		st.pyplot(fig)
+
 
 
 
@@ -537,10 +525,10 @@ if select_theme == 'Machine Learning':
 
 		liste_var = st.sidebar.multiselect('Sélectionnez les variables :',
 									['Année', 'Mois', 'Jour',
-								    'Jour_de_la_semaine', 'Heure', 'Grève', 'Covid', 'Confinement',
+								    'Jour_de_la_semaine', 'Heure', 'Grève', 'Confinement',
 								    'Jour_férié', 'Vacances',
 								    'vac_aout', 'vac_noel',
-								    'Pluie', 'Chaud', 'sam_dim', 'lat', 'long',
+								    'Pluie', 'sam_dim', 'lat', 'long',
 								    'Comptage_horaire_h_1', 'Comptage_horaire_h_2',
 								    'Comptage_horaire_h_3', 'Comptage_horaire_j_1', 'Comptage_horaire_j_2',
 								    'Comptage_horaire_j_3', 'Comptage_horaire_s_1', 'Comptage_horaire_s_2',
@@ -766,7 +754,8 @@ if select_theme == 'Machine Learning':
 		            lw = 1)
 		plt.xlabel("Jours / Heures")
 		plt.ylabel("Comptages horaires")
-
+		plt.xticks(np.arange(12, len(df_graphe_h["Jour"][df_graphe_h["Jour"] >= jour_deb_test].unique())*24+12, 24),
+					df_graphe_h["Jour"][df_graphe_h["Jour"] >= jour_deb_test].unique())
 		plt.title(titre)
 		plt.grid(True, linestyle = ':')
 		plt.legend();
@@ -788,10 +777,10 @@ if select_theme == 'Machine Learning':
 
 		liste_var = st.sidebar.multiselect('Sélectionnez les variables :',
 									['Année', 'Mois', 'Jour',
-								    'Jour_de_la_semaine', 'Heure', 'Grève', 'Covid', 'Confinement',
+								    'Jour_de_la_semaine', 'Heure', 'Grève', 'Confinement',
 								    'Jour_férié', 'Vacances',
 								    'vac_aout', 'vac_noel',
-								    'Pluie', 'Chaud', 'lat', 'long', 'sam_dim',
+								    'Pluie', 'lat', 'long', 'sam_dim',
 								    'Comptage_horaire', 'Comptage_horaire_h_1', 'Comptage_horaire_h_2',
 								    'Comptage_horaire_h_3', 'Comptage_horaire_j_1', 'Comptage_horaire_j_2',
 								    'Comptage_horaire_j_3', 'Comptage_horaire_s_1', 'Comptage_horaire_s_2',
