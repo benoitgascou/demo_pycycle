@@ -342,10 +342,10 @@ if select_theme == 'Data Visualisation':
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
-			        shadow = True,
+			        shadow = False,
 			        radius= 0.8);
 			st.pyplot(fig)
-			st.markdown("3/4 des accidentés à vélo sont des hommes contre 1/4 de femmes. Le boom des livraisons à"
+			st.markdown("3/4 des accidentés à vélo sont des hommes contre 1/4 de femmes. Le boom des livraisons à "
 			"vélo, métier majoritairement masculin, joue sur ces chiffres. Comparons la gravité des "
 			"accidents en fonction du sexe :")
 
@@ -361,7 +361,7 @@ if select_theme == 'Data Visualisation':
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
-			        shadow = True,
+			        shadow = False,
 			        colors = ("lightgreen", "red", "orange", "lightyellow"))
 			st.pyplot(fig)
 
@@ -377,7 +377,7 @@ if select_theme == 'Data Visualisation':
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
-			        shadow = True,
+			        shadow = False,
 			        colors = ("lightgreen", "orange", "lightyellow"),
 			        startangle=80);
 			st.pyplot(fig)
@@ -412,7 +412,7 @@ if select_theme == 'Data Visualisation':
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.8,
 			        labeldistance = 1.1,
-			        shadow = True);
+			        shadow = False);
 			st.pyplot(fig)
 			st.markdown("Sans surprise la majorité des accidentés ont entre 18 et 30 ans, ce qui correspond à la tranche "
 			"d’âge qui roule le plus à vélo. Puis le nombre décroît avec l’âge (et l’usage).")
@@ -439,7 +439,7 @@ if select_theme == 'Data Visualisation':
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
-			        shadow = True,
+			        shadow = False,
 			        startangle = 90);
 			st.pyplot(fig)
 			st.markdown("Avec 1/3 des trajets non renseignés, difficile de conclure, même si les trajets "
@@ -463,7 +463,7 @@ if select_theme == 'Data Visualisation':
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
-			        shadow = True,
+			        shadow = False,
 			        startangle = 90);
 			st.pyplot(fig)
 			st.markdown("Une grosse moitié des accidents a eu lieu sur la chaussée contre 1/3 sur des pistes cyclables. "
@@ -487,7 +487,7 @@ if select_theme == 'Data Visualisation':
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
-			        shadow = True,
+			        shadow = False,
 			        radius= 0.8);
 			st.pyplot(fig)
 			st.markdown("Les 3/4 des accidents ont lieu sous une météo normale. Le 1/4 restant a lieu sous la pluie ou "
