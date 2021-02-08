@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import datetime
 
 from streamlit_folium import folium_static
 import folium
@@ -25,26 +24,17 @@ from PIL import Image
 image = Image.open('velo.jpg')
 st.image(image, use_column_width=True, width=500)
 
-df1 = pd.read_csv("df1.csv", sep = ";")
-df2 = pd.read_csv("df2.csv", sep = ";")
-df3 = pd.read_csv("df3.csv", sep = ";")
-df = pd.concat([df1, df2, df3], ignore_index=True)
-#Fichier source détaillé, NA retraités, doublons photos corrigés
-df["Date et heure de comptage"] = pd.to_datetime(df["Date et heure de comptage"])
-df['Date'] = df['Date et heure de comptage'].dt.date
-
 df_acc = pd.read_csv('df_acc.csv', sep=';')
 #concaténation des 4 fichiers sources du NB, déjà retraité des NA, filtré sur la période sept 2019 à déc 2019 et accidents vélo
 
 df_ml = pd.read_csv('df_ml.csv', sep=';')
 #fichier déjà retraité des NA, avec les variables numériques déjà ajoutées pour optimiser le temps de traitement
 
-#plan_df = pd.read_csv('plan_df.csv', sep=';')
-#plan_df_jour = pd.read_csv('plan_df_jour.csv', sep=';')
-#plan_df_nuit = pd.read_csv('plan_df_nuit.csv', sep=';')
+plan_df = pd.read_csv('plan_df.csv', sep=';')
+plan_df_jour = pd.read_csv('plan_df_jour.csv', sep=';')
+plan_df_nuit = pd.read_csv('plan_df_nuit.csv', sep=';')
 plan_df_2019 = pd.read_csv('plan_df_2019.csv', sep=';')
 #fichier sources cartographies, flitrés par sites, doublons url photos déjà traités
-
 
 
 dates = pd.read_csv('dates.csv', sep=';')
@@ -109,240 +99,85 @@ if select_theme == 'Data Visualisation':
 		st.sidebar.subheader(select_dataviz)
 		periode = st.sidebar.radio('Sélectionnez les éléments à afficher sur la carte :', ("Trafic sur 24h", "Trafic Jour", "Trafic Nuit" ))
 
-		#variables temps
-		st.sidebar.header("Filtres période")
 
-		date = st.sidebar.date_input('date début - date fin :', value=(datetime.date(2019, 9, 1), datetime.date(2020, 12, 31)), min_value=datetime.date(2019, 9, 1), max_value=datetime.date(2020, 12, 31))
-
-		heure = st.sidebar.slider("tranche horaire :", min_value=0, max_value=23, step=1, value=(0, 23))
-
-		df_filtre = df
-
-		tranche_hor2 = st.sidebar.checkbox("ajouter une tranche horaire", value=False)
-		if tranche_hor2:
-			heure2 = st.sidebar.slider("", min_value=0, max_value=23, step=1, value=(0, 23))
-			df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1]) | (df_filtre["Heure"] >= heure2[0]) & (df_filtre["Heure"] <= heure2[1])]
-		else:
-			df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1])]
-
-
-		liste_jr_sem = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-		select_jr_sem = st.sidebar.multiselect('jours de la semaine :', liste_jr_sem, default = liste_jr_sem)
-		jr_sem =[]
-		for i in np.arange(0,7):
-			if liste_jr_sem[i] in select_jr_sem :
-				jr_sem.append(i)
-
-
-		annee = st.sidebar.multiselect('années :', [2019, 2020], default = [2019, 2020])
-
-		liste_mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
-		select_mois = st.sidebar.multiselect('mois :', liste_mois, default = liste_mois)
-		mois =[]
-		for i in np.arange(0,12):
-			if liste_mois[i] in select_mois :
-				mois.append(i+1)
-
-		#filtres
-		df_filtre = df_filtre[(df_filtre["Date"] >= date[0]) & (df_filtre["Date"] <= date[1])]
-		df_filtre = df_filtre[df_filtre["Jour_de_la_semaine"].isin(jr_sem)]
-		df_filtre = df_filtre[df_filtre["Année"].isin(annee)]
-		df_filtre = df_filtre[df_filtre["Mois"].isin(mois)]
-
-		#Plus de filtres
-		if st.sidebar.checkbox("plus de filtres", value=False):
-			liste_semaine = np.arange(1,54).tolist()
-			semaine = st.sidebar.multiselect('semaines :', liste_semaine, default=liste_semaine)
-			liste_jour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-		        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
-			jour = st.sidebar.multiselect('jours :', liste_jour, default=liste_jour)
-			df_filtre = df_filtre[df_filtre["Semaine"].isin(semaine)]
-			df_filtre = df_filtre[df_filtre["Jour"].isin(jour)]
-
-
-		#Fériés / Vacances
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-		if st.sidebar.checkbox("filtres jours fériés / vacances", value=False):
-
-			st.sidebar.subheader("Jours fériés")
-			ferie = st.sidebar.checkbox("oui ", value=True)
-			pas_ferie = st.sidebar.checkbox("non ", value=True)
-
-			if ferie == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 1].index, axis=0)
-			if pas_ferie == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 0].index, axis=0)
-
-
-			st.sidebar.subheader("Vacances")
-			hors_vac = st.sidebar.checkbox("période hors vacances", value=True)
-			fevrier = st.sidebar.checkbox("février", value=True)
-			printemps = st.sidebar.checkbox("printemps", value=True)	 
-			ascension = st.sidebar.checkbox("Ascension", value=True)
-			juillet = st.sidebar.checkbox("juillet", value=True)
-			aout = st.sidebar.checkbox("août", value=True)
-			toussaint = st.sidebar.checkbox("Toussaint", value=True)
-			noel = st.sidebar.checkbox("Noël ", value=True)
-
-			if hors_vac == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Vacances"] == 0].index, axis=0)
-			if fevrier == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_fevrier"] == 1].index, axis=0)
-			if printemps == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_printemps"] == 1].index, axis=0)
-			if ascension == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_ascension"] == 1].index, axis=0)
-			if juillet == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_juillet"] == 1].index, axis=0)
-			if aout == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_aout"] == 1].index, axis=0)
-			if toussaint == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_toussaint"] == 1].index, axis=0)
-			if noel == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_noel"] == 1].index, axis=0)
-
-		#Météo
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-		if st.sidebar.checkbox("filtres météo", value=False):
-
-			st.sidebar.subheader("Pluie")
-			pas_de_pluie = st.sidebar.checkbox("pas de pluie", value=True)
-			pluie_mod = st.sidebar.checkbox("modérée", value=True)	 
-			pluie_forte = st.sidebar.checkbox("forte", value=True)
-
-			st.sidebar.subheader("Froid")
-			inf_4 = st.sidebar.checkbox("froid (< 4°C)", value=True)
-			sup_4 = st.sidebar.checkbox("autre", value=True)
-			 
-
-			st.sidebar.subheader("Beau temps")
-			sup_23 = st.sidebar.checkbox("beau temps (>23°C avec soleil)", value=True)
-			inf_23 = st.sidebar.checkbox("autre ", value=True)
-
-			if pas_de_pluie == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 0].index, axis=0)
-			if pluie_mod == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 1].index, axis=0)
-			if pluie_forte == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 2].index, axis=0)
-
-			if sup_4 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 0].index, axis=0)
-			if inf_4 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 1].index, axis=0)
-
-			if sup_23 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 1].index, axis=0)
-			if inf_23 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 0].index, axis=0)
-
-
-		#Evènements exceptionnels
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)	
-		if st.sidebar.checkbox("filtres évènements exceptionnels", value=False):
-
-			st.sidebar.subheader("Grève des transports")
-			greve = st.sidebar.checkbox("oui", value=True)
-			pas_greve = st.sidebar.checkbox("non", value=True)	 
-
-			st.sidebar.subheader("Covid")
-			av_cov = st.sidebar.checkbox("avant", value=True)
-			covid = st.sidebar.checkbox("après", value=True)	 
-
-			st.sidebar.subheader("Confinement")
-			pas_conf = st.sidebar.checkbox("pas de confinement", value=True)
-			conf_1 = st.sidebar.checkbox("1er confinement", value=True)
-			conf_2 = st.sidebar.checkbox("2e confinement", value=True)
-
-			if greve == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Greve"] == 1].index, axis=0)
-			if pas_greve == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Greve"] == 0].index, axis=0)
-
-			if av_cov == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 0].index, axis=0)
-			if covid == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 1].index, axis=0)
-
-			if pas_conf == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 0].index, axis=0)
-			if conf_1 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 1].index, axis=0)
-			if conf_2 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 2].index, axis=0)
-
-
-		# création d'un nouveau df qui servira à la cartographie
-		df_geo = df_filtre.groupby(['Identifiant du site de comptage', 'Nom du site de comptage', 'long', 'lat', 'Lien vers photo du site de comptage'], as_index = False).agg({'Comptage horaire':'mean'})
-
-
-		# Clustering avec le modèle K-Means
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+		if periode == "Trafic Jour":
+			plan_df = plan_df_jour
+		elif periode == "Trafic Nuit":
+			plan_df = plan_df_nuit
+				
 		if st.sidebar.checkbox("Clustering", value=False):
-			from sklearn.cluster import KMeans
-			#Création d'un DF avec les coordonnées géographiques et le comptage horaire moyen pour chaque site de comptage
-			df_cluster = df.groupby('Identifiant du site de comptage', as_index = False).agg({'Comptage horaire':'mean',
-			                                                                                 'lat':'mean',
-			                                                                                 'long':'mean'})
+			#df_cluster = plan_df.[['Identifiant du site de comptage','lat','long']]
 			kmeans = KMeans(n_clusters = 3)
-			kmeans.fit(df_cluster[["Comptage horaire", "lat", "long"]])
+			kmeans.fit(plan_df[["Comptage horaire", "lat", "long"]])
 			centroids = kmeans.cluster_centers_
 			labels = kmeans.labels_
-			# Ajouter les labels au DF "df_cluster"
-			labels = pd.DataFrame(labels)
-			df_cluster = df_cluster.join(labels)
-			df_cluster["groupe"] = df_cluster[0]
-			df_cluster = df_cluster.drop(0, axis = 1)
-			# Fusionner le DF "df_cluster" avec le précédent DF servira à la cartographie
-			df_geo = df_geo.join(df_cluster["groupe"])
+			#Ajouter les labels au DF "df_cluster"
+			plan_df["groupe"] = pd.DataFrame(labels)
 
-
-			# affichage des sites de comptage sur la carte en utilisant la librairie Folium
+			#Affichage carte avec clustering
 			carte = folium.Map(location = [48.86, 2.341886], zoom_start = 12, min_zoom=12)
-
-			for nom, comptage, latitude, longitude, image, groupe in zip(df_geo["Nom du site de comptage"],
-			                                                             df_geo["Comptage horaire"],
-			                                                             df_geo["lat"],
-			                                                             df_geo["long"],
-			                                                             df_geo["Lien vers photo du site de comptage"],
-			                                                             df_geo["groupe"]):
-				if groupe == 0:
-					couleur = "#d9152a"
-				elif groupe == 1:
-					couleur = "#368fe5"
-				else:
-					couleur = "#129012"
-				pp = "<strong>" + nom + "</strong>" + "<br>Comptage horaire : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
-				folium.CircleMarker(location=[latitude, longitude],
-				                    radius=comptage/10,
-				                    popup = folium.Popup(pp, max_width = 300),
-				                    tooltip= "<strong>" + nom + "</strong>",
-				                    color=couleur,
-				                    fill_color=couleur,
-				                    fill_opacity=0.3
-				                   ).add_to(carte)
+			for nom, comptage, latitude, longitude, image, groupe in zip(plan_df["Nom du site de comptage"],
+					                                                     plan_df["Comptage horaire"],
+					                                                     plan_df["lat"],
+					                                                     plan_df["long"],
+					                                                     plan_df["Lien vers photo du site de comptage"],
+					                                                     plan_df["groupe"]):
+			    if groupe == 0:
+			        couleur = "#d9152a"
+			    elif groupe == 1:
+			        couleur = "#368fe5"
+			    elif groupe == 2:
+			        couleur = "#129012"
+			    else :
+			    	couleur ="#368fe5"
+			    
+			    
+			    pp = "<strong>" + nom + "</strong>" + "<br>Comptage horaire : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
+			    folium.CircleMarker(location=[latitude, longitude],
+			                        radius=comptage/10,
+			                        popup = folium.Popup(pp, max_width = 300),
+			                        tooltip= "<strong>" + nom + "</strong>",
+			                        color = couleur,
+			                        fill_color = couleur,
+			                        fill_opacity=0.3
+			                       ).add_to(carte)
 			folium_static(carte)
-		else :
-			# affichage des sites de comptage sur la carte en utilisant la librairie Folium
+
+
+		else:
+			couleur = "#368fe5"
+			#Affichage carte sans clustering
 			carte = folium.Map(location = [48.86, 2.341886], zoom_start = 12, min_zoom=12)
-
-			for nom, comptage, latitude, longitude, image in zip(df_geo["Nom du site de comptage"],
-			                                                             df_geo["Comptage horaire"],
-			                                                             df_geo["lat"],
-			                                                             df_geo["long"],
-			                                                             df_geo["Lien vers photo du site de comptage"]):
-				couleur = "#368fe5"
-				pp = "<strong>" + nom + "</strong>" + "<br>Comptage horaire : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
-				folium.CircleMarker(location=[latitude, longitude],
-				                    radius=comptage/10,
-				                    popup = folium.Popup(pp, max_width = 300),
-				                    tooltip= "<strong>" + nom + "</strong>",
-				                    color=couleur,
-				                    fill_color=couleur,
-				                    fill_opacity=0.3
-				                   ).add_to(carte)
+			for nom, comptage, latitude, longitude, image in zip(plan_df["Nom du site de comptage"],
+					                                                     plan_df["Comptage horaire"],
+					                                                     plan_df["lat"],
+					                                                     plan_df["long"],
+					                                                     plan_df["Lien vers photo du site de comptage"]):
+			    
+			    pp = "<strong>" + nom + "</strong>" + "<br>Comptage horaire : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
+			    folium.CircleMarker(location=[latitude, longitude],
+			                        radius=comptage/10,
+			                        popup = folium.Popup(pp, max_width = 300),
+			                        tooltip= "<strong>" + nom + "</strong>",
+			                        color = couleur,
+			                        fill_color = couleur,
+			                        fill_opacity=0.3
+			                       ).add_to(carte)
 			folium_static(carte)
-		
+
+		#commentaires carte		
+		# st.markdown(body="<ul>"
+		# 	             "<li>69 sites de comptage</li>"
+		# 	             "<li>Maillage faible : 3,5 sites / arrondissement<br>"
+		# 	             "Quais de Seine & axe Nord-Sud +++<br>"
+		# 	             "Axes Est-Ouest --</li>"
+		# 	             "<li>Sites classés en 3 couleurs selon l’intensité du trafic (modèle de clustering K-means)<br>"
+		# 	             "<font size=5>o</font>   Hypercentre, 10e, 11e<br>"
+		# 	             "<font size=4>o</font>   Quais, Batignolles, La Villette, 14e, 15e<br>"
+		# 	             "<font size=2>o</font>   Périphérie, 6e, 7e, 8e, 13e"
+		# 	             "</li></ul>",
+		# 	             unsafe_allow_html=True)
+
 
 
 
@@ -357,6 +192,7 @@ if select_theme == 'Data Visualisation':
 		dates.set_index('Date',inplace=True)
 		fig = plt.figure(figsize = (20, 10))
 		st.line_chart(dates)
+
 
 
 
