@@ -28,10 +28,20 @@ st.image(image, use_column_width=True, width=500)
 df1 = pd.read_csv("df1.csv", sep = ";")
 df2 = pd.read_csv("df2.csv", sep = ";")
 df3 = pd.read_csv("df3.csv", sep = ";")
-df = pd.concat([df1, df2, df3], ignore_index=True)
+df4 = pd.read_csv("df4.csv", sep = ";")
+df5 = pd.read_csv("df5.csv", sep = ";")
+df6 = pd.read_csv("df6.csv", sep = ";")
+df7 = pd.read_csv("df7.csv", sep = ";")
+df8 = pd.read_csv("df8.csv", sep = ";")
+df9 = pd.read_csv("df9.csv", sep = ";")
+df10 = pd.read_csv("df10.csv", sep = ";")
+df11 = pd.read_csv("df11.csv", sep = ";")
+
+
+df = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11], ignore_index=True)
 #Fichier source détaillé, NA retraités, doublons photos corrigés
-#df["Date et heure de comptage"] = pd.to_datetime(df["Date et heure de comptage"])
-#df['Date'] = df['Date et heure de comptage'].dt.date
+df["Date et heure de comptage"] = pd.to_datetime(df["Date et heure de comptage"])
+df['Date'] = df['Date et heure de comptage'].dt.date
 
 df_acc = pd.read_csv('df_acc.csv', sep=';')
 #concaténation des 4 fichiers sources du NB, déjà retraité des NA, filtré sur la période sept 2019 à déc 2019 et accidents vélo
