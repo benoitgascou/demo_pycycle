@@ -30,8 +30,8 @@ df2 = pd.read_csv("df2.csv", sep = ";")
 df3 = pd.read_csv("df3.csv", sep = ";")
 df = pd.concat([df1, df2, df3], ignore_index=True)
 #Fichier source détaillé, NA retraités, doublons photos corrigés
-df["Date et heure de comptage"] = pd.to_datetime(df["Date et heure de comptage"])
-df['Date'] = df['Date et heure de comptage'].dt.date
+#df["Date et heure de comptage"] = pd.to_datetime(df["Date et heure de comptage"])
+#df['Date'] = df['Date et heure de comptage'].dt.date
 
 df_acc = pd.read_csv('df_acc.csv', sep=';')
 #concaténation des 4 fichiers sources du NB, déjà retraité des NA, filtré sur la période sept 2019 à déc 2019 et accidents vélo
