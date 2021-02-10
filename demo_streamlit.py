@@ -83,13 +83,11 @@ st.sidebar.markdown(body="<hr>", unsafe_allow_html=True)
 ####   DATAVIZ    ####
 ######################
 if select_theme == 'Data Visualisation':
-
 	st.sidebar.header(select_theme)
 	select_dataviz = st.sidebar.radio(
 	"Sélectionnez une Dataviz :", (dataviz1_1, dataviz1_2, dataviz2_1, dataviz2_2))
 	st.sidebar.markdown(body="<hr>", unsafe_allow_html=True)
-
-
+	
 #DATAVIZ TRAFIC
 ###################################
 ###################################
@@ -106,179 +104,188 @@ if select_theme == 'Data Visualisation':
 		st.title(dataviz1)
 		st.header(select_dataviz)
 
-		st.sidebar.subheader(select_dataviz)
-		periode = st.sidebar.radio('Sélectionnez les éléments à afficher sur la carte :', ("Trafic sur 24h", "Trafic Jour", "Trafic Nuit" ))
+		#Choix de la période
+		####################
+		st.sidebar.title("Choix de la période")
+		st.sidebar.subheader("Sélectionnez la période")
+		date = st.sidebar.date_input(
+			'(entre le 01/09/2019 et le 31/12/2020)',
+			value=(datetime.date(2019, 9, 1), datetime.date(2020, 12, 31)),
+			min_value=datetime.date(2019, 9, 1),
+			max_value=datetime.date(2020, 12, 31))
 
-		#variables temps
-		st.sidebar.header("Filtres période")
+		st.sidebar.subheader("Affinez votre recherche")
 
-		date = st.sidebar.date_input('date début - date fin :', value=(datetime.date(2019, 9, 1), datetime.date(2020, 12, 31)), min_value=datetime.date(2019, 9, 1), max_value=datetime.date(2020, 12, 31))
+		heure = st.sidebar.slider("Tranche horaire", min_value=0, max_value=23, step=1, value=(0, 23))
 
-		heure = st.sidebar.slider("tranche horaire :", min_value=0, max_value=23, step=1, value=(0, 23))
-
-		df_filtre = df
-
-		tranche_hor2 = st.sidebar.checkbox("ajouter une tranche horaire", value=False)
+		heure2 = ()
+		tranche_hor2 = st.sidebar.checkbox("Ajoutez une tranche horaire", value=False)
 		if tranche_hor2:
 			heure2 = st.sidebar.slider("", min_value=0, max_value=23, step=1, value=(0, 23))
-			df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1]) | (df_filtre["Heure"] >= heure2[0]) & (df_filtre["Heure"] <= heure2[1])]
-		else:
-			df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1])]
-
 
 		liste_jr_sem = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-		select_jr_sem = st.sidebar.multiselect('jours de la semaine :', liste_jr_sem, default = liste_jr_sem)
+		select_jr_sem = st.sidebar.multiselect('Jour de la semaine', liste_jr_sem, default = liste_jr_sem)
 		jr_sem =[]
 		for i in np.arange(0,7):
 			if liste_jr_sem[i] in select_jr_sem :
 				jr_sem.append(i)
 
+		liste_jour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+		17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+		jour = st.sidebar.multiselect('Jour du mois', liste_jour, default=liste_jour)
 
-		annee = st.sidebar.multiselect('années :', [2019, 2020], default = [2019, 2020])
+		liste_semaine = np.arange(1,54).tolist()
+		semaine = st.sidebar.multiselect('Semaine', liste_semaine, default=liste_semaine)
 
 		liste_mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
-		select_mois = st.sidebar.multiselect('mois :', liste_mois, default = liste_mois)
+		select_mois = st.sidebar.multiselect('Mois', liste_mois, default = liste_mois)
 		mois =[]
 		for i in np.arange(0,12):
 			if liste_mois[i] in select_mois :
 				mois.append(i+1)
 
-		#filtres
-		df_filtre = df_filtre[(df_filtre["Date"] >= date[0]) & (df_filtre["Date"] <= date[1])]
-		df_filtre = df_filtre[df_filtre["Jour_de_la_semaine"].isin(jr_sem)]
-		df_filtre = df_filtre[df_filtre["Année"].isin(annee)]
-		df_filtre = df_filtre[df_filtre["Mois"].isin(mois)]
-
-		#Plus de filtres
-		if st.sidebar.checkbox("plus de filtres", value=False):
-			liste_semaine = np.arange(1,54).tolist()
-			semaine = st.sidebar.multiselect('semaines :', liste_semaine, default=liste_semaine)
-			liste_jour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-		        17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
-			jour = st.sidebar.multiselect('jours :', liste_jour, default=liste_jour)
-			df_filtre = df_filtre[df_filtre["Semaine"].isin(semaine)]
-			df_filtre = df_filtre[df_filtre["Jour"].isin(jour)]
+		annee = st.sidebar.multiselect('Année', [2019, 2020], default = [2019, 2020])
 
 
-		#Fériés / Vacances
+		#Evénements récurrents
+		######################
 		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-		if st.sidebar.checkbox("filtres jours fériés / vacances", value=False):
+		st.sidebar.title("Evénements récurrents")
 
-			st.sidebar.subheader("Jours fériés")
-			ferie = st.sidebar.checkbox("oui ", value=True)
-			pas_ferie = st.sidebar.checkbox("non ", value=True)
-
-			if ferie == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 1].index, axis=0)
-			if pas_ferie == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 0].index, axis=0)
+		#Weekend
+		st.sidebar.subheader("Week-end")
+		weekend = st.sidebar.checkbox("Oui ", value=True)
+		pas_weekend = st.sidebar.checkbox("Non ", value=True)
 
 
-			st.sidebar.subheader("Vacances")
-			hors_vac = st.sidebar.checkbox("période hors vacances", value=True)
-			fevrier = st.sidebar.checkbox("février", value=True)
-			printemps = st.sidebar.checkbox("printemps", value=True)	 
-			ascension = st.sidebar.checkbox("Ascension", value=True)
-			juillet = st.sidebar.checkbox("juillet", value=True)
-			aout = st.sidebar.checkbox("août", value=True)
-			toussaint = st.sidebar.checkbox("Toussaint", value=True)
-			noel = st.sidebar.checkbox("Noël ", value=True)
+		#Férié
+		st.sidebar.subheader("Jour férié")
+		ferie = st.sidebar.checkbox("Oui  ", value=True)
+		pas_ferie = st.sidebar.checkbox("Non  ", value=True)
 
-			if hors_vac == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Vacances"] == 0].index, axis=0)
-			if fevrier == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_fevrier"] == 1].index, axis=0)
-			if printemps == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_printemps"] == 1].index, axis=0)
-			if ascension == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_ascension"] == 1].index, axis=0)
-			if juillet == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_juillet"] == 1].index, axis=0)
-			if aout == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_aout"] == 1].index, axis=0)
-			if toussaint == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_toussaint"] == 1].index, axis=0)
-			if noel == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_noel"] == 1].index, axis=0)
+		#Vacances
+		st.sidebar.subheader("Vacances")
+		hors_vac = st.sidebar.checkbox("Période hors vacances", value=True)
+		fevrier = st.sidebar.checkbox("Février", value=True)
+		printemps = st.sidebar.checkbox("Printemps", value=True)	 
+		ascension = st.sidebar.checkbox("Ascension", value=True)
+		juillet = st.sidebar.checkbox("Juillet", value=True)
+		aout = st.sidebar.checkbox("Août", value=True)
+		toussaint = st.sidebar.checkbox("Toussaint", value=True)
+		noel = st.sidebar.checkbox("Noël ", value=True)
 
 		#Météo
+		st.sidebar.subheader("Météo")
+		st.sidebar.markdown("<strong>Pluie</strong>", unsafe_allow_html=True)
+		pas_de_pluie = st.sidebar.checkbox("Pas de pluie", value=True)
+		pluie_mod = st.sidebar.checkbox("Modérée", value=True)	 
+		pluie_forte = st.sidebar.checkbox("Forte", value=True)
+		st.sidebar.markdown("<strong>Froid</strong>", unsafe_allow_html=True)
+		inf_4 = st.sidebar.checkbox("Froid (< 4°C)", value=True)
+		sup_4 = st.sidebar.checkbox("Autre", value=True)
+		st.sidebar.markdown("<strong>Chaud</strong>", unsafe_allow_html=True)
+		sup_25 = st.sidebar.checkbox("Chaud (>25°C avec soleil)", value=True)
+		inf_25 = st.sidebar.checkbox("Autre ", value=True)
+
+
+
+		#Evénements exceptionnels
+		##########################
 		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-		if st.sidebar.checkbox("filtres météo", value=False):
+		st.sidebar.title("Evénements exceptionnels")
 
-			st.sidebar.subheader("Pluie")
-			pas_de_pluie = st.sidebar.checkbox("pas de pluie", value=True)
-			pluie_mod = st.sidebar.checkbox("modérée", value=True)	 
-			pluie_forte = st.sidebar.checkbox("forte", value=True)
+		st.sidebar.subheader("Covid")
+		av_cov = st.sidebar.checkbox("Avant", value=True)
+		covid = st.sidebar.checkbox("Après", value=True)
 
-			st.sidebar.subheader("Froid")
-			inf_4 = st.sidebar.checkbox("froid (< 4°C)", value=True)
-			sup_4 = st.sidebar.checkbox("autre", value=True)
-			 
+		st.sidebar.subheader("Confinement")
+		pas_conf = st.sidebar.checkbox("Pas de confinement", value=True)
+		conf_1 = st.sidebar.checkbox("1er confinement", value=True)
+		conf_2 = st.sidebar.checkbox("2e confinement", value=True)
 
-			st.sidebar.subheader("Beau temps")
-			sup_23 = st.sidebar.checkbox("beau temps (>23°C avec soleil)", value=True)
-			inf_23 = st.sidebar.checkbox("autre ", value=True)
+		st.sidebar.subheader("Grève des tansports")
+		greve = st.sidebar.checkbox("Oui", value=True)
+		pas_greve = st.sidebar.checkbox("non", value=True)	
 
-			if pas_de_pluie == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 0].index, axis=0)
-			if pluie_mod == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 1].index, axis=0)
-			if pluie_forte == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 2].index, axis=0)
-
-			if sup_4 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 0].index, axis=0)
-			if inf_4 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 1].index, axis=0)
-
-			if sup_23 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 1].index, axis=0)
-			if inf_23 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 0].index, axis=0)
+		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+		st.sidebar.title("Testez le clustering")
+		st.sidebar.markdown("(Modèle de machine learning qui classe les sites selon l'intensité du trafic)")
+		clustering = st.sidebar.checkbox("Clustering", value=False)
 
 
-		#Evènements exceptionnels
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)	
-		if st.sidebar.checkbox("filtres évènements exceptionnels", value=False):
 
-			st.sidebar.subheader("Grève des transports")
-			greve = st.sidebar.checkbox("oui", value=True)
-			pas_greve = st.sidebar.checkbox("non", value=True)	 
+		#Filtres
+		########
+		df_filtre = df
+		df_filtre = df_filtre[(df_filtre["Date"] >= date[0]) & (df_filtre["Date"] <= date[1])]
+		if tranche_hor2:
+			df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1]) | (df_filtre["Heure"] >= heure2[0]) & (df_filtre["Heure"] <= heure2[1])]
+		else:
+			df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1])]
+		df_filtre = df_filtre[df_filtre["Jour_de_la_semaine"].isin(jr_sem)]
+		df_filtre = df_filtre[df_filtre["Jour"].isin(jour)]
+		df_filtre = df_filtre[df_filtre["Semaine"].isin(semaine)]
+		df_filtre = df_filtre[df_filtre["Mois"].isin(mois)]
+		df_filtre = df_filtre[df_filtre["Année"].isin(annee)]
+		if weekend == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Weekend"] == 1].index, axis=0)
+		if pas_weekend == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Weekend"] == 0].index, axis=0)
+		if ferie == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 1].index, axis=0)
+		if pas_ferie == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 0].index, axis=0)
+		if hors_vac == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Vacances"] == 0].index, axis=0)
+		if fevrier == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_fevrier"] == 1].index, axis=0)
+		if printemps == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_printemps"] == 1].index, axis=0)
+		if ascension == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_ascension"] == 1].index, axis=0)
+		if juillet == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_juillet"] == 1].index, axis=0)
+		if aout == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_aout"] == 1].index, axis=0)
+		if toussaint == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_toussaint"] == 1].index, axis=0)
+		if noel == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_noel"] == 1].index, axis=0)
+		if pas_de_pluie == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 0].index, axis=0)
+		if pluie_mod == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 1].index, axis=0)
+		if pluie_forte == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 2].index, axis=0)
+		if sup_4 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 0].index, axis=0)
+		if inf_4 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 1].index, axis=0)
+		if sup_25 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 1].index, axis=0)
+		if inf_25 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 0].index, axis=0)
+		if greve == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Grève"] == 1].index, axis=0)
+		if pas_greve == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Grève"] == 0].index, axis=0)
+		if av_cov == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 0].index, axis=0)
+		if covid == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 1].index, axis=0)
+		if pas_conf == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 0].index, axis=0)
+		if conf_1 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 1].index, axis=0)
+		if conf_2 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 2].index, axis=0)
 
-			st.sidebar.subheader("Covid")
-			av_cov = st.sidebar.checkbox("avant", value=True)
-			covid = st.sidebar.checkbox("après", value=True)	 
-
-			st.sidebar.subheader("Confinement")
-			pas_conf = st.sidebar.checkbox("pas de confinement", value=True)
-			conf_1 = st.sidebar.checkbox("1er confinement", value=True)
-			conf_2 = st.sidebar.checkbox("2e confinement", value=True)
-
-			if greve == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Greve"] == 1].index, axis=0)
-			if pas_greve == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Greve"] == 0].index, axis=0)
-
-			if av_cov == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 0].index, axis=0)
-			if covid == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 1].index, axis=0)
-
-			if pas_conf == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 0].index, axis=0)
-			if conf_1 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 1].index, axis=0)
-			if conf_2 == False:
-				df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 2].index, axis=0)
 
 
 		# création d'un nouveau df qui servira à la cartographie
 		df_geo = df_filtre.groupby(['Identifiant du site de comptage', 'Nom du site de comptage', 'long', 'lat', 'Lien vers photo du site de comptage'], as_index = False).agg({'Comptage horaire':'mean'})
-
-
 		# Clustering avec le modèle K-Means
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-		if st.sidebar.checkbox("Clustering", value=False):
+		if clustering:
 			from sklearn.cluster import KMeans
 			#Création d'un DF avec les coordonnées géographiques et le comptage horaire moyen pour chaque site de comptage
 			df_cluster = df.groupby('Identifiant du site de comptage', as_index = False).agg({'Comptage horaire':'mean',
@@ -312,9 +319,13 @@ if select_theme == 'Data Visualisation':
 					couleur = "#368fe5"
 				else:
 					couleur = "#129012"
+				if comptage == 0:
+					rayon = 0.5
+				else:
+					rayon = comptage
 				pp = "<strong>" + nom + "</strong>" + "<br>Comptage horaire : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
 				folium.CircleMarker(location=[latitude, longitude],
-				                    radius=comptage/10,
+				                    radius=rayon/10,
 				                    popup = folium.Popup(pp, max_width = 300),
 				                    tooltip= "<strong>" + nom + "</strong>",
 				                    color=couleur,
@@ -331,10 +342,14 @@ if select_theme == 'Data Visualisation':
 			                                                             df_geo["lat"],
 			                                                             df_geo["long"],
 			                                                             df_geo["Lien vers photo du site de comptage"]):
+				if comptage == 0:
+					rayon = 0.5
+				else:
+					rayon = comptage
 				couleur = "#368fe5"
 				pp = "<strong>" + nom + "</strong>" + "<br>Comptage horaire : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
 				folium.CircleMarker(location=[latitude, longitude],
-				                    radius=comptage/10,
+				                    radius=rayon/10,
 				                    popup = folium.Popup(pp, max_width = 300),
 				                    tooltip= "<strong>" + nom + "</strong>",
 				                    color=couleur,
@@ -342,21 +357,41 @@ if select_theme == 'Data Visualisation':
 				                    fill_opacity=0.3
 				                   ).add_to(carte)
 			folium_static(carte)
-		
-
-
-
-
-#Evolution du trafic de sept 2019 à déc 2020
-############################################
+				
+	#Evolution du trafic de sept 2019 à déc 2020
+	############################################
 	if select_dataviz == dataviz1_2:
-		st.sidebar.subheader(select_dataviz)
-		st.title(dataviz1)
-		st.header(select_dataviz)
-		dates['Date'] = pd.to_datetime(dates['Date'], errors='coerce')
-		dates.set_index('Date',inplace=True)
-		fig = plt.figure(figsize = (20, 10))
-		st.line_chart(dates)
+				st.sidebar.subheader(select_dataviz)
+				st.title(dataviz1)
+				st.header(select_dataviz)
+				dates = df.groupby('Date')['Comptage horaire'].mean()
+				fig = plt.figure(figsize = (30, 10))
+				plt.plot_date(dates.index, dates, 'b-', label = "Nombre moyen de vélos par jour")
+				plt.xlabel('Date', fontsize = 12)
+				plt.ylabel('Nombre moyen de vélos / jour', fontsize = 12)
+				plt.ylim(0, 120)
+				plt.title('Trafic cycliste à Paris entre septembre 2019 et décembre 2020', fontsize = 18)
+				plt.xticks(rotation = 0, fontsize = 18)
+				plt.xticks(['2019-09', '2019-11', '2020-01', '2020-03', '2020-05', '2020-07', '2020-09', '2020-11', '2021-01' ], ['Sep 2019', 'Nov 2019', 'Jan 2020', 'Mars 2020', 'Mai 2020', 'Juil 2020', 'Sep 2020', 'Nov 2020', 'Jan 2021'])
+				plt.legend()
+
+				plt.annotate('Grève des transports', xy=("2019-09-15", 103), xytext=("2019-11-01", 134), fontsize = 20, ha = "left", c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('', xy=("2019-12-15", 115), xytext=("2019-12-14", 133), fontsize = 20, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('', xy=("2020-01-10", 106), xytext=("2019-12-14", 133), fontsize = 20, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('Déconfinement', xy=("2020-05-10", 60), xytext=("2020-03-20", 134), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('Mois de septembre le plus chaud jamais enregistré', xy=("2020-09-15", 115), xytext=("2020-09-05", 134), c = "blue", fontsize = 20 ,ha = "center", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('Déconfinement', xy=("2020-05-10", 60), xytext=("2020-03-20", 134), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('Mois de septembre le plus chaud jamais enregistré', xy=("2020-09-15", 115), xytext=("2020-09-05", 134), c = "blue", fontsize = 20 ,ha = "center", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('Noël', xy=("2019-12-25", 15), xytext=("2019-11-20", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate("1er confinement", xy=("2020-03-19", 4), xytext=("2020-02-07", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('Août', xy=("2020-08-10", 25), xytext=("2020-07-05", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('2e confinement', xy=("2020-11-01", 15), xytext=("2020-09-20", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+				plt.annotate('Noël', xy=("2020-12-25", 5), xytext=("2020-12-07", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'});
+				st.pyplot(fig)
+				#dates['Date'] = pd.to_datetime(dates['Date'], errors='coerce')
+				#dates.set_index('Date',inplace=True)
+				#fig = plt.figure(figsize = (20, 10))
+				#st.line_chart(dates)
 
 
 
