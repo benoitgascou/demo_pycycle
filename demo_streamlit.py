@@ -221,16 +221,16 @@ if select_page == page3:
 		excep2 = "Confinement"
 		excep3 = "Grève des transports"
 		select_excep = st.radio("", (excep1, excep2, excep3))
-		if select_excep == recur1:
+		if select_excep == excep1:
 			st.mardown(select_excep)
 			#insérer codes graphes Weekend
-		if select_excep == recur2:
+		if select_excep == excep2:
 			st.markdown(select_excep)
 			#insérer codes graphes Jour férié
-		if select_excep == recur3:
+		if select_excep == excep3:
 			st.markdown(select_excep)
 			#insérer codes graphes Vacances
-		if select_excep == recur4:
+		if select_excep == excep4:
 			st.markdown(select_excep)			
 			#insérer codes graphes Météo
 
