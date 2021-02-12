@@ -24,7 +24,7 @@ from PIL import Image
 #entête
 image = Image.open('velo.jpg')
 st.image(image, use_column_width=True, width=500)
-st.title("PyCycle in Paris")
+st.markdown("<h1 style='text-align: center; color: black;'>PyCycle in Paris</h1>", unsafe_allow_html=True)
 
 df_date = pd.read_csv("df_date.csv", sep = ";")
 #Données par date/heure variables catégorielles
@@ -68,85 +68,198 @@ pages = [page1, page2, page3, page4, page5, page6]
 select_page = st.sidebar.radio("", pages)
 
 st.sidebar.info(
-		"\n\n"
-        "Auteurs :"
-        "\n\n"
-        "Benoit Gascou "
-        "[linkedIn](https://www.linkedin.com/in/benoît-gascou-53306218b/)"
-        "\n\n"
-        "Cynthia Laboureau "
-        "[linkedIn](https://www.linkedin.com/in/cynthia-lab/)"
-        "\n\n\n\n\n"
-        "Joséphine Vaton "
-        "[linkedIn](https://www.linkedin.com/in/josephine-vaton-3a311695/)"
-        "\n\n"
-        "En formation de Data Analyst\n"
-        "avec [DataScientest](https://datascientest.com/)\n\n"
-        "Bootcamp novembre 2020"
-        "\n\n"
-        "Données :"
-        "\n"
-        "[Ville de Paris](https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/information/?disjunctive.id_compteur&disjunctive.nom_compteur&disjunctive.id&disjunctive.name)"
+"Auteurs :"
+"\n\n"
+"Benoit Gascou "
+"[linkedIn](https://www.linkedin.com/in/benoît-gascou-53306218b/)"
+"\n\n"
+"Cynthia Laboureau "
+"[linkedIn](https://www.linkedin.com/in/cynthia-lab/)"
+"\n\n"
+"Joséphine Vaton "
+"[linkedIn](https://www.linkedin.com/in/josephine-vaton-3a311695/)"
+"\n\n"
+"En formation de Data Analyst\n"
+"avec [DataScientest](https://datascientest.com/)\n\n"
+"Bootcamp novembre 2020"
+"\n\n"
+"Données :"
+"\n"
+"[Ville de Paris](https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/information/?disjunctive.id_compteur&disjunctive.nom_compteur&disjunctive.id&disjunctive.name)"
 )
 
-
-
-#dataviz1 = "Analyse du trafic cycliste à Paris"
-
-#dataviz1_1 = "Cartographie des sites de comptage"
-#dataviz1_2 = "Evolution du trafic entre sep 2019 et déc 2020"
-
-
-##Dataviz Accidents
-#dataviz2 = "Analyse des accidents cyclistes à Paris"
-
-#dataviz2_1 = "Cartographie des accidents"
-#dataviz2_2 = "Statistiques concernant les personnes accidentées"
-
-###Data Visualisation
-#machine_learning1 = "Prédictions des comptages sur les derniers jours du mois"
-#machine_learning2 = "Prédictions des comptages sur les derniers mois de la période"
-
-
-#st.sidebar.title("Plan de l'application")
-#st.sidebar.markdown(body="<hr>", unsafe_allow_html=True)
-
-#select_theme = st.sidebar.radio("Sélectionnez un thème :", ('Data Visualisation', 'Machine Learning'))
-#st.sidebar.markdown(body="<hr>", unsafe_allow_html=True)
 
 ##########################
 ####Projet & résultats####
 ##########################
 if select_page == page1:
-	st.header(select_page)
-	#st.write("PyCycle in Paris"
-	#"Évolution du trafic cycliste à Paris de septembre 2019 à décembre 2020"
+	#Titres, auterus, sources
+	st.markdown("<h3 style='text-align: center; color: black;'>Évolution du trafic cycliste à Paris de septembre 2019 à décembre 2020</h1>", unsafe_allow_html=True)
+	st.markdown("<p style='text-align: center; color: black;'>Projet réalisé dans le cadre de la formation <strong>Data Analyst</strong> de <a href='https://www.linkedin.com/school/datascientest/'>DataScientest.com</a>"
+		"<br>Promotion Bootcamp novembre 2020</p>", unsafe_allow_html=True)
+	st.markdown("<p style='text-align: center; color: black;'>Auteurs :"
+		"<br><strong>Benoit Gascou </strong><a href='https://www.linkedin.com/in/benoît-gascou-53306218b/'>LinkedIn</a>"
+		"<br><strong>Cynthia Laboureau </strong><a href='https://www.linkedin.com/in/cynthia-lab/'>LinkedIn</a>"
+		"<br><strong>Joséphine Vaton </strong><a href='https://www.linkedin.com/in/josephine-vaton-3a311695/'>LinkedIn</a>"
+		"</p>", unsafe_allow_html=True)
+	st.markdown("<p style='text-align: center; color: black;'>Sources de données :"
+		"<br><a href='https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/information/?disjunctive.id_compteur&disjunctive.nom_compteur&disjunctive.id&disjunctive.name'>Comptage vélos | Open Data | Ville de Paris</a>"
+		"<br><a href='https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidentscorporels-de-la-circulation-routiere-annees-de-2005-a-2019/'>Bases de données accidents de la circulation routière | data.gouv.fr</a>"
+		"<br></p>", unsafe_allow_html=True)
+	#CONTEXTE
+	st.markdown("<h4 style='text-align: left; color: black;'><br>I. CONTEXTE", unsafe_allow_html=True)
+	st.markdown("<br><p style='text-align: justify'>"
+	"Lors du premier déconfinement en mai 2020, la Mairie de Paris a créé ex nihilo cinquante kilomètres de pistes cyclables. "
+	"Le but ? Désengorger les transports en commun pour éviter la propagation du virus tout en limitant le report sur les voitures particulières. "
+	"Une politique pro-vélo amorcée depuis longtemps, mais soudain amplifiée par la pandémie. "
+	"Aujourd’hui, il suffit de descendre dans la rue pour le constater : il n’y a jamais eu autant de vélos à Paris. "
+	"</p>", unsafe_allow_html=True)
+	st.markdown("<p style='text-align: justify'>"
+	"Nous avons voulu étudier et quantifier cette évolution du trafic cycliste à partir des données disponibles sur le site de la Mairie de Paris, "
+	"pour la période du 1er septembre 2019 au 31 décembre 2020. "
+	"</p>", unsafe_allow_html=True)
+	#ANALYSES & CONCLUSIONS
+	st.markdown("<h4 style='text-align: left; color: black;'><br>II. ANALYSES & CONCLUSIONS", unsafe_allow_html=True)
+	st.markdown("<br><p style='font-style: italic'>"
+	"Pour accéder à nos analyses détaillées, cliquez dans le menu de gauche. "
+	"<br>Pour accéder directement à nos conclusions, cliquez sur les filtres ci-dessous. "
+	"</p>", unsafe_allow_html=True)
+	conclu1 = "1. Évolution temporelle : quels facteurs influencent le trafic cycliste ?"
+	conclu2 = "2. Évolution géographique : le trafic est-il le même partout et tout le temps ?"
+	conclu3 = "3. Trafic & accidents : quel est l’impact du trafic sur les accidents de vélos ?"
+	conclu4 = "4. Prédiction du trafic"
+	conclusion = st.selectbox("", (conclu1, conclu2, conclu3, conclu4))
+	if conclusion == conclu1:
+		st.markdown(
+		"<p>Sur la période étudiée, de septembre 2019 à décembre 2020, voici les chiffres à retenir.</p>"
+		"<br>"
+		"<p>Influence des facteurs récurrents :"
+		"<ul>"
+		  "<li>"
+		  "Week-end :"
+		  "<ul><li style='list-style: none'>- 40 % le dimanche</li>"
+		  "<li style='list-style: none'>- 25 % le samedi</li></ul>"
+		  "</li>"
+		  "<li>"
+		  "Vacances :"
+		  "<ul><li style='list-style: none'>- 57 % à Noël</li>"
+		  "<li style='list-style: none'>- 33 % en février</li></ul>"
+		  "</li>"
+		  "<li>"
+		  "Jours férié :"
+		  "<ul><li style='list-style: none'>- 54 %</li></ul>"
+		  "</li>"
+		  "<li>"
+		  "Météo :"
+		  "<ul><li style='list-style: none'>+ 50 % s’il fait très beau (> 25°C avec soleil)</li>"
+		  "<li style='list-style: none'>- 33 % s’il pleut (> 10 mm/jour)</li>"
+		  "<li style='list-style: none'>- 28 % s’il fait très froid (< 4°C)</li></ul>"
+		  "</li>"
+		"</ul></p><br>"
+		"<p>Influence des facteurs exceptionnels :"
+		"<ul>"
+		  "<li>"
+		  "Grève des transports :"
+		  "<ul><li style='list-style: none'>+ 50 %</li></ul>"
+		  "</li>"
+		  "<li>"
+		  "Pandémie de Covid-19 : "
+		  "<ul><li style='list-style: none'>+ 24 %</li></ul>"
+		  "</li>"
+		  "<li>"
+		  "Confinement strict :"
+		  "<ul><li style='list-style: none'>- 83 %</li></ul>"
+		  "</li>"
+		  "<li>"
+		  "Confinement souple :"
+		  "<ul><li style='list-style: none'>- 34 %</li></ul>"
+		  "</li>"
+		"</ul></p>"
+		"<p style='text-align: justify'>Le facteur le plus pérenne sur la période étudiée est la pandémie de Covid-19. "
+		"D’après le <a href='https://www.insee.fr/fr/statistiques/5012724'>Bilan démographique de l’INSEE</a> paru en janvier 2021, "
+		"la part du vélo dans les moyens de transport atteignait début 2020, avant la pandémie, 6% à Paris et 3% en France. "
+		"Soit une hausse de <strong>50% en 5 ans.</strong></p>"
+		"<p style='text-align: justify'>Nous démontrons une hausse supplémentaire de <strong>24%</strong> à Paris depuis le début de la pandémie. "
+		"Outre la création et l’aménagement de pistes cyclables par la Mairie de Paris, plusieurs causes peuvent l’expliquer :"
+		"<ul>"
+		  "<li>évitement des transports publics,</li>"
+		  "<li>redécouverte de la proximité,</li>"
+		  "<li>exercice physique encore praticable,</li>"
+		  "<li>aides publiques pour faire réparer ou acheter un vélo.</li>"
+		"</ul>"
+		"</p>"
+		, unsafe_allow_html=True)
+	if conclusion == conclu2:
+		st.markdown("")
+		# topo à faire (Cynthia) #
+	if conclusion == conclu3:
+		st.markdown("<br><p style='text-align: justify'>"
+		"La période étudiée se limite à 4 mois, de septembre à décembre 2019. "
+		"Nous démontrons un lien statistique entre le nombre d’accidents impliquant des cyclistes et le nombre de vélos circulant à Paris. "
+		"Mécaniquement, une hausse de ces accidents est donc à prévoir en 2020. "
+		"Cependant, lors de la grève des transports de décembre 2019 les accidents ont augmenté moins vite que le trafic cycliste. "
+		"En sera-t-il de même avec la pandémie de Covid-19 ? A vérifier lorsque les chiffres 2020 seront disponibles."
+		"</p>", unsafe_allow_html=True)
+		# à compléter après modif de l’analyse  (Cynthia) #
+	if conclusion == conclu4:
+		st.markdown("<br><p style='text-align: justify'>"
+		"Nous avons obtenu un très bon modèle théorique de régression linéaire. "
+		"Cependant nous avons dû pour cela créer des variables reprenant les comptages pour chaque site aux heures, jours et semaines précédant le comptage à prédire. "
+		"Des prévisions stricto-sensu ne sont donc pas possibles en l’état. "
+		"L’étape suivante sera de créer un nouveau modèle, capable de faire des prévisions à moyen terme."
+		"</p>", unsafe_allow_html=True)		
+		# à compléter avec les résultats etc. (Cynthia) #
+	#PERSPECTIVES
+	st.markdown("<h4 style='text-align: left; color: black;'><br>III. PERSPECTIVES", unsafe_allow_html=True)
+	st.markdown("<br><p style='text-align: justify'>"
+	"Pour accompagner la Mairie de Paris et la Sécurité Routière dans leurs décisions en matière d’aménagement urbain, "
+	"il nous semble important de poursuivre et approfondir cette étude. "
+	"L’étape suivante consiste à monitorer le trafic cycliste à Paris, "
+	"pour analyser plus finement les causes et les conséquences de sa variation. "
+	"</p>", unsafe_allow_html=True)
+	st.markdown("<p style='text-align: justify'>"
+	"A cette fin, nous devrons élargir la période étudiée en analysant les données archivées et en récoltant les données en temps réel. "
+	"Nous pourrons aussi pousser plus loin les études d’impact sur les accidents de vélos et sur d’autres thèmes, "
+	"comme les retombées sur l’usage de la voiture ou des transports publics. "
+	"Concernant la prédiction du trafic cycliste, il nous faut à présent passer à une phase de prévisions à court et moyen termes.  "
+	"</p>", unsafe_allow_html=True)
+	st.markdown("<p style='text-align: justify'>"
+	"A cet effet, nous proposons plusieurs pistes d’amélioration."
+	
+	"<ul>"
+	  "<li>"
+	  "<strong>Relevé des données “Comptage vélos / heure / site”</strong>"
+	    "<ul>"
+	      "<li>Renforcer le maillage des sites de comptage (3,5 / arrondissement à ce jour)</li>"
+	      "<li>Équiper certains axes Est-Ouest très empruntés par les cyclistes :</li>"
+	      "<li style='list-style: none'>Porte de Vincennes - Nation - Bastille - Saint-Paul</li>"
+	      "<li style='list-style: none'>Porte de Bagnolet - Père-Lachaise - République - Saint-Lazare</li>"
+	     "</ul>"
+	  "</li>"
+	  "<li>"
+	  "<strong>Ajout de données extérieures (historiques et actuelles)</strong>"
+	    "<ul>"
+	      "<li>Accidents impliquant des vélos / heure</li>"
+	      "<li>Relevés météorologiques / heure</li>"
+	      "<li>Trafic routier / heure</li>"
+	      "<li>Affluence dans les transports en commun / heure</li>"
+	     "</ul>"
+	  "</li>"
+	  "<li>"
+	  "<strong>Machine et deep learning</strong>"
+	    "<ul>"
+	      "<li>Créer de nouvelles variables explicatives numériques et indépendantes, grâce aux données extérieures</li>"
+	      "<li>Relevés météorologiques / heure</li>"
+	      "<li>Tester d’autres types de modèles, capables de prévisions sur les séries temporelles, comme les Microsoft Time Series ou les Réseaux de Neurones.</li>"
+	     "</ul>"
+	  "</li>"
+	"</ul>"
+	"</p>", unsafe_allow_html=True)
 
-	#"Projet réalisé dans le cadre de la formation Data Analyst de DataScientest.com"
-	#"Promotion Bootcamp novembre 2020"
 
-	#"Auteurs :"
-	#"Benoit Gascou LinkedIn" 
-	#"Cynthia Laboureau LinkedIn" 
-	#"Joséphine Vaton LinkedIn" 
 
-	#"Sources des données :"
-	#"Comptage vélos l Open Data l Ville de Paris"
-	#"Bases de données accidents de la circulation routière l data.gouv.fr)"
-	#"PyCycle in Paris"
-	#"Évolution du trafic cycliste à Paris de septembre 2019 à décembre 2020"
 
-	#"Projet réalisé dans le cadre de la formation Data Analyst de DataScientest.com" 
-	#"Promotion Bootcamp novembre 2020"
 
-	#"Auteurs :"
-	#"Benoit Gascou LinkedIn" 
-	#"Cynthia Laboureau LinkedIn" 
-	#"Joséphine Vaton LinkedIn" 
-
-	#"Sources des données :"
-	#"Comptage vélos l Open Data l Ville de Paris"
-	#"Bases de données accidents de la circulation routière l data.gouv.fr")
 
 ##########################
 ####Jeux de données   ####
