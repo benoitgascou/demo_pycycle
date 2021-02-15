@@ -104,7 +104,7 @@ if select_page == page1:
 		"</p>", unsafe_allow_html=True)
 	st.markdown("<p style='text-align: center; color: black;'>Sources de données :"
 		"<br><a href='https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/information/?disjunctive.id_compteur&disjunctive.nom_compteur&disjunctive.id&disjunctive.name'>Comptage vélos | Open Data | Ville de Paris</a>"
-		"<br><a href='https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidentscorporels-de-la-circulation-routiere-annees-de-2005-a-2019/'>Bases de données accidents de la circulation routière | data.gouv.fr</a>"
+		"<br><a href='https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2019/'>Bases de données accidents de la circulation routière | data.gouv.fr</a>"
 		"<br></p>", unsafe_allow_html=True)
 	#CONTEXTE
 	st.markdown("<h4 style='text-align: left; color: black;'><br>I. CONTEXTE", unsafe_allow_html=True)
@@ -317,15 +317,164 @@ if select_page == page3:
 		if select_recur == recur1:
 			st.markdown(select_recur)
 			#insérer codes graphes Weekend
+			df_weekend1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Weekend"] == 1)]["Date et heure de comptage"])]
+			df_weekend1["Weekend"] = 1
+			df_weekend0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Weekend"] == 0)]["Date et heure de comptage"])]
+			df_weekend0["Weekend"] = 0
+			df_graphe = pd.concat([df_weekend1, df_weekend0], ignore_index=True)
+			df_graphe = df_graphe.groupby('Weekend', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6));
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Trafic le week-end vs les jours de la semaine', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen / heure')
+			plt.xticks(range(2), ['Lundi au Vendredi', 'Weekend'])
+			plt.text(-0.12, 30, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
+			plt.text(0.89, 30, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
+			st.pyplot(fig)
+			df_jr0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 0]["Date et heure de comptage"])]
+			df_jr0["Jour_de_la_semaine"] = 0
+			df_jr1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 1]["Date et heure de comptage"])]
+			df_jr1["Jour_de_la_semaine"] = 1
+			df_jr2 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 2]["Date et heure de comptage"])]
+			df_jr2["Jour_de_la_semaine"] = 2
+			df_jr3 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 3]["Date et heure de comptage"])]
+			df_jr3["Jour_de_la_semaine"] = 3
+			df_jr4 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 4]["Date et heure de comptage"])]
+			df_jr4["Jour_de_la_semaine"] = 4
+			df_jr5 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 5]["Date et heure de comptage"])]
+			df_jr5["Jour_de_la_semaine"] = 5
+			df_jr6 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 6]["Date et heure de comptage"])]
+			df_jr6["Jour_de_la_semaine"] = 6
+			df_graphe = pd.concat([df_jr0, df_jr1, df_jr2, df_jr3, df_jr4, df_jr5, df_jr6], ignore_index=True)
+			df_graphe = df_graphe.groupby('Jour_de_la_semaine', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6))
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Trafic selon les jours de la semaine de la semaine', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen / heure')
+			plt.xticks(range(7), ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'])
+			plt.text(-0.25, 30, df_graphe['Comptage horaire'][0].round(1), fontsize=10, color="white", weight="bold")
+			plt.text(0.75, 30, df_graphe['Comptage horaire'][1].round(1), fontsize=10, color="white", weight="bold")
+			plt.text(1.75, 30, df_graphe['Comptage horaire'][2].round(1), fontsize=10, color="white", weight="bold")
+			plt.text(2.75, 30, df_graphe['Comptage horaire'][3].round(1), fontsize=10, color="white", weight="bold")
+			plt.text(3.75, 30, df_graphe['Comptage horaire'][4].round(1), fontsize=10, color="white", weight="bold")
+			plt.text(4.75, 30, df_graphe['Comptage horaire'][5].round(1), fontsize=10, color="white", weight="bold")
+			plt.text(5.75, 30, df_graphe['Comptage horaire'][6].round(1), fontsize=10, color="white", weight="bold")
+			st.pyplot(fig)
 		if select_recur == recur2:
 			st.markdown(select_recur)
 			#insérer codes graphes Jour férié
+			df_ferie1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_férié"] == 1]["Date et heure de comptage"])]
+			df_ferie1["Jour_férié"] = 1
+			df_ferie0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_férié"] == 0]["Date et heure de comptage"])]
+			df_ferie0["Jour_férié"] = 0
+			df_graphe = pd.concat([df_ferie1, df_ferie0], ignore_index=True)
+			df_graphe = df_graphe.groupby('Jour_férié', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6))
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Trafic hors jours feriés vs jours fériés', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen / heure')
+			plt.xticks(range(2), ['Hors jours fériés', 'Jours fériés'])
+			plt.text(-0.12, 25, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
+			plt.text(0.89, 15, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
+			st.pyplot(fig)
 		if select_recur == recur3:
 			st.markdown(select_recur)
 			#insérer codes graphes Vacances
+			df_vacances1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Vacances"] == 1)]["Date et heure de comptage"])]
+			df_vacances1["Vacances"] = 1
+			df_vacances0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Vacances"] == 0)]["Date et heure de comptage"])]
+			df_vacances0["Vacances"] = 0
+			df_graphe = pd.concat([df_vacances1, df_vacances0], ignore_index=True)
+			df_graphe = df_graphe.groupby('Vacances', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6))
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Trafic selon les vacances', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen / heure')
+			plt.xticks(range(2), ['Hors vacances', 'Vacances'])
+			plt.text(-0.12, 30, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
+			plt.text(0.89, 30, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
+			st.pyplot(fig)
+			df_vac1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_fevrier"] == 1)]["Date et heure de comptage"])]
+			df_vac1["vac"] = 0
+			df_vac2 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_printemps"] == 1)]["Date et heure de comptage"])]
+			df_vac2["vac"] = 1
+			df_vac3 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_ascension"] == 1)]["Date et heure de comptage"])]
+			df_vac3["vac"] = 2
+			df_vac4 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_juillet"] == 1)]["Date et heure de comptage"])]
+			df_vac4["vac"] = 3
+			df_vac5 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_aout"] == 1)]["Date et heure de comptage"])]
+			df_vac5["vac"] = 4
+			df_vac6 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_toussaint"] == 1)]["Date et heure de comptage"])]
+			df_vac6["vac"] = 5
+			df_vac7 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_noel"] == 1)]["Date et heure de comptage"])]
+			df_vac7["vac"] = 6
+			df_vac0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Vacances"] == 0)]["Date et heure de comptage"])]
+			df_vac0["vac"] = 7
+			df_graphe = pd.concat([df_vac0, df_vac1, df_vac2, df_vac3, df_vac4, df_vac5, df_vac6, df_vac7], ignore_index=True)
+			df_graphe = df_graphe.groupby('vac', as_index = False).agg({'Comptage horaire':'mean'})
+			df_graphe = df_graphe.reset_index()
+			fig = plt.figure(figsize = (10,7))
+			sns.barplot(x=df_graphe['Comptage horaire'], y=df_graphe.index, orient = 'h',palette = 'hls')
+			plt.title('Trafic Vacances', fontsize = 18)
+			plt.xlabel('Nombre moyen de vélos moyen par heure')
+			plt.yticks(range(8), ['Février','Printemps', 'Ascension', 'Juillet', 'Août', 'Toussaint', 'Noël','Hors vacances'])
+			plt.text(df_graphe['Comptage horaire'][0]-7, 0.05, df_graphe['Comptage horaire'][0].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][1]-7, 1+0.05, df_graphe['Comptage horaire'][1].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][2]-7, 2+0.05, df_graphe['Comptage horaire'][2].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][3]-7, 3+0.05, df_graphe['Comptage horaire'][3].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][4]-7, 4+0.05, df_graphe['Comptage horaire'][4].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][5]-7, 5+0.05, df_graphe['Comptage horaire'][5].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][6]-7, 6+0.05, df_graphe['Comptage horaire'][6].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][7]-7, 7+0.05, df_graphe['Comptage horaire'][7].round(1), fontsize=12, color="white", weight="bold")
+			st.pyplot(fig)		
 		if select_recur == recur4:
 			st.markdown(select_recur)			
 			#insérer codes graphes Météo
+			df_pluie0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Pluie"] == 0)]["Date et heure de comptage"])]
+			df_pluie0["Pluie"] = 0
+			df_pluie1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Pluie"] == 1)]["Date et heure de comptage"])]
+			df_pluie1["Pluie"] = 1
+			df_pluie2 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Pluie"] == 2)]["Date et heure de comptage"])]
+			df_pluie2["Pluie"] = 2
+			df_graphe = pd.concat([df_pluie0, df_pluie1, df_pluie2], ignore_index=True)
+			df_graphe = df_graphe.groupby('Pluie', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6))
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Influence de la pluie', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen / heure')
+			plt.xticks(range(3), ['Pas de pluie', 'Modérée', 'Forte'])
+			plt.text(-0.15, 30, df_graphe['Comptage horaire'][0].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(0.85, 30, df_graphe['Comptage horaire'][1].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(1.85, 30, df_graphe['Comptage horaire'][2].round(1), fontsize=12, color="white", weight="bold")
+			st.pyplot(fig)
+			df_froid0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Froid"] == 0)]["Date et heure de comptage"])]
+			df_froid0["Froid"] = 0
+			df_froid1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Froid"] == 1)]["Date et heure de comptage"])]
+			df_froid1["Froid"] = 1
+			df_graphe = pd.concat([df_froid0, df_froid1], ignore_index=True)
+			df_graphe = df_graphe.groupby('Froid', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6))
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Influence du froid', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen / heure')
+			plt.xticks(range(2), ['> 4°C', '< 4°C'])
+			plt.text(-0.12, 25, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
+			plt.text(0.89, 25, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
+			st.pyplot(fig)
+			df_chaud0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Chaud"] == 0)]["Date et heure de comptage"])]
+			df_chaud0["Chaud"] = 0
+			df_chaud1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Chaud"] == 1)]["Date et heure de comptage"])]
+			df_chaud1["Chaud"] = 1
+			df_graphe = pd.concat([df_chaud0, df_chaud1], ignore_index=True)
+			df_graphe = df_graphe.groupby('Chaud', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6))
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Influence du beau temps', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen / heure')
+			plt.xticks(range(2), ['Autre', '> 25°C avec soleil'])
+			plt.text(-0.12, 40, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
+			plt.text(0.89, 40, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")			
+			st.pyplot(fig)			
 	#Evènements exceptionnels
 	#########################
 	if dataviz_temp == temp3:
@@ -335,17 +484,62 @@ if select_page == page3:
 		excep3 = "Grève des transports"
 		select_excep = st.radio("", (excep1, excep2, excep3))
 		if select_excep == excep1:
-			st.mardown(select_excep)
-			#insérer codes graphes Weekend
+			st.markdown(select_excep)
+			#insérer codes graphes Covid
+			df_covid = df_date[((df_date.Semaine < 49) & (df_date.Année == 2019)) | ((df_date.Semaine >= 4) & (df_date.Année == 2020))]
+			df_covid0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_covid[df_covid["Covid"] == 0]["Date et heure de comptage"])]
+			df_covid0["Covid"] = 0
+			df_covid1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_covid[df_covid["Covid"] == 1]["Date et heure de comptage"])]
+			df_covid1["Covid"] = 1
+			df_graphe = pd.concat([df_covid0, df_covid1], ignore_index=True)
+			df_graphe = df_graphe.groupby('Covid', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6))
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Trafic période globale de la Covid', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen par heure')
+			plt.xticks(range(2), ['Avant le Covid', 'Pendant le Covid'])
+			plt.text(-0.12, 30, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
+			plt.text(0.89, 30, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold") 
+			st.pyplot(fig)
 		if select_excep == excep2:
 			st.markdown(select_excep)
-			#insérer codes graphes Jour férié
+			#insérer codes graphes Jour Confinement
+			df_confinement = df_date[(df_date.Semaine >= 12) & (df_date.Année == 2020)]
+			df_confinement0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_confinement[df_confinement["Confinement"] == 0]["Date et heure de comptage"])]
+			df_confinement0["Confinement"] = 0
+			df_confinement1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_confinement[df_confinement["Confinement"] == 1]["Date et heure de comptage"])]
+			df_confinement1["Confinement"] = 1
+			df_confinement2 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_confinement[df_confinement["Confinement"] == 2]["Date et heure de comptage"])]
+			df_confinement2["Confinement"] = 2
+			df_graphe = pd.concat([df_confinement0, df_confinement1, df_confinement2], ignore_index=True)
+			df_graphe = df_graphe.groupby('Confinement', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6))
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Influence des confinements pendant la Covid', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen / heure')
+			plt.xticks(range(3), ['Pas de Confinement', 'Confinement 1', 'Confinement 2'])
+			plt.text(-0.15, 35, df_graphe['Comptage horaire'][0].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(0.85, 4, df_graphe['Comptage horaire'][1].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(1.85, 22, df_graphe['Comptage horaire'][2].round(1), fontsize=12, color="white", weight="bold");
+			st.pyplot(fig)			
 		if select_excep == excep3:
 			st.markdown(select_excep)
-			#insérer codes graphes Vacances
-		if select_excep == excep4:
-			st.markdown(select_excep)			
-			#insérer codes graphes Météo
+			#insérer codes graphes Grève
+			df_greve = df_date[(df_date.Année == 2019) | ((df_date.Semaine < 11) & (df_date.Année == 2020))]
+			df_greve0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_greve[df_greve["Grève"] == 0]["Date et heure de comptage"])]
+			df_greve0["Grève"] = 0
+			df_greve1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_greve[df_greve["Grève"] == 1]["Date et heure de comptage"])]
+			df_greve1["Grève"] = 1
+			df_graphe = pd.concat([df_greve0, df_greve1], ignore_index=True)
+			df_graphe = df_graphe.groupby('Grève', as_index = False).agg({'Comptage horaire':'mean'})
+			fig = plt.figure(figsize = (6, 6))
+			sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+			plt.title('Influence de la grève', fontsize = 18)
+			plt.ylabel('Nombre moyen de vélos moyen / heure')
+			plt.xticks(range(2), ['avant / après', 'pendant'])
+			plt.text(-0.12, 32, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
+			plt.text(0.89, 32, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
+			st.pyplot(fig)		
 
 ############################
 ## Évolution géographique ##
