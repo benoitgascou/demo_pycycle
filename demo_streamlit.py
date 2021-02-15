@@ -918,7 +918,7 @@ if select_page == page5:
 			df_sex = df_acc.groupby('sexe', as_index = False).agg({'sexe':'count'})
 			plt.pie(x = df_sex.sexe,
 			        labels = ['Homme', 'Femme'],
-			        explode = [0, 0.1],
+			        explode = [0, 0],
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
@@ -935,7 +935,7 @@ if select_page == page5:
 			df_hom = df_hom.groupby('grav', as_index = False).agg({'grav':'count'})
 			plt.pie(x = df_hom.grav,
 			        labels = ['Indemne ', 'Tué ', 'Blessé hospitalisé', 'Blessé léger'],
-			        explode = [0, 0.2, 0.2, 0],
+			        explode = [0, 0, 0, 0],
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
@@ -949,7 +949,7 @@ if select_page == page5:
 			df_fem = df_fem.groupby('grav', as_index = False).agg({'grav':'count'})
 			plt.pie(x = df_fem.grav,
 			        labels = ['Indemne ', 'Blessé hospitalisé', 'Blessé léger'],
-			        explode = [0, 0.2, 0],
+			        explode = [0, 0, 0],
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
@@ -957,7 +957,7 @@ if select_page == page5:
 			        colors = ("lightgreen", "orange", "lightyellow"),
 			        startangle=80);
 			st.pyplot(fig)
-			st.markdown("Pour les hommes, il y a environ la moitié des d’accidents sans blessure et une autre moitié "
+			st.markdown("Pour les hommes, il y a environ la moitié des accidents sans blessure et une autre moitié "
 			"avec blessures légères. Pour les femmes, c’est plutôt 1/4 d’accidents sans blessure et 3/4 "
 			"avec des blessures légères. Pour les deux, la proportion d'accidents entraînant une "
 			"hospitalisation est assez faible, d’environ 2%. Sur la période (4 mois et 644 accidents), il n’y "
@@ -1004,7 +1004,7 @@ if select_page == page5:
 			                  'Utilisation professionnelle',
 			                  'Promenade – loisirs',
 			                  'Autre'],
-			        explode = [0, 0.09, 0, 0, 0, 0.09, 0],
+			        explode = [0, 0, 0, 0, 0, 0, 0],
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
@@ -1026,7 +1026,7 @@ if select_page == page5:
 			                  'Sur trottoir',
 			                  'Sur piste cyclable',
 			                  'Sur autre voie spéciale'],
-			        explode = [0, 0, 0.2, 0],
+			        explode = [0, 0, 0, 0],
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
@@ -1040,20 +1040,22 @@ if select_page == page5:
 			fig = plt.figure(figsize=(8, 8))
 			plt.title("Cyclistes accidentés selon la météo", fontsize=12)
 			df_atm = df_acc.groupby('atm', as_index = False).agg({'atm':'count'})
+			df_atm.loc[4,:] = df_atm.loc[4,:] + df_atm.loc[3,:]
+			df_atm = df_atm.drop(df_atm.index[3])
+			df_atm.loc[6,:] = df_atm.loc[4,:]
+			df_atm = df_atm.drop(df_atm.index[-3]) 
 
 			plt.pie(x = df_atm.atm,
 			        labels = ['Normale',
 			                  'Pluie légère',
 			                  'Pluie forte',
-			                  'Brouillard',
-			                  'Temps éblouissant',
-			                  'Temps couvert'],
-			        explode = [0, 0.1, 0.05, 0.2, 0, 0.1],
+			                  'Temps couvert',
+			                  'Brouilard ou temps ébouissant'],
 			        autopct = lambda x : str(round(x, 2)) + '%',
 			        pctdistance = 0.7,
 			        labeldistance = 1.1,
 			        shadow = False,
-			        radius= 0.8);
+			        radius= 0.8)
 			st.pyplot(fig)
 			st.markdown("Les 3/4 des accidents ont lieu sous une météo normale. Le 1/4 restant a lieu sous la pluie ou "
 			"par temps couvert.")
