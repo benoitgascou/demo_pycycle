@@ -68,24 +68,22 @@ pages = [page1, page2, page3, page4, page5, page6]
 select_page = st.sidebar.radio("", pages)
 
 st.sidebar.info(
-"Auteurs :"
-"\n\n"
+"Auteurs : "
 "Benoit Gascou "
-"[linkedIn](https://www.linkedin.com/in/benoît-gascou-53306218b/)"
-"\n\n"
+"[linkedIn](https://www.linkedin.com/in/benoît-gascou-53306218b/), "
 "Cynthia Laboureau "
-"[linkedIn](https://www.linkedin.com/in/cynthia-lab/)"
-"\n\n"
+"[linkedIn](https://www.linkedin.com/in/cynthia-lab/), "
 "Joséphine Vaton "
 "[linkedIn](https://www.linkedin.com/in/josephine-vaton-3a311695/)"
 "\n\n"
-"En formation de Data Analyst\n"
-"avec [DataScientest](https://datascientest.com/)\n\n"
+"En formation de Data Analyst, "
+"[DataScientest](https://datascientest.com/), "
 "Bootcamp novembre 2020"
 "\n\n"
 "Données :"
 "\n"
-"[Ville de Paris](https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/information/?disjunctive.id_compteur&disjunctive.nom_compteur&disjunctive.id&disjunctive.name)"
+"[Ville de Paris](https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/information/?disjunctive.id_compteur&disjunctive.nom_compteur&disjunctive.id&disjunctive.name), "
+"[data.gouv.fr](https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2019/)"
 )
 
 
