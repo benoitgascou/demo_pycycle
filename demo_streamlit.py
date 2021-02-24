@@ -126,12 +126,12 @@ if select_page == page1:
 	conclu2 = "2. Évolution géographique : le trafic est-il le même partout et tout le temps ?"
 	conclu3 = "3. Trafic & accidents : quel est l’impact du trafic sur les accidents de vélos ?"
 	conclu4 = "4. Prédiction du trafic"
-	conclusion = st.selectbox("", (conclu1, conclu2, conclu3, conclu4))
+	conclusion = st.radio("", (conclu1, conclu2, conclu3, conclu4))
 	if conclusion == conclu1:
 		st.markdown(
-		"<p>Sur la période étudiée, de septembre 2019 à décembre 2020, voici les chiffres à retenir.</p>"
+		"<p><br>Sur la période étudiée, de septembre 2019 à décembre 2020, voici les chiffres à retenir.</p>"
 		"<br>"
-		"<p>Influence des facteurs récurrents :"
+		"<p><strong>Influence des facteurs récurrents</strong>"
 		"<ul>"
 		  "<li>"
 		  "Week-end :"
@@ -154,7 +154,7 @@ if select_page == page1:
 		  "<li style='list-style: none'>- 28 % s’il fait très froid (< 4°C)</li></ul>"
 		  "</li>"
 		"</ul></p><br>"
-		"<p>Influence des facteurs exceptionnels :"
+		"<p><strong>Influence des facteurs exceptionnels</strong>"
 		"<ul>"
 		  "<li>"
 		  "Grève des transports :"
