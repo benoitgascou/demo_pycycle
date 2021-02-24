@@ -286,12 +286,11 @@ if select_page == page3:
 		st.subheader(dataviz_temp)
 		dates = df_comptages.groupby('Date')['Comptage horaire'].mean()
 		fig = plt.figure(figsize = (30, 10))
-		plt.plot_date(dates.index, dates, 'b-', label = "Nombre moyen de vélos par jour")
+		plt.plot_date(dates.index, dates, 'b-', label = "Nombre moyen de vélos / heure / site")
 		plt.xlabel('\nDate', fontsize = 20)
-		plt.ylabel('Nombre moyen de vélos / jour', fontsize = 20)
-		plt.ylim(0, 120)
+		plt.ylabel('Nombre moyen de vélos / heure / site', fontsize = 20)
+		plt.ylim(0, 130)
 		plt.title('Trafic cycliste à Paris entre septembre 2019 et décembre 2020\n', fontsize = 22)
-		plt.xticks(rotation = 0, fontsize = 18)
 		liste_dates = [dt.datetime(2019, 9, 1),
 		               dt.datetime(2019, 11, 1),
 		               dt.datetime(2020, 1, 1),
@@ -301,18 +300,19 @@ if select_page == page3:
 		               dt.datetime(2020, 9, 1),
 		               dt.datetime(2020, 11, 1),
 		               dt.datetime(2021, 1, 1)]
-		plt.xticks(liste_dates, ['Sep 2019', 'Nov 2019', 'Jan 2020', 'Mars 2020', 'Mai 2020', 'Juil 2020', 'Sep 2020', 'Nov 2020', 'Jan 2021'])
+		plt.xticks(liste_dates, ['Sep 2019', 'Nov 2019', 'Jan 2020', 'Mars 2020', 'Mai 2020', 'Juil 2020', 'Sep 2020', 'Nov 2020', 'Jan 2021'],fontsize = 18)
+		plt.yticks(fontsize = 18)
 		plt.legend(fontsize = 18)
-		plt.annotate('Grève des transports', xy=(dt.datetime(2019, 9, 15), 103), xytext=(dt.datetime(2019, 11, 1), 134), fontsize = 22, ha = "left", c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('', xy=(dt.datetime(2019, 12, 15), 115), xytext=(dt.datetime(2019, 12, 14), 133), fontsize = 22, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('', xy=(dt.datetime(2020, 1, 10), 106), xytext=(dt.datetime(2019, 12, 14), 133), fontsize = 22, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Déconfinement', xy=(dt.datetime(2020, 5, 10), 60), xytext=(dt.datetime(2020, 3, 20), 134), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Mois de septembre le plus chaud jamais enregistré', xy=(dt.datetime(2020, 9, 15), 115), xytext=(dt.datetime(2020, 9, 5), 134), c = "blue", fontsize = 22 ,ha = "center", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Noël', xy=(dt.datetime(2019, 12, 25), 15), xytext=(dt.datetime(2019, 11, 20), -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate("1er confinement", xy=(dt.datetime(2020, 3, 19), 4), xytext=(dt.datetime(2020, 2, 7), -15), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Août', xy=(dt.datetime(2020, 8, 10), 25), xytext=(dt.datetime(2020, 7, 5), -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('2e confinement', xy=(dt.datetime(2020, 11, 1), 15), xytext=(dt.datetime(2020, 9, 20), -15), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Noël', xy=(dt.datetime(2020, 12, 25), 5), xytext=(dt.datetime(2020, 12, 7), -15), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Grève des transports', xy=(dt.datetime(2019, 9, 15), 103), xytext=(dt.datetime(2019, 11, 1), 154), fontsize = 22, ha = "left", c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('', xy=(dt.datetime(2019, 12, 15), 115), xytext=(dt.datetime(2019, 12, 14), 153), fontsize = 22, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('', xy=(dt.datetime(2020, 1, 10), 106), xytext=(dt.datetime(2019, 12, 14), 153), fontsize = 22, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Déconfinement', xy=(dt.datetime(2020, 5, 10), 60), xytext=(dt.datetime(2020, 3, 20), 154), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Mois de septembre le plus chaud jamais enregistré', xy=(dt.datetime(2020, 9, 15), 115), xytext=(dt.datetime(2020, 9, 5), 154), c = "blue", fontsize = 22 ,ha = "center", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Noël', xy=(dt.datetime(2019, 12, 25), 15), xytext=(dt.datetime(2019, 11, 30), -30), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate("1er confinement", xy=(dt.datetime(2020, 3, 19), 4), xytext=(dt.datetime(2020, 2, 7), -30), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Août', xy=(dt.datetime(2020, 8, 10), 25), xytext=(dt.datetime(2020, 7, 15), -30), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('2e confinement', xy=(dt.datetime(2020, 11, 1), 15), xytext=(dt.datetime(2020, 9, 20), -30), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Noël', xy=(dt.datetime(2020, 12, 25), 5), xytext=(dt.datetime(2020, 12, 7), -30), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
 		st.pyplot(fig)
 		st.markdown(
 		"<p style='text-align: justify'>"
