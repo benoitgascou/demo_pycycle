@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import datetime
+import datetime as dt
 
 from streamlit_folium import folium_static
 import folium
@@ -128,56 +128,57 @@ if select_page == page1:
 	conclu4 = "4. Prédiction du trafic"
 	conclusion = st.radio("", (conclu1, conclu2, conclu3, conclu4))
 	if conclusion == conclu1:
+		st.markdown("<br><strong>1. Évolution temporelle :</strong> quels facteurs influencent le trafic cycliste ?", unsafe_allow_html=True)
 		st.markdown(
-		"<p><br>Sur la période étudiée, de septembre 2019 à décembre 2020, voici les chiffres à retenir.</p>"
+		"<p>Sur la période étudiée, de septembre 2019 à décembre 2020, voici les chiffres à retenir.</p>"
 		"<br>"
 		"<p><strong>Influence des facteurs récurrents</strong>"
 		"<ul>"
 		  "<li>"
 		  "Week-end :"
-		  "<ul><li style='list-style: none'>- 40 % le dimanche</li>"
-		  "<li style='list-style: none'>- 25 % le samedi</li></ul>"
+		  "<ul><li style='list-style: none'>-40 % le dimanche</li>"
+		  "<li style='list-style: none'>-25 % le samedi</li></ul>"
 		  "</li>"
 		  "<li>"
 		  "Vacances :"
-		  "<ul><li style='list-style: none'>- 57 % à Noël</li>"
-		  "<li style='list-style: none'>- 33 % en février</li></ul>"
+		  "<ul><li style='list-style: none'>-57 % à Noël</li>"
+		  "<li style='list-style: none'>-33 % en février</li></ul>"
 		  "</li>"
 		  "<li>"
 		  "Jours férié :"
-		  "<ul><li style='list-style: none'>- 54 %</li></ul>"
+		  "<ul><li style='list-style: none'>-54 %</li></ul>"
 		  "</li>"
 		  "<li>"
 		  "Météo :"
-		  "<ul><li style='list-style: none'>+ 50 % s’il fait très beau (> 25°C avec soleil)</li>"
-		  "<li style='list-style: none'>- 33 % s’il pleut (> 10 mm/jour)</li>"
-		  "<li style='list-style: none'>- 28 % s’il fait très froid (< 4°C)</li></ul>"
+		  "<ul><li style='list-style: none'>+50 % s’il fait très beau (> 25 °C avec soleil)</li>"
+		  "<li style='list-style: none'>-33 % s’il pleut (> 10 mm/jour)</li>"
+		  "<li style='list-style: none'>-28 % s’il fait très froid (< 4 °C)</li></ul>"
 		  "</li>"
 		"</ul></p><br>"
 		"<p><strong>Influence des facteurs exceptionnels</strong>"
 		"<ul>"
 		  "<li>"
 		  "Grève des transports :"
-		  "<ul><li style='list-style: none'>+ 50 %</li></ul>"
+		  "<ul><li style='list-style: none'>+50 %</li></ul>"
 		  "</li>"
 		  "<li>"
 		  "Pandémie de Covid-19 : "
-		  "<ul><li style='list-style: none'>+ 24 %</li></ul>"
+		  "<ul><li style='list-style: none'>+24 %</li></ul>"
 		  "</li>"
 		  "<li>"
 		  "Confinement strict :"
-		  "<ul><li style='list-style: none'>- 83 %</li></ul>"
+		  "<ul><li style='list-style: none'>-83 %</li></ul>"
 		  "</li>"
 		  "<li>"
 		  "Confinement souple :"
-		  "<ul><li style='list-style: none'>- 34 %</li></ul>"
+		  "<ul><li style='list-style: none'>-34 %</li></ul>"
 		  "</li>"
 		"</ul></p>"
 		"<p style='text-align: justify'>Le facteur le plus pérenne sur la période étudiée est la pandémie de Covid-19. "
 		"D’après le <a href='https://www.insee.fr/fr/statistiques/5012724'>Bilan démographique de l’INSEE</a> paru en janvier 2021, "
-		"la part du vélo dans les moyens de transport atteignait début 2020, avant la pandémie, 6% à Paris et 3% en France. "
-		"Soit une hausse de <strong>50% en 5 ans.</strong></p>"
-		"<p style='text-align: justify'>Nous démontrons une hausse supplémentaire de <strong>24%</strong> à Paris depuis le début de la pandémie. "
+		"la part du vélo dans les moyens de transport atteignait début 2020, avant la pandémie, 6 % à Paris et 3 % en France. "
+		"Soit une hausse de <strong>50 % en 5 ans.</strong></p>"
+		"<p style='text-align: justify'>Nous démontrons une hausse supplémentaire de <strong>24 %</strong> à Paris depuis le début de la pandémie. "
 		"Outre la création et l’aménagement de pistes cyclables par la Mairie de Paris, plusieurs causes peuvent l’expliquer :"
 		"<ul>"
 		  "<li>évitement des transports publics,</li>"
@@ -188,9 +189,11 @@ if select_page == page1:
 		"</p>"
 		, unsafe_allow_html=True)
 	if conclusion == conclu2:
+		st.markdown("<br><strong>2. Évolution géographique :</strong> le trafic est-il le même partout et tout le temps ?", unsafe_allow_html=True)
 		st.markdown("")
 		# topo à faire (Cynthia) #
 	if conclusion == conclu3:
+		st.markdown("<br><strong>3. Trafic & accidents :</strong> quel est l’impact du trafic sur les accidents de vélos ?", unsafe_allow_html=True)	
 		st.markdown("<br><p style='text-align: justify'>"
 		"La période étudiée se limite à 4 mois, de septembre à décembre 2019. "
 		"Nous démontrons un lien statistique entre le nombre d’accidents impliquant des cyclistes et le nombre de vélos circulant à Paris. "
@@ -200,6 +203,7 @@ if select_page == page1:
 		"</p>", unsafe_allow_html=True)
 		# à compléter après modif de l’analyse  (Cynthia) #
 	if conclusion == conclu4:
+		st.markdown("<br><strong>4. Prédiction du trafic</strong>", unsafe_allow_html=True)		
 		st.markdown("<br><p style='text-align: justify'>"
 		"Nous avons obtenu un très bon modèle théorique de régression linéaire. "
 		"Cependant nous avons dû pour cela créer des variables reprenant les comptages pour chaque site aux heures, jours et semaines précédant le comptage à prédire. "
@@ -288,21 +292,45 @@ if select_page == page3:
 		plt.ylim(0, 120)
 		plt.title('Trafic cycliste à Paris entre septembre 2019 et décembre 2020\n', fontsize = 22)
 		plt.xticks(rotation = 0, fontsize = 18)
-		plt.xticks(['2019-09', '2019-11', '2020-01', '2020-03', '2020-05', '2020-07', '2020-09', '2020-11', '2021-01' ], ['Sep 2019', 'Nov 2019', 'Jan 2020', 'Mars 2020', 'Mai 2020', 'Juil 2020', 'Sep 2020', 'Nov 2020', 'Jan 2021'])
+		liste_dates = [dt.datetime(2019, 9, 1),
+		               dt.datetime(2019, 11, 1),
+		               dt.datetime(2020, 1, 1),
+		               dt.datetime(2020, 3, 1),
+		               dt.datetime(2020, 5, 1),
+		               dt.datetime(2020, 7, 1),
+		               dt.datetime(2020, 9, 1),
+		               dt.datetime(2020, 11, 1),
+		               dt.datetime(2021, 1, 1)]
+		plt.xticks(liste_dates, ['Sep 2019', 'Nov 2019', 'Jan 2020', 'Mars 2020', 'Mai 2020', 'Juil 2020', 'Sep 2020', 'Nov 2020', 'Jan 2021'])
 		plt.legend(fontsize = 18)
-		plt.annotate('Grève des transports', xy=("2019-09-15", 103), xytext=("2019-11-01", 134), fontsize = 20, ha = "left", c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('', xy=("2019-12-15", 115), xytext=("2019-12-14", 133), fontsize = 20, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('', xy=("2020-01-10", 106), xytext=("2019-12-14", 133), fontsize = 20, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Déconfinement', xy=("2020-05-10", 60), xytext=("2020-03-20", 134), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Mois de septembre le plus chaud jamais enregistré', xy=("2020-09-15", 115), xytext=("2020-09-05", 134), c = "blue", fontsize = 20 ,ha = "center", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Déconfinement', xy=("2020-05-10", 60), xytext=("2020-03-20", 134), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Mois de septembre le plus chaud jamais enregistré', xy=("2020-09-15", 115), xytext=("2020-09-05", 134), c = "blue", fontsize = 20 ,ha = "center", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Noël', xy=("2019-12-25", 15), xytext=("2019-11-20", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate("1er confinement", xy=("2020-03-19", 4), xytext=("2020-02-07", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Août', xy=("2020-08-10", 25), xytext=("2020-07-05", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('2e confinement', xy=("2020-11-01", 15), xytext=("2020-09-20", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
-		plt.annotate('Noël', xy=("2020-12-25", 5), xytext=("2020-12-07", -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'});
+		plt.annotate('Grève des transports', xy=(dt.datetime(2019, 9, 15), 103), xytext=(dt.datetime(2019, 11, 1), 134), fontsize = 22, ha = "left", c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('', xy=(dt.datetime(2019, 12, 15), 115), xytext=(dt.datetime(2019, 12, 14), 133), fontsize = 22, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('', xy=(dt.datetime(2020, 1, 10), 106), xytext=(dt.datetime(2019, 12, 14), 133), fontsize = 22, c = "blue", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Déconfinement', xy=(dt.datetime(2020, 5, 10), 60), xytext=(dt.datetime(2020, 3, 20), 134), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Mois de septembre le plus chaud jamais enregistré', xy=(dt.datetime(2020, 9, 15), 115), xytext=(dt.datetime(2020, 9, 5), 134), c = "blue", fontsize = 22 ,ha = "center", arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Noël', xy=(dt.datetime(2019, 12, 25), 15), xytext=(dt.datetime(2019, 11, 20), -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate("1er confinement", xy=(dt.datetime(2020, 3, 19), 4), xytext=(dt.datetime(2020, 2, 7), -15), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Août', xy=(dt.datetime(2020, 8, 10), 25), xytext=(dt.datetime(2020, 7, 5), -15), c = "blue", fontsize = 20, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('2e confinement', xy=(dt.datetime(2020, 11, 1), 15), xytext=(dt.datetime(2020, 9, 20), -15), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
+		plt.annotate('Noël', xy=(dt.datetime(2020, 12, 25), 5), xytext=(dt.datetime(2020, 12, 7), -15), c = "blue", fontsize = 22, arrowprops={'facecolor':'black', 'arrowstyle':'->'})
 		st.pyplot(fig)
+		st.markdown(
+		"<p style='text-align: justify'>"
+		"On observe en premier lieu une périodicité hebdomadaire et une fluctuation importante au cours des 16 mois de la période étudiée. "
+		"Suivons cette évolution dans le détail."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"Au fil de l’automne le trafic baisse progressivement, le froid et la pluie rebutant les usagers."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"La grande grève des transports débute le 5 décembre et immédiatement le trafic monte en flèche. "
+		"Seules les vacances de Noël cassent, provisoirement, la courbe."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"Lorsque les transports publics reprennent le 27 janvier 2020 le trafic diminue, mais reste légèrement supérieur au mois précédent la grève. "
+		"Il remonte ensuite à l’approche du printemps."
+		"</p>"
+		, unsafe_allow_html=True)
 	#Evènements récurrents
 	######################
 	if dataviz_temp == temp2:
@@ -516,7 +544,7 @@ if select_page == page3:
 				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
 				plt.title('Influence du froid\n', fontsize = 22)
 				plt.ylabel('Nombre moyen de vélos moyen / heure', fontsize = 16)
-				plt.xticks(range(2), ['> 4°C', '< 4°C'], fontsize = 16)
+				plt.xticks(range(2), ['> 4 °C', '< 4 °C'], fontsize = 16)
 				plt.text(-0.12, 25, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
 				plt.text(0.89, 25, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
 				st.pyplot(fig)
@@ -531,7 +559,7 @@ if select_page == page3:
 				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
 				plt.title('Influence du beau temps\n', fontsize = 22)
 				plt.ylabel('Nombre moyen de vélos moyen / heure', fontsize = 16)
-				plt.xticks(range(2), ['Autre', '> 25°C avec soleil'], fontsize = 16)
+				plt.xticks(range(2), ['Autre', '> 25 °C avec soleil'], fontsize = 16)
 				plt.text(-0.12, 40, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
 				plt.text(0.89, 40, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")			
 				st.pyplot(fig)			
@@ -619,9 +647,9 @@ if select_page == page4:
 	st.sidebar.subheader("Sélectionnez la période")
 	date = st.sidebar.date_input(
 		'(entre le 01/09/2019 et le 31/12/2020)',
-		value=(datetime.date(2019, 9, 1), datetime.date(2020, 12, 31)),
-		min_value=datetime.date(2019, 9, 1),
-		max_value=datetime.date(2020, 12, 31))
+		value=(dt.date(2019, 9, 1), dt.date(2020, 12, 31)),
+		min_value=dt.date(2019, 9, 1),
+		max_value=dt.date(2020, 12, 31))
 
 	st.sidebar.subheader("Affinez votre recherche")
 
@@ -690,10 +718,10 @@ if select_page == page4:
 	pluie_mod = st.sidebar.checkbox("Modérée", value=True)	 
 	pluie_forte = st.sidebar.checkbox("Forte", value=True)
 	st.sidebar.markdown("<strong>Froid</strong>", unsafe_allow_html=True)
-	inf_4 = st.sidebar.checkbox("Froid (< 4°C)", value=True)
+	inf_4 = st.sidebar.checkbox("Froid (< 4 °C)", value=True)
 	sup_4 = st.sidebar.checkbox("Autre", value=True)
 	st.sidebar.markdown("<strong>Chaud</strong>", unsafe_allow_html=True)
-	sup_25 = st.sidebar.checkbox("Chaud (>25°C avec soleil)", value=True)
+	sup_25 = st.sidebar.checkbox("Chaud (>25 °C avec soleil)", value=True)
 	inf_25 = st.sidebar.checkbox("Autre ", value=True)
 
 
@@ -701,7 +729,7 @@ if select_page == page4:
 	#Evénements exceptionnels
 	##########################
 	st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-	st.sidebar.title("Evénements exceptionnels")
+	st.sidebar.title("Evènements exceptionnels")
 
 	st.sidebar.subheader("Covid")
 	av_cov = st.sidebar.checkbox("Avant", value=True)
@@ -1042,7 +1070,7 @@ if select_page == page5:
 				st.markdown("<p style='text-align: justify'>Pour les hommes, il y a environ la moitié des accidents sans blessure et une autre moitié "
 				"avec blessures légères. Pour les femmes, c’est plutôt 1/4 d’accidents sans blessure et 3/4 "
 				"avec des blessures légères. Pour les deux, la proportion d'accidents entraînant une "
-				"hospitalisation est assez faible, d’environ 2%. Sur la période (4 mois et 644 accidents), il n’y "
+				"hospitalisation est assez faible, d’environ 2 %. Sur la période (4 mois et 644 accidents), il n’y "
 				"a eu qu’un seul mort, un homme.</p>"
 				, unsafe_allow_html=True)
 			#accidentés par âge
