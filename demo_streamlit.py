@@ -132,27 +132,42 @@ if select_page == page1:
 		st.markdown(
 		"<p>Sur la période étudiée, de septembre 2019 à décembre 2020, voici les chiffres à retenir.</p>"
 		"<br>"
+		"<p><strong>Périodicité</strong>"
+		"<ul>"
+		  "<li>"
+		  "Automnes 2020 vs 2019 : +21 %"
+		  "<ul><li style='list-style: none'>+66 % en septembre 2020 vs 2019</li>"
+		  "<li style='list-style: none'>+31 % en octobre</li>"
+		  "<li style='list-style: none'>+26 % en novembre</li>"
+		  "<li style='list-style: none'>-39 % en décembre</li></ul>"
+		  "</li>"
+		  "<li>"
+		  "Week-end vs semaine : -32 %"
+		  "<ul><li style='list-style: none'>-25 % le samedi</li>"
+		  "<li style='list-style: none'>-40 % le dimanche</li>"
+		  "<li style='list-style: none'>2 pics aux heures de pointe (8-9h et 17-19h) en semaine</li></ul>"		  
+		  "</li>"
+		"</ul></p><br>"
 		"<p><strong>Influence des facteurs récurrents</strong>"
 		"<ul>"
 		  "<li>"
-		  "Week-end :"
-		  "<ul><li style='list-style: none'>-40 % le dimanche</li>"
-		  "<li style='list-style: none'>-25 % le samedi</li></ul>"
+		  "Vacances : -15 %"
+		  "<ul><li style='list-style: none'>-43 % à Noël</li>"
+		  "<li style='list-style: none'>-33 % en février</li>"
+		  "<li style='list-style: none'>-8 % en août</li>"
+		  "<li style='list-style: none'>-5 % à la Toussaint</li>"
+		  "<li style='list-style: none'>+18 % à l'Ascension</li>"
+		  "<li style='list-style: none'>+34 % en juillet</li></ul>"
 		  "</li>"
 		  "<li>"
-		  "Vacances :"
-		  "<ul><li style='list-style: none'>-57 % à Noël</li>"
-		  "<li style='list-style: none'>-33 % en février</li></ul>"
-		  "</li>"
-		  "<li>"
-		  "Jours férié :"
-		  "<ul><li style='list-style: none'>-54 %</li></ul>"
+		  "Jour férié :"
+		  "<ul><li style='list-style: none'>-46 %</li></ul>"
 		  "</li>"
 		  "<li>"
 		  "Météo :"
 		  "<ul><li style='list-style: none'>+50 % s’il fait très beau (> 25 °C avec soleil)</li>"
 		  "<li style='list-style: none'>-33 % s’il pleut (> 10 mm/jour)</li>"
-		  "<li style='list-style: none'>-28 % s’il fait très froid (< 4 °C)</li></ul>"
+		  "<li style='list-style: none'>-27 % s’il fait très froid (< 4 °C)</li></ul>"
 		  "</li>"
 		"</ul></p><br>"
 		"<p><strong>Influence des facteurs exceptionnels</strong>"
@@ -338,10 +353,9 @@ if select_page == page3:
 	if dataviz_temp == temp2:
 		st.subheader(dataviz_temp)
 		periodi1 = "Mensuelle"
-		periodi2 = "Hebdomadaire"
-		periodi3 = "Journalière"
-		periodi4 = "Horaire"
-		select_periodi = st.radio("", (periodi1, periodi2, periodi3, periodi4))
+		periodi2 = "Journalière"
+		periodi3 = "Horaire"
+		select_periodi = st.radio("", (periodi1, periodi2, periodi3))
 		if select_periodi == periodi1:
 			#Mois
 			df_comptages["Mois"] = df_comptages['Date et heure de comptage'].dt.month
@@ -363,10 +377,10 @@ if select_page == page3:
 			"décrits dans la courbe générale : grève, Covid et confinements. "
 			"</p>"
 			"<p style='text-align: justify'>"
-			"La hausse du trafic est flagrante entre les automnes 2019 et 2020 : "
-			"+66 % en septembre, +31 % en octobre, +26 % en novembre. "
-			"Seul le mois de décembre 2019, au plus fort de la grève, dépasse celui de 2020 (-39 %), "
-			"plombé par le deuxième confinement et le couvre-feu."
+			"La hausse du trafic est flagrante entre les automnes 2020 et 2019 : +21 %. Dans le détail : "
+			"+66 % en septembre, +31 % en octobre et +26 % en novembre. On observe cependant -39 % "
+			"en décembre 2020. En effet, le deuxième confinement et le couvre-feu ont fait chuter le trafic, "
+			"alors qu’il était boosté par la grève en décembre 2019."
 			"</p>", unsafe_allow_html=True)				
 		if select_periodi == periodi2:
 			# jours de la semaine
@@ -466,8 +480,6 @@ if select_page == page3:
 			df_jour["Heure"] = df_jour['Date et heure de comptage'].dt.hour
 			df_jour = df_jour.groupby(['Heure'], as_index = False).agg({'Comptage horaire':'mean'})
 			fig = plt.figure(figsize = (8, 4))
-			#num = 0
-			#titres = ['Lundi', 'Mardi','Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
 			sns.barplot(x = 'Heure', y = 'Comptage horaire', data = df_jour, errwidth=0)
 			plt.ylabel('Nombre moyen de vélos / heure / site')
 			plt.ylim(0, 170)
@@ -475,6 +487,12 @@ if select_page == page3:
 			plt.xlabel(" ")
 			plt.title("Trafic selon l'heure et le jour de la semaine\n")
 			st.pyplot(fig)
+			if select_jr_sem == ["lundi", "mardi", "mercredi", "jeudi", "vendredi"]:
+				st.markdown(			
+				"<p style='text-align: justify'>"
+				"En semaine, on observe 2 pics aux heures de pointe : entre 8 et 9h, puis entre 17 et 19h, "
+				"comme pour les autres moyens de transport quotidiens (voiture, transports en commun)."
+				"</p>", unsafe_allow_html=True)			
 			select_jr_sem2 = st.multiselect('Sélectionnez le(s) jour(s) de la semaine :', liste_jr_sem,
 			                                default = ["samedi", "dimanche"])
 			jr_sem =[]
@@ -487,7 +505,6 @@ if select_page == page3:
 			df_jour["Heure"] = df_jour['Date et heure de comptage'].dt.hour
 			df_jour = df_jour.groupby(['Heure'], as_index = False).agg({'Comptage horaire':'mean'})
 			fig = plt.figure(figsize = (8, 4))
-			#num = 0
 			#titres = ['Lundi', 'Mardi','Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
 			sns.barplot(x = 'Heure', y = 'Comptage horaire', data = df_jour, errwidth=0)
 			plt.ylabel('Nombre moyen de vélos / heure / site')
@@ -496,19 +513,18 @@ if select_page == page3:
 			plt.xlabel(" ")
 			plt.title("Trafic selon l'heure et le jour de la semaine\n")
 			st.pyplot(fig)
-			st.markdown(			
-			"<p style='text-align: justify'>"
-			"En semaine, on observe 2 pics aux heures de pointe : entre 8 et 9h, puis entre 17 et 19h. "
-			"Le week-end, la courbe est beaucoup plus lissée avec une progression régulière jusqu'à 17h, puis une diminution dans la soirée."
-			"</p>", unsafe_allow_html=True)
-
-		#if select_periodi == periodi4:
+			if select_jr_sem2 == ["samedi", "dimanche"]:			
+				st.markdown(			
+				"<p style='text-align: justify'>"
+				"Le week-end, pas de pics. La courbe est plus lisse avec une bosse en fin d'après-midi "
+				"(16-17h) et un creux au milieu de la nuit (4-5h)."
+				"</p>", unsafe_allow_html=True)
 
 	#Evènements récurrents
 	######################
 	if dataviz_temp == temp3:
 		st.subheader(dataviz_temp)
-		recur1 = "Jour férié"
+		recur1 = "Jours fériés"
 		recur2 = "Vacances"
 		recur3 = "Météo"
 		select_recur = st.radio("", (recur1, recur2, recur3))
@@ -526,16 +542,21 @@ if select_page == page3:
 				fig = plt.figure(figsize = (6, 6))
 				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
 				plt.title('Trafic hors jours feriés vs jours fériés\n', fontsize = 15)
-				plt.ylabel('Nombre moyen de vélos moyen / heure / site', fontsize = 13)
+				plt.ylabel('Nombre moyen de vélos / heure / site', fontsize = 13)
 				plt.xticks(range(2), ['Hors jours fériés', 'Jours fériés'], fontsize = 13)
-				plt.text(-0.12, 25, df_graphe['Comptage horaire'][0].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(0.89, 15, df_graphe['Comptage horaire'][1].round(1), fontsize=12, color="white", weight="bold")
+				plt.text(-0.12, 25, df_graphe['Comptage horaire'][0].round(1), fontsize=14, color="white", weight="bold")
+				plt.text(0.89, 15, df_graphe['Comptage horaire'][1].round(1), fontsize=14, color="white", weight="bold")
 				st.pyplot(fig)
+			st.markdown(			
+			"<p style='text-align: justify'>"
+			"Sur la période étudiée (septembre 2019 - décembre 2020), "
+			"les jours fériés font baisser le trafic de 46 % en moyenne."
+			"</p>", unsafe_allow_html=True)			
 		if select_recur == recur2:
 			#st.markdown(select_recur)
 			#Vacances
-			col1, col2 = st.beta_columns([2, 3])
-			with col1:
+			col1, col2, col3 = st.beta_columns([1,2,1])
+			with col2:
 				df_vacances1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Vacances"] == 1)]["Date et heure de comptage"])]
 				df_vacances1["Vacances"] = 1
 				df_vacances0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Vacances"] == 0)]["Date et heure de comptage"])]
@@ -545,50 +566,63 @@ if select_page == page3:
 				fig = plt.figure(figsize = (6, 6))
 				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
 				plt.title('Trafic selon les vacances\n', fontsize = 17)
-				plt.ylabel('Nombre moyen de vélos moyen / heure / site', fontsize = 12)
+				plt.ylabel('Nombre moyen de vélos / heure / site', fontsize = 12)
 				plt.xticks(range(2), ['Hors vacances', 'Vacances'], fontsize = 12)
 				plt.text(-0.12, 30, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
 				plt.text(0.89, 30, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
 				st.pyplot(fig)
-			with col2:
-				df_vac1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_fevrier"] == 1)]["Date et heure de comptage"])]
-				df_vac1["vac"] = 0
-				df_vac2 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_printemps"] == 1)]["Date et heure de comptage"])]
-				df_vac2["vac"] = 1
-				df_vac3 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_ascension"] == 1)]["Date et heure de comptage"])]
-				df_vac3["vac"] = 2
-				df_vac4 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_juillet"] == 1)]["Date et heure de comptage"])]
-				df_vac4["vac"] = 3
-				df_vac5 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_aout"] == 1)]["Date et heure de comptage"])]
-				df_vac5["vac"] = 4
-				df_vac6 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_toussaint"] == 1)]["Date et heure de comptage"])]
-				df_vac6["vac"] = 5
-				df_vac7 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_noel"] == 1)]["Date et heure de comptage"])]
-				df_vac7["vac"] = 6
-				df_vac0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Vacances"] == 0)]["Date et heure de comptage"])]
-				df_vac0["vac"] = 7
-				df_graphe = pd.concat([df_vac0, df_vac1, df_vac2, df_vac3, df_vac4, df_vac5, df_vac6, df_vac7], ignore_index=True)
-				df_graphe = df_graphe.groupby('vac', as_index = False).agg({'Comptage horaire':'mean'})
-				df_graphe = df_graphe.reset_index()
-				fig = plt.figure(figsize = (10, 7))
-				sns.barplot(x=df_graphe['Comptage horaire'], y=df_graphe.index, orient = 'h',palette = 'hls')
-				plt.title("Trafic Vacances vs reste de l'année\n", fontsize = 18)
-				plt.xlabel('Nombre moyen de vélos moyen par heure', fontsize = 14)
-				plt.yticks(range(8), ['Février','Printemps', 'Ascension', 'Juillet', 'Août', 'Toussaint', 'Noël','Hors vacances'], fontsize = 14)
-				plt.text(df_graphe['Comptage horaire'][0]-7, 0.05, df_graphe['Comptage horaire'][0].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(df_graphe['Comptage horaire'][1]-7, 1+0.05, df_graphe['Comptage horaire'][1].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(df_graphe['Comptage horaire'][2]-7, 2+0.05, df_graphe['Comptage horaire'][2].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(df_graphe['Comptage horaire'][3]-7, 3+0.05, df_graphe['Comptage horaire'][3].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(df_graphe['Comptage horaire'][4]-7, 4+0.05, df_graphe['Comptage horaire'][4].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(df_graphe['Comptage horaire'][5]-7, 5+0.05, df_graphe['Comptage horaire'][5].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(df_graphe['Comptage horaire'][6]-7, 6+0.05, df_graphe['Comptage horaire'][6].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(df_graphe['Comptage horaire'][7]-7, 7+0.05, df_graphe['Comptage horaire'][7].round(1), fontsize=12, color="white", weight="bold")
-				st.pyplot(fig)		
+			st.markdown(			
+			"<p style='text-align: justify'>"
+			"Sur la période étudiée (septembre 2019 - décembre 2020), "
+			"les vacances scolaires parisiennes font baisser le trafic de 15 % en moyenne."
+			"</p><br>", unsafe_allow_html=True)					
+			df_vac1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_fevrier"] == 1)]["Date et heure de comptage"])]
+			df_vac1["vac"] = 0
+			df_vac2 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_printemps"] == 1)]["Date et heure de comptage"])]
+			df_vac2["vac"] = 1
+			df_vac3 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_ascension"] == 1)]["Date et heure de comptage"])]
+			df_vac3["vac"] = 2
+			df_vac4 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_juillet"] == 1)]["Date et heure de comptage"])]
+			df_vac4["vac"] = 3
+			df_vac5 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_aout"] == 1)]["Date et heure de comptage"])]
+			df_vac5["vac"] = 4
+			df_vac6 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_toussaint"] == 1)]["Date et heure de comptage"])]
+			df_vac6["vac"] = 5
+			df_vac7 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["vac_noel"] == 1)]["Date et heure de comptage"])]
+			df_vac7["vac"] = 6
+			df_vac0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Vacances"] == 0)]["Date et heure de comptage"])]
+			df_vac0["vac"] = 7
+			df_graphe = pd.concat([df_vac0, df_vac1, df_vac2, df_vac3, df_vac4, df_vac5, df_vac6, df_vac7], ignore_index=True)
+			df_graphe = df_graphe.groupby('vac', as_index = False).agg({'Comptage horaire':'mean'})
+			df_graphe = df_graphe.reset_index()
+			fig = plt.figure(figsize = (8, 5))
+			sns.barplot(x=df_graphe['Comptage horaire'], y=df_graphe.index, orient = 'h',palette = 'hls')
+			plt.title("Trafic Vacances vs reste de l'année\n", fontsize = 13)
+			plt.xlabel('Nombre moyen de vélospar heure / site', fontsize = 11)
+			plt.yticks(range(8), ['Février','Printemps', 'Ascension', 'Juillet', 'Août', 'Toussaint', 'Noël','Hors vacances'], fontsize = 12)
+			plt.text(df_graphe['Comptage horaire'][0]-7, 0.1, df_graphe['Comptage horaire'][0].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][1]-7, 1+0.1, df_graphe['Comptage horaire'][1].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][2]-7, 2+0.1, df_graphe['Comptage horaire'][2].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][3]-7, 3+0.1, df_graphe['Comptage horaire'][3].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][4]-7, 4+0.1, df_graphe['Comptage horaire'][4].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][5]-7, 5+0.1, df_graphe['Comptage horaire'][5].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][6]-7, 6+0.1, df_graphe['Comptage horaire'][6].round(1), fontsize=12, color="white", weight="bold")
+			plt.text(df_graphe['Comptage horaire'][7]-7, 7+0.1, df_graphe['Comptage horaire'][7].round(1), fontsize=12, color="white", weight="bold")
+			st.pyplot(fig)
+			st.markdown(			
+			"<p style='text-align: justify'>"
+			"Toutes les vacances n’ont pas le même effet. "
+			"Les vacances de Noël (2019 et 2020) sont les plus impactantes : -43 % par rapport à la moyenne sur la période étudiée. "
+			"Puis viennent les vacances de février 2020 avec -33 %. "
+			"Les vacances en août et à la Toussaint provoquent une faible baisse, respectivement de -8 % et -5 %. "
+			"En revanche, pour le pont de l’Ascension et les vacances en juillet, on observe une hausse significative : +18 % et 34 %. "
+			"Nous écartons les vacances de printemps 2020, le trafic étant alors fortement réduit par le premier confinement."
+			"</p>", unsafe_allow_html=True)						
 		if select_recur == recur3:
 			#st.markdown(select_recur)			
 			#insérer codes graphes Météo
-			col1, col2, col3 = st.beta_columns(3)
-			with col1:
+			col1, col2, col3 = st.beta_columns([1,2,1])
+			with col2:
 				df_pluie0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Pluie"] == 0)]["Date et heure de comptage"])]
 				df_pluie0["Pluie"] = 0
 				df_pluie1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Pluie"] == 1)]["Date et heure de comptage"])]
@@ -600,12 +634,20 @@ if select_page == page3:
 				fig = plt.figure(figsize = (6, 6))
 				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
 				plt.title('Influence de la pluie\n', fontsize = 22)
-				plt.ylabel('Nombre moyen de vélos moyen / heure / site', fontsize = 16)
+				plt.ylabel('Nombre moyen de vélos / heure / site', fontsize = 16)
 				plt.xticks(range(3), ['Pas de pluie', 'Modérée', 'Forte'], fontsize = 16)
-				plt.text(-0.15, 30, df_graphe['Comptage horaire'][0].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(0.85, 30, df_graphe['Comptage horaire'][1].round(1), fontsize=12, color="white", weight="bold")
-				plt.text(1.85, 30, df_graphe['Comptage horaire'][2].round(1), fontsize=12, color="white", weight="bold")
+				plt.text(-0.15, 30, df_graphe['Comptage horaire'][0].round(1), fontsize=14, color="white", weight="bold")
+				plt.text(0.85, 30, df_graphe['Comptage horaire'][1].round(1), fontsize=14, color="white", weight="bold")
+				plt.text(1.85, 30, df_graphe['Comptage horaire'][2].round(1), fontsize=14, color="white", weight="bold")
 				st.pyplot(fig)
+			st.markdown(			
+			"<p style='text-align: justify'>"
+			"Sur la période étudiée (septembre 2019 - décembre 2020), la pluie impacte le trafic : -33 % en moyenne. "
+			"En revanche, il y a peu de différence entre une pluie modérée et forte. "
+			"Les usagers prêts à affronter la pluie le font apparemment coûte que coûte.</p>"
+			"<p>Autre facteur météorologique étudié : les températures extrêmes pour Paris.</p>"
+			, unsafe_allow_html=True)				
+			col1, col2, col3 = st.beta_columns([1,2,1])
 			with col2:
 				df_froid0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Froid"] == 0)]["Date et heure de comptage"])]
 				df_froid0["Froid"] = 0
@@ -616,12 +658,17 @@ if select_page == page3:
 				fig = plt.figure(figsize = (6, 6))
 				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
 				plt.title('Influence du froid\n', fontsize = 22)
-				plt.ylabel('Nombre moyen de vélos moyen / heure / site', fontsize = 16)
+				plt.ylabel('Nombre moyen de vélos / heure / site', fontsize = 16)
 				plt.xticks(range(2), ['> 4 °C', '< 4 °C'], fontsize = 16)
 				plt.text(-0.12, 25, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
 				plt.text(0.89, 25, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
 				st.pyplot(fig)
-			with col3:	
+			st.markdown(			
+			"<p style='text-align: justify'>"
+			"Si le thermomètre descend sous les 4 °C, il refroidit 27 % des cyclistes en moyenne."
+			, unsafe_allow_html=True)
+			col1, col2, col3 = st.beta_columns([1,2,1])
+			with col2:	
 				df_chaud0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Chaud"] == 0)]["Date et heure de comptage"])]
 				df_chaud0["Chaud"] = 0
 				df_chaud1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[(df_date["Année"] == 2020) & (df_date["Chaud"] == 1)]["Date et heure de comptage"])]
@@ -631,21 +678,50 @@ if select_page == page3:
 				fig = plt.figure(figsize = (6, 6))
 				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
 				plt.title('Influence du beau temps\n', fontsize = 22)
-				plt.ylabel('Nombre moyen de vélos moyen / heure / site', fontsize = 16)
-				plt.xticks(range(2), ['Autre', '> 25 °C avec soleil'], fontsize = 16)
+				plt.ylabel('Nombre moyen de vélos / heure / site', fontsize = 16)
+				plt.xticks(range(2), ['Autre', '> 25 °C'], fontsize = 16)
 				plt.text(-0.12, 40, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
 				plt.text(0.89, 40, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")			
-				st.pyplot(fig)			
+				st.pyplot(fig)
+			st.markdown(			
+			"<p style='text-align: justify'>"
+			"A l’opposé, des températures supérieures à 25°C font sortir, en moyenne, 50 % de cyclistes supplémentaires."
+			, unsafe_allow_html=True)						
 	#Evènements exceptionnels
 	#########################
 	if dataviz_temp == temp4:
 		st.subheader(dataviz_temp)
-		excep1 = "Covid"
-		excep2 = "Confinement"
-		excep3 = "Grève des transports"
-		select_excep = st.radio("", (excep1, excep2, excep3))
+		excep1 = "Grève des transports"
+		excep2 = "Covid-19"
+		select_excep = st.radio("", (excep1, excep2))
 		if select_excep == excep1:
-			#t.markdown(select_excep)
+			#Grève
+			col1, col2, col3 = st.beta_columns([1, 2, 1])
+			with col2:
+				df_greve = df_date[(df_date.Année == 2019) | ((df_date.Semaine < 11) & (df_date.Année == 2020))]
+				df_greve0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_greve[df_greve["Grève"] == 0]["Date et heure de comptage"])]
+				df_greve0["Grève"] = 0
+				df_greve1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_greve[df_greve["Grève"] == 1]["Date et heure de comptage"])]
+				df_greve1["Grève"] = 1
+				df_graphe = pd.concat([df_greve0, df_greve1], ignore_index=True)
+				df_graphe = df_graphe.groupby('Grève', as_index = False).agg({'Comptage horaire':'mean'})
+				fig = plt.figure(figsize = (6, 6))
+				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
+				plt.title('Influence de la grève\n', fontsize = 18)
+				plt.ylabel('Nombre moyen de vélos / heure / site', fontsize = 13)
+				plt.xticks(range(2), ['avant / après', 'pendant'], fontsize = 13)
+				plt.text(-0.12, 32, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
+				plt.text(0.89, 32, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
+				st.pyplot(fig)
+			st.markdown(			
+			"<p style='text-align: justify'>"
+			"Pour distinguer l’effet de la grève (du 5 décembre 2019 au 26 janvier 2020) de celui de la pandémie de Covid-19, "
+			"nous avons ici pris en compte la période du 1er septembre 2019 au 16 mars 2020 (veille du premier confinement)."
+			"<p style='text-align: justify'>"
+			"Pendant la grève des transports de l’hiver 2019/2020, le trafic explose avec +58 % en moyenne."
+			"</p><br>"
+			, unsafe_allow_html=True)
+		if select_excep == excep2:
 			#Covid
 			col1, col2, col3 = st.beta_columns([1, 2, 1])
 			with col2:
@@ -658,15 +734,24 @@ if select_page == page3:
 				df_graphe = df_graphe.groupby('Covid', as_index = False).agg({'Comptage horaire':'mean'})
 				fig = plt.figure(figsize = (6, 6))
 				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
-				plt.title('Trafic période globale de la Covid\n', fontsize = 18)
-				plt.ylabel('Nombre moyen de vélos moyen par heure', fontsize = 13)
-				plt.xticks(range(2), ['Avant le Covid', 'Pendant le Covid'], fontsize = 13)
+				plt.title('Influence de la pandémie\n', fontsize = 18)
+				plt.ylabel('Nombre moyen de vélos par heure', fontsize = 13)
+				plt.xticks(range(2), ['Avant Covid-19', 'Covid-19'], fontsize = 13)
 				plt.text(-0.12, 30, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
 				plt.text(0.89, 30, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold") 
 				st.pyplot(fig)
-		if select_excep == excep2:
-			#st.markdown(select_excep)
-			#Confinement
+			st.markdown(			
+			"<p style='text-align: justify'>"
+			"Nous avons retenu le 17 mars 2020 (date du 1er jour de confinement) comme début de la pandémie de Covid-19. "
+			"Pour distinguer l’effet de la pandémie de Covid-19 de celui de la grève des transports, "
+			"nous avons ici pris en compte la période du 1er septembre 2019 au 31 décembre 2020, hors période de grève (du 5 décembre 2019 au 26 janvier 2020)."
+			"<p style='text-align: justify'>"
+			"Sur la période étudiée, le trafic augmente de 23 %, en moyenne, après le début de la pandémie."
+			"</p>"
+			"<p style='text-align: justify'>"
+			"<br>Pendant la période Covid-19 il y a eu 3,5 mois de confinement. Quel a été leur effet ?"
+			"</p>"
+			, unsafe_allow_html=True)				
 			col1, col2, col3 = st.beta_columns([1, 2, 1])
 			with col2:
 				df_confinement = df_date[(df_date.Semaine >= 12) & (df_date.Année == 2020)]
@@ -680,33 +765,19 @@ if select_page == page3:
 				df_graphe = df_graphe.groupby('Confinement', as_index = False).agg({'Comptage horaire':'mean'})
 				fig = plt.figure(figsize = (6, 6))
 				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
-				plt.title('Influence des confinements pendant la Covid\n', fontsize = 18)
-				plt.ylabel('Nombre moyen de vélos moyen / heure / site', fontsize = 13)
+				plt.title('Influence des confinements\n', fontsize = 18)
+				plt.ylabel('Nombre moyen de vélos / heure / site', fontsize = 13)
 				plt.xticks(range(3), ['Pas de Confinement', 'Confinement 1', 'Confinement 2'], fontsize = 12, rotation = 20)
 				plt.text(-0.15, 35, df_graphe['Comptage horaire'][0].round(1), fontsize=12, color="white", weight="bold")
 				plt.text(0.85, 4, df_graphe['Comptage horaire'][1].round(1), fontsize=12, color="white", weight="bold")
 				plt.text(1.85, 22, df_graphe['Comptage horaire'][2].round(1), fontsize=12, color="white", weight="bold");
-				st.pyplot(fig)			
-		if select_excep == excep3:
-			#st.markdown(select_excep)
-			#insérer codes graphes Grève
-			col1, col2, col3 = st.beta_columns([1, 2, 1])
-			with col2:
-				df_greve = df_date[(df_date.Année == 2019) | ((df_date.Semaine < 11) & (df_date.Année == 2020))]
-				df_greve0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_greve[df_greve["Grève"] == 0]["Date et heure de comptage"])]
-				df_greve0["Grève"] = 0
-				df_greve1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_greve[df_greve["Grève"] == 1]["Date et heure de comptage"])]
-				df_greve1["Grève"] = 1
-				df_graphe = pd.concat([df_greve0, df_greve1], ignore_index=True)
-				df_graphe = df_graphe.groupby('Grève', as_index = False).agg({'Comptage horaire':'mean'})
-				fig = plt.figure(figsize = (6, 6))
-				sns.barplot(x=df_graphe.index, y=df_graphe['Comptage horaire'],palette = 'hls')
-				plt.title('Influence de la grève\n', fontsize = 18)
-				plt.ylabel('Nombre moyen de vélos moyen / heure / site', fontsize = 13)
-				plt.xticks(range(2), ['avant / après', 'pendant'], fontsize = 13)
-				plt.text(-0.12, 32, df_graphe['Comptage horaire'][0].round(1), fontsize=15, color="white", weight="bold")
-				plt.text(0.89, 32, df_graphe['Comptage horaire'][1].round(1), fontsize=15, color="white", weight="bold")
-				st.pyplot(fig)		
+				st.pyplot(fig)
+			st.markdown(			
+			"<p style='text-align: justify'>"
+			"Les deux confinements n’ont pas eu le même impact. "
+			"Lors du premier, très strict, le trafic a chuté de 82 % en moyenne contre 36 % seulement pour le deuxième, "
+			"aux règles plus souples (écoles et magasins ouverts)."
+			"</p>", unsafe_allow_html=True)									
 
 ############################
 ## Évolution géographique ##
@@ -965,6 +1036,11 @@ if select_page == page4:
 			                    fill_opacity=0.3
 			                   ).add_to(carte)
 		folium_static(carte)
+	st.markdown(			
+	"<p style='font-style: italic'>"
+	"En cliquant sur les cercles, vous pouvez faire apparaître l’adresse, l’identifiant, "
+	"la photo et le nombre moyen de vélos / heure pour chaque site de comptage. "
+	"</p>", unsafe_allow_html=True)			
 
 ########################
 ## Trafic & accidents ##
