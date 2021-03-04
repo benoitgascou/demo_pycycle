@@ -92,7 +92,7 @@ st.sidebar.info(
 ##########################
 if select_page == page1:
 	#Titres, auterus, sources
-	st.markdown("<h3 style='text-align: center; color: black;'>Évolution du trafic cycliste à Paris de septembre 2019 à décembre 2020</h1>", unsafe_allow_html=True)
+	st.markdown("<h3 style='text-align: center; color: black;'>Évolution du trafic cycliste à Paris de septembre 2019 à décembre 2020</h3>", unsafe_allow_html=True)
 	st.markdown("<p style='text-align: center; color: black;'>Projet réalisé dans le cadre de la formation <strong>Data Analyst</strong> de <a href='https://www.linkedin.com/school/datascientest/'>DataScientest.com</a>"
 		"<br>Promotion Bootcamp novembre 2020</p>", unsafe_allow_html=True)
 	st.markdown("<p style='text-align: center; color: black;'>Auteurs :"
@@ -105,7 +105,7 @@ if select_page == page1:
 		"<br><a href='https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2019/'>Bases de données accidents de la circulation routière | data.gouv.fr</a>"
 		"<br></p>", unsafe_allow_html=True)
 	#CONTEXTE
-	st.markdown("<h4 style='text-align: left; color: black;'><br>I. CONTEXTE", unsafe_allow_html=True)
+	st.markdown("<h4 style='text-align: left; color: black;'><br>I. CONTEXTE</h4>", unsafe_allow_html=True)
 	st.markdown("<br><p style='text-align: justify'>"
 	"Lors du premier déconfinement en mai 2020, la Mairie de Paris a créé ex nihilo cinquante kilomètres de pistes cyclables. "
 	"Le but ? Désengorger les transports en commun pour éviter la propagation du virus tout en limitant le report sur les voitures particulières. "
@@ -117,7 +117,7 @@ if select_page == page1:
 	"pour la période du 1er septembre 2019 au 31 décembre 2020. "
 	"</p>", unsafe_allow_html=True)
 	#ANALYSES & CONCLUSIONS
-	st.markdown("<h4 style='text-align: left; color: black;'><br>II. ANALYSES & CONCLUSIONS", unsafe_allow_html=True)
+	st.markdown("<h4 style='text-align: left; color: black;'><br>II. ANALYSES & CONCLUSIONS</h4>", unsafe_allow_html=True)
 	st.markdown("<br><p style='font-style: italic'>"
 	"Pour accéder à nos analyses détaillées, cliquez dans le menu de gauche. "
 	"<br>Pour accéder directement à nos conclusions, cliquez sur les filtres ci-dessous. "
@@ -227,7 +227,7 @@ if select_page == page1:
 		"</p>", unsafe_allow_html=True)		
 		# à compléter avec les résultats etc. (Cynthia) #
 	#PERSPECTIVES
-	st.markdown("<h4 style='text-align: left; color: black;'><br>III. PERSPECTIVES", unsafe_allow_html=True)
+	st.markdown("<h4 style='text-align: left; color: black;'><br>III. PERSPECTIVES</h4>", unsafe_allow_html=True)
 	st.markdown("<br><p style='text-align: justify'>"
 	"Pour accompagner la Mairie de Paris et la Sécurité Routière dans leurs décisions en matière d’aménagement urbain, "
 	"il nous semble important de poursuivre et approfondir cette étude. "
@@ -278,8 +278,170 @@ if select_page == page1:
 ##########################
 elif select_page == page2:
 	st.header(select_page)
-	st.title("PyCycle in Paris")
-
+	dataset_1 = "Dataset Principal"
+	dataset_2 = "Dataset Secondaire"
+	select_dataset = st.radio("", [dataset_1, dataset_2])
+	if select_dataset == dataset_1:
+		st.subheader("DATASET PRINCIPAL")
+		st.markdown("<p style='text-align: justify'>"
+		"Langage utilisé : <strong>Python</strong><br>"
+		"Librairies utilisées : <strong>Pandas, NumPy, Matplotlib, Seaborn, Scikit-learn</strong>"
+		"</p>", unsafe_allow_html=True)
+		st.markdown("<h3>1. Source</h3>"
+		"<p style='text-align: justify'>"
+		"Le jeu de données provient du site de la Mairie de Paris : "
+		"<a href='https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/information/?disjunctive.id_compteur&disjunctive.nom_compteur&disjunctive.id&disjunctive.name'>Comptage Vélo – Données compteurs</a>"
+		"</p>", unsafe_allow_html=True)
+		st.markdown("<h3>2. Période</h3>"
+		"<p style='text-align: justify'>"
+		"Les données sont mises à jour quotidiennement et remontent sur 13 mois glissants. "
+		"Nous avons récupéré toutes les données <strong>du 1er septembre 2019 au 31 décembre 2020 (16 mois).</strong>"
+		"</p>", unsafe_allow_html=True)
+		st.markdown("<h3>3. Remarques</h3>"
+		"<p style='text-align: justify'>"
+		"<ul>"
+		   "<li>Les données sont fournies par un prestataire : <a href='https://www.eco-compteur.com/'>Eco-Compteur</a>.</li>"
+		   "<li>Le nombre de compteurs fluctue. Certains sont créés, d’autres arrêtés en cas de travaux ou de panne.</li>"		  
+		"</ul>"
+		"</p>", unsafe_allow_html=True)
+		st.markdown("<h3>4. Exploration des données</h3>"
+		"<p style='text-align: justify'>"
+		"<strong>Taille du DataFrame</strong><br>"
+		"1 002 827 lignes x 9 colonnes"
+		"</p>"
+		"<p style='text-align: justify'>"
+		"<strong>Les variables</strong><br>"
+		"<table style='text-align: center ; margin: auto'>"
+		  "<tr>"
+		    "<th>N° colonne</th>"
+		    "<th>Nom de la colonne</th>"
+		    "<th>Type</th>"
+		  "</tr>"
+		  "<tr>"
+		    "<td>1</td>"
+		    "<td>Identifiant du compteur</td>"
+		    "<td>string</td>"
+		  "</tr>"
+		  "<tr>"
+		    "<td>2</td>"
+		    "<td>Nom du compteur</td>"
+		    "<td>string</td>"
+		  "</tr>"
+		  "<tr>"
+		    "<td>3</td>"
+		    "<td>Identifiant du site de comptage</td>"
+		    "<td>string</td>"
+		  "</tr>"
+		  "<tr>"
+		    "<td>4</td>"
+		    "<td>Nom du site de comptage</td>"
+		    "<td>string</td>"
+		  "</tr>"
+		  "<tr>"
+		    "<td>5</td>"
+		    "<td>Comptage horaire</td>"
+		    "<td>integer</td>"
+		  "</tr>"
+		  "<tr>"
+		    "<td>6</td>"
+		    "<td>Date et heure de comptage</td>"
+		    "<td>DateTime</td>"
+		  "</tr>"
+		  "<tr>"
+		    "<td>7</td>"
+		    "<td>Date d'installation du site de comptage</td>"
+		    "<td>date</td>"
+		  "</tr>"	
+		  "<tr>"
+		    "<td>8</td>"
+		    "<td>Lien vers photo du site de comptage</td>"
+		    "<td>string</td>"
+		  "</tr>"
+		  "<tr>"
+		    "<td>9</td>"
+		    "<td>Coordonnées géographiques</td>"
+		    "<td>geo_point_2d</td>"
+		  "</tr>"		  		  	  		  
+		"</table>"
+		"</p>"
+		"<p style='text-align: justify'>"
+		"La variable cible est le “<span style='color: #1ca2d1'>Comptage horaire</span>”, c’est-à-dire <strong><span style='color: #1ca2d1'>le nombre de vélos/heure/site</span></strong>. "
+		"C’est la seule variable numérique continue."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"Nous n’avons que deux variables explicatives, respectivement temporelle et géographique : "
+		" “<span style='color: #1ca2d1'>Date et heure du comptage</span>” et “<span style='color: #1ca2d1'>Coordonnées géographiques”</span>."
+		"</p>"
+		, unsafe_allow_html=True)
+		st.markdown("<h3>5. Traitement des données</h3>"
+		"<p style='text-align: justify'>"
+		"Le DataFrame ne contient pas de doublons."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"<strong>Valeurs manquantes</strong><br>"
+		"37 152 valeurs sont manquantes, soit 3,7 % du DataFrame. "
+		"Elles concernent 6 variables, toutes liées à l'identification des compteurs. "
+		"Nous retrouvons les informations via les adresses des sites et nous remplaçons toutes les valeurs manquantes."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"<strong>Valeurs extrêmes de la variable “Comptage horaire”</strong><br>"
+		"Les statistiques descriptives font apparaître des valeurs extrêmes (3e quartile : 68, 4e quartile : 1275). "
+		"Un boxplot nous permet de les visualiser : elles sont nombreuses, continues et cohérentes. "
+		"Un minimum de 0 vélo/heure/site et un maximum de 1 275 (soit 21 vélos/minute/site) ne sont pas aberrants. "
+		"Nous gardons toutes les valeurs."
+		"</p>"
+		, unsafe_allow_html=True)
+		st.markdown("<h3>6. Ajout de variables</h3>"
+		"<p style='text-align: justify'>"
+		"Pour alimenter notre analyse, nous créons 25 variables."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"<strong>Périodicité</strong> : Année, Mois, Semaine, Jour de la semaine, Week-end etc."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"<strong>Événements récurrents</strong> : Jours fériés, Types de vacances, Infos météo (Pluie, Froid, Chaleur)."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"<strong>Evènements exceptionnels</strong> : Grève, Covid, Confinement."
+		"</p>"		
+		, unsafe_allow_html=True)
+		st.markdown("<br><strong> Extrait du DataFrame</strong>", unsafe_allow_html=True)
+		st.dataframe(df_ml.iloc[:,0:19].head(10))
+	elif select_dataset == dataset_2:
+		st.subheader("DATASET SECONDAIRE")
+		st.markdown("<h3>1. Source</h3>"
+		"<p style='text-align: justify'>"
+		"Ce deuxième jeu de données provient de la Plateforme ouverte des données publiques françaises : "
+		"<a href='https://www.data.gouv.fr/fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2019/'>"
+		"Bases de données annuelles des accidents corporels de la circulation routière - Années de 2005 à 2019</a>"
+		"</p>", unsafe_allow_html=True)
+		st.markdown("<h3>2. Période</h3>"
+		"<p style='text-align: justify'>"
+		"Nous sélectionnons la période <strong>du 1er septembre au 31 décembre 2019 (4 mois)</strong>, les données 2020 n’étant pas encore disponibles."
+		"</p>", unsafe_allow_html=True)
+		st.markdown("<h3>3. Remarques</h3>"
+		"<p style='text-align: justify'>"
+		"Une étude sur 4 mois nous permet déjà d'identifier les liens entre l’intensité du trafic cycliste et le nombre d’accidents impliquant des vélos. "
+		"D’autant que sur la période septembre - décembre 2019, la grève des transports a provoqué une hausse du trafic. "
+		"Cela servira de tendance pour l'année 2020, où la pandémie a elle aussi provoqué une hausse."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"Les accidents de cette base sont ceux ayant provoqué des dommages corporels."
+		"</p>"
+		, unsafe_allow_html=True)
+		st.markdown("<h3>4. Traitement des données</h3>"
+		"<p style='text-align: justify'>"
+		"<ul>"
+		   "<li>La base de données comprend plusieurs tables. Nous en réunissons quatre (par la variable identifiant les accidents) pour former notre DataFrame : Caractéristiques, Véhicules, Lieux, Usagers</li>"
+		   "<li>Nous sélectionnons les colonnes utiles à notre analyse.</li>"
+		   "<li>Nous filtrons par ville (Paris), période (sep-déc 2019) et catégorie de véhicules impliqués (vélo).</li>"
+		   "<li>Il n’y a ni valeur manquante ni doublon.</li>"
+		   "<li>Nous convertissons le type de certaines colonnes.</li>"
+		   "<li>Nous créons une colonne ‘Age’ (2019 - année de naissance des victimes).</li>"		  
+		"</ul>"
+		"</p>", unsafe_allow_html=True)
+		st.markdown("<br><strong> Extrait du DataFrame</strong>", unsafe_allow_html=True)
+		st.dataframe(df_acc.head(10))
 ############################
 ## Évolution géographique ##
 ############################
