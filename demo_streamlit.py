@@ -131,7 +131,7 @@ if select_page == page1:
 		st.markdown("<br><strong>1. Évolution géographique :</strong> le trafic est-il le même partout et tout le temps ?", unsafe_allow_html=True)
 		st.markdown("")
 		# topo à faire (Cynthia) #
-	if conclusion == conclu2:
+	elif conclusion == conclu2:
 		st.markdown("<br><strong>2. Évolution temporelle :</strong> quels facteurs influencent le trafic cycliste ?", unsafe_allow_html=True)
 		st.markdown(
 		"<p>Sur la période étudiée, de septembre 2019 à décembre 2020, voici les chiffres à retenir.</p>"
@@ -207,7 +207,7 @@ if select_page == page1:
 		"</ul>"
 		"</p>"
 		, unsafe_allow_html=True)
-	if conclusion == conclu3:
+	elif conclusion == conclu3:
 		st.markdown("<br><strong>3. Trafic & accidents :</strong> quel est l’impact du trafic sur les accidents de vélos ?", unsafe_allow_html=True)	
 		st.markdown("<br><p style='text-align: justify'>"
 		"La période étudiée se limite à 4 mois, de septembre à décembre 2019. "
@@ -217,7 +217,7 @@ if select_page == page1:
 		"En sera-t-il de même avec la pandémie de Covid-19 ? A vérifier lorsque les chiffres 2020 seront disponibles."
 		"</p>", unsafe_allow_html=True)
 		# à compléter après modif de l’analyse  (Cynthia) #
-	if conclusion == conclu4:
+	elif conclusion == conclu4:
 		st.markdown("<br><strong>4. Prédiction du trafic</strong>", unsafe_allow_html=True)		
 		st.markdown("<br><p style='text-align: justify'>"
 		"Nous avons obtenu un très bon modèle théorique de régression linéaire. "
@@ -276,353 +276,494 @@ if select_page == page1:
 ##########################
 ####Jeux de données   ####
 ##########################
-if select_page == page2:
+elif select_page == page2:
 	st.header(select_page)
 	st.title("PyCycle in Paris")
 
 ############################
 ## Évolution géographique ##
 ############################
-if select_page == page3:
+elif select_page == page3:
 	st.header(select_page)
-	st.markdown("<p style='text-align: justify'>"
-	"Pour la cartographie, nous avons choisi la bibliothèque <strong>Folium</strong>. "
-	"Elle permet de géolocaliser des informations sur une carte dynamique et détaillée de type OpenStreetMap."
-	"</p>", unsafe_allow_html=True)
-	#Carte générale
-	###############
-	df_filtre = df_date
-	# création d'un nouveau df qui servira à la cartographie
-	df_geo = df_comptages[df_comptages["Date et heure de comptage"].isin(df_filtre["Date et heure de comptage"])]
-	df_geo = df_geo.groupby(['Identifiant du site de comptage'], as_index = False).agg({'Comptage horaire':'mean'})
-	df_geo = df_geo.merge(right=df_site, on="Identifiant du site de comptage", how="left")
-	# Clustering avec le modèle K-Means
-	#Création d'un DF avec les coordonnées géographiques et le comptage horaire moyen pour chaque site de comptage
-	df_cluster = df_geo[['Identifiant du site de comptage','Comptage horaire', 'lat', 'long']]
-	kmeans = KMeans(n_clusters = 3)
-	kmeans.fit(df_cluster[["Comptage horaire", "lat", "long"]])
-	centroids = kmeans.cluster_centers_
-	labels = kmeans.labels_
-	# Ajouter les labels au DF "df_cluster"
-	labels = pd.DataFrame(labels)
-	df_cluster = df_cluster.join(labels)
-	df_cluster["groupe"] = df_cluster[0]
-	df_cluster = df_cluster.drop(0, axis = 1)
-	# Fusionner le DF "df_cluster" avec le précédent DF servira à la cartographie
-	df_geo = df_geo.join(df_cluster["groupe"])
-	# affichage des sites de comptage sur la carte en utilisant la librairie Folium
-	carte = folium.Map(location = [48.86, 2.341886], zoom_start = 12, min_zoom=12)
-
-	for nom, comptage, latitude, longitude, image, groupe in zip(df_geo["Nom du site de comptage"],
-	                                                             df_geo["Comptage horaire"],
-	                                                             df_geo["lat"],
-	                                                             df_geo["long"],
-	                                                             df_geo["Lien vers photo du site de comptage"],
-	                                                             df_geo["groupe"]):
-		if groupe == 0:
-			couleur = "#d9152a"
-		elif groupe == 1:
-			couleur = "#368fe5"
-		else:
-			couleur = "#129012"
-		if comptage == 0:
-			rayon = 0.5
-		else:
-			rayon = comptage
-		pp = "<strong>" + nom + "</strong>" + "<br>nombre moyen de vélos/heure/site : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
-		folium.CircleMarker(location=[latitude, longitude],
-		                    radius=rayon/10,
-		                    popup = folium.Popup(pp, max_width = 300),
-		                    tooltip= "<strong>" + nom + "</strong>",
-		                    color=couleur,
-		                    fill_color=couleur,
-		                    fill_opacity=0.3
-		                   ).add_to(carte)
-	folium_static(carte)
-	st.markdown(			
-	"<p style='font-style: italic ; text-align: justify'>"
-	"En cliquant sur les cercles, vous pouvez faire apparaître l’adresse, l’identifiant, "
-	"la photo et le nombre moyen de vélos / heure pour chaque site de comptage. "
-	"</p>", unsafe_allow_html=True)
-
-	st.subheader("Classification des sites de comptage par Apprentissage automatique (Machine learning)")			
-	st.markdown(			
-	"<p style='text-align: justify'>"
-	"Nous avons utilisé un modèle de <strong>classification non-supervisée (Clustering) :</strong> "
-	"<strong>l’algorithme des k-moyennes (K-Means)</strong>. Il affiche les sites de comptage en 3 groupes "
-	"(bleu, vert ou rouge) en fonction de l’intensité du trafic."
-	"</p>"
-	"<p>La taille des cercles est proportionnelle au nombre moyen de vélos/heure/site.</p>"
-	, unsafe_allow_html=True)
-
-
-	#Choix de la période
-	####################
-	st.subheader("A votre tour !")
-	st.markdown(			
-	"<p style='font-style: italic ; text-align: justify'>"
-	"A l’aide des filtres ci-dessous, vous pouvez modifier tous les paramètres et ainsi afficher la carte qui vous intéresse, "
-	"par exemple : le trafic de jour ou de nuit, en semaine ou le week-end, pendant les vacances scolaires ou les jours fériés, "
-	"lors d’une grève ou d’un confinement…"
-	"</p>", unsafe_allow_html=True)	
-
-	st.header("Choix de la période étudiée")
-	#st.write("Sélectionnez une période entre le 01/09/2019 et le 31/12/2020")
-	col1, col2 = st.beta_columns([2.5, 2])
-	with col1:
-		date = st.date_input(
-			'Sélectionnez une période entre le 01/09/2019 et le 31/12/2020',
-			value=(dt.date(2019, 9, 1), dt.date(2020, 12, 31)),
-			min_value=dt.date(2019, 9, 1),
-			max_value=dt.date(2020, 12, 31))
-
-	st.header("Choix de la périodicité")
-	col1, col2 = st.beta_columns([1, 3])
-	with col1:
-		annee = st.multiselect("Sélectionnez l'année", [2019, 2020], default = [2019, 2020])
-	with col2:
-		liste_mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
-		select_mois = st.multiselect("Sélectionnez le mois", liste_mois, default = liste_mois)
-		mois =[]
-		for i in np.arange(0,12):
-			if liste_mois[i] in select_mois :
-				mois.append(i+1)	
-	col1, col2 = st.beta_columns([3, 2])
-	with col1:
-		liste_jr_sem = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-		select_jr_sem = st.multiselect('Sélectionnez le jour de la semaine', liste_jr_sem, default = liste_jr_sem)
-		jr_sem =[]
-		for i in np.arange(0,7):
-			if liste_jr_sem[i] in select_jr_sem :
-				jr_sem.append(i)
-	with col2:		
-		heure = st.slider("Sélectionnez la tranche horaire", min_value=0, max_value=23, step=1, value=(0, 23))
-		heure2 = ()
-		tranche_hor2 = st.checkbox("Ajoutez une tranche horaire", value=False)
-		if tranche_hor2:
-			heure2 = st.slider("", min_value=0, max_value=23, step=1, value=(0, 23))
-
-	plus_filtres = st.checkbox("Plus de filtres", value = False)
-	if plus_filtres:
-		liste_semaine = np.arange(1,54).tolist()
-		semaine = st.multiselect('Sélectionnez le jour de la semaine (1 à 53)', liste_semaine, default=liste_semaine)
-		liste_jour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-		17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
-		jour = st.multiselect('Sélectionnez le jour du mois (1 à 31)', liste_jour, default=liste_jour)
-
-	#Evénements récurrents
-	######################
-	st.header("Autres choix")
-
-	col1, col2, col3 = st.beta_columns(3)
-	#Weekend
-	with col1:
-		st.subheader("Week-end")
-		weekend = st.checkbox("Du lundi au vendredi", value=True)
-		pas_weekend = st.checkbox("Weekends", value=True)
-	#Férié
-	with col2:
-		st.subheader("Jours fériés")
-		ferie = st.checkbox("Hors jours fériés", value=True)
-		pas_ferie = st.checkbox("Jours fériés", value=True)
-
-	#Vacances
-	st.subheader("Vacances")
-	col1, col2, col3 = st.beta_columns(3)
-	with col1:
-		hors_vac = st.checkbox("Hors vacances scolaires", value=True)
-		fevrier = st.checkbox("Vacances de février", value=True)
-		printemps = st.checkbox("Vacances de Pâques", value=True)
-	with col2:		 
-		ascension = st.checkbox("Pont de l'Ascension", value=True)
-		ete = st.checkbox("Vacances d'été", value=True)
-	with col3:	
-		toussaint = st.checkbox("Toussaint", value=True)
-		noel = st.checkbox("Noël ", value=True)
-
-	#Météo
-	st.subheader("Météo")
-	col1, col2, col3 = st.beta_columns([1, 1, 1])
-	with col1:
-		st.markdown("<strong>Pluie</strong>", unsafe_allow_html=True)
-		pas_de_pluie = st.checkbox("Hors jours de pluie (précipitations ≤ 10 mm)", value=True)
-		pluie = st.checkbox("Jours de pluie (précipitations > 10 mm)", value=True)
-	with col2:	
-		st.markdown("<strong>Froid</strong>", unsafe_allow_html=True)
-		inf_4 = st.checkbox("Hors jours de grand froid (t > 4 °C)", value=True)
-		sup_4 = st.checkbox("Jours de grand froid (t ≤ 4 °C)", value=True)
-	with col3:	
-		st.markdown("<strong>Chaleur</strong>", unsafe_allow_html=True)
-		sup_25 = st.checkbox("Hors jours de grosse chaleur (t  < 25 °C)", value=True)
-		inf_25 = st.checkbox("Jours de grosse chaleur (t ≥ 25 °C)", value=True)
-
-	#Evénements exceptionnels
-	##########################
-	col1, col2, col3 = st.beta_columns(3)
-	with col1:
-		st.subheader("Pandémie de Covid-19")
-		av_cov = st.checkbox("Avant la pandémie (< 17/03/2020)", value=True)
-		covid = st.checkbox("Depuis la pandémie (≥ 17/03/2020)", value=True)
-	with col2:
-		st.subheader("Confinement")
-		pas_conf = st.checkbox("Pas de confinement", value=True)
-		conf_1 = st.checkbox("1er confinement", value=True)
-		conf_2 = st.checkbox("2e confinement", value=True)
-	with col3:
-		st.subheader("Grève des tansports")
-		greve = st.checkbox("Hors grève", value=True)
-		pas_greve = st.checkbox("Jours de grève", value=True)	
-
-	st.header("Avec ou sans clustering")
-	st.markdown("Modèle de machine learning qui classe les sites selon l'intensité du trafic")
-	clustering = st.checkbox("Clustering", value=False)
-
-	#Filtres
-	########
-	df_filtre = df_date
-	df_filtre = df_filtre[(df_filtre["Date"] >= date[0]) & (df_filtre["Date"] <= date[1])]
-	df_filtre = df_filtre[df_filtre["Année"].isin(annee)]
-	df_filtre = df_filtre[df_filtre["Mois"].isin(mois)]
-	df_filtre = df_filtre[df_filtre["Jour_de_la_semaine"].isin(jr_sem)]
-	if tranche_hor2:
-		df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1]) | (df_filtre["Heure"] >= heure2[0]) & (df_filtre["Heure"] <= heure2[1])]
-	else:
-		df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1])]
-	if plus_filtres:
-		df_filtre = df_filtre[df_filtre["Jour"].isin(jour)]
-		df_filtre = df_filtre[df_filtre["Semaine"].isin(semaine)]
-	if weekend == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Weekend"] == 1].index, axis=0)
-	if pas_weekend == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Weekend"] == 0].index, axis=0)
-	if ferie == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 1].index, axis=0)
-	if pas_ferie == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 0].index, axis=0)
-	if hors_vac == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Vacances"] == 0].index, axis=0)
-	if fevrier == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_fevrier"] == 1].index, axis=0)
-	if printemps == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_printemps"] == 1].index, axis=0)
-	if ascension == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_ascension"] == 1].index, axis=0)
-	if ete == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_juillet"] == 1].index, axis=0)
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_aout"] == 1].index, axis=0)
-	if toussaint == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_toussaint"] == 1].index, axis=0)
-	if noel == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_noel"] == 1].index, axis=0)
-	if pas_de_pluie == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 0].index, axis=0)
-	if pluie == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 1].index, axis=0)
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 2].index, axis=0)
-	if sup_4 == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 0].index, axis=0)
-	if inf_4 == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 1].index, axis=0)
-	if sup_25 == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 1].index, axis=0)
-	if inf_25 == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 0].index, axis=0)
-	if av_cov == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 0].index, axis=0)
-	if covid == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 1].index, axis=0)
-	if pas_conf == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 0].index, axis=0)
-	if conf_1 == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 1].index, axis=0)
-	if conf_2 == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 2].index, axis=0)
-	if greve == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Grève"] == 1].index, axis=0)
-	if pas_greve == False:
-		df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Grève"] == 0].index, axis=0)	
-
-	# création d'un nouveau df qui servira à la cartographie
-	df_geo = df_comptages[df_comptages["Date et heure de comptage"].isin(df_filtre["Date et heure de comptage"])]
-	df_geo = df_geo.groupby(['Identifiant du site de comptage'], as_index = False).agg({'Comptage horaire':'mean'})
-	df_geo = df_geo.merge(right=df_site, on="Identifiant du site de comptage", how="left")
-
-	# Clustering avec le modèle K-Means
-	if clustering:
-		from sklearn.cluster import KMeans
+	carte_1 = "Cartographie générale"
+	carte_2 = "Cartographie sur mesure"
+	select_carte = st.radio("", [carte_1, carte_2])
+	if select_carte == carte_1:
+		#Carte générale
+		###############
+		st.markdown("<p style='text-align: justify'>"
+		"Pour la cartographie, nous avons choisi la bibliothèque <strong>Folium</strong>. "
+		"Elle permet de géolocaliser des informations sur une carte dynamique et détaillée de type OpenStreetMap."
+		"</p>", unsafe_allow_html=True)			
+		st.markdown(			
+		"<p style='text-align: justify'>"
+		"Nous avons utilisé un modèle de <strong>classification non-supervisée (Clustering) :</strong> "
+		"<strong>l’algorithme des k-moyennes (K-Means)</strong>. Il affiche les sites de comptage en 3 groupes "
+		"(bleu, vert ou rouge) selon de l’intensité du trafic."
+		"</p>"
+		"<p>La taille des cercles est proportionnelle au <strong>nombre moyen de vélos/heure/site.</strong></p>"
+		, unsafe_allow_html=True)
+		df_filtre1 = df_date
+		# création d'un nouveau df qui servira à la cartographie
+		df_geo1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_filtre1["Date et heure de comptage"])]
+		df_geo1 = df_geo1.groupby(['Identifiant du site de comptage'], as_index = False).agg({'Comptage horaire':'mean'})
+		df_geo1 = df_geo1.merge(right=df_site, on="Identifiant du site de comptage", how="left")
+		# Clustering avec le modèle K-Means
 		#Création d'un DF avec les coordonnées géographiques et le comptage horaire moyen pour chaque site de comptage
-		df_cluster = df_geo[['Identifiant du site de comptage','Comptage horaire', 'lat', 'long']]
-		kmeans = KMeans(n_clusters = 3)
-		kmeans.fit(df_cluster[["Comptage horaire", "lat", "long"]])
-		centroids = kmeans.cluster_centers_
-		labels = kmeans.labels_
+		df_cluster1 = df_geo1[['Identifiant du site de comptage','Comptage horaire', 'lat', 'long']]
+		kmeans1 = KMeans(n_clusters = 3)
+		kmeans1.fit(df_cluster1[["Comptage horaire", "lat", "long"]])
+		centroids1 = kmeans1.cluster_centers_
+		labels1 = kmeans1.labels_
 		# Ajouter les labels au DF "df_cluster"
-		labels = pd.DataFrame(labels)
-		df_cluster = df_cluster.join(labels)
-		df_cluster["groupe"] = df_cluster[0]
-		df_cluster = df_cluster.drop(0, axis = 1)
+		labels1 = pd.DataFrame(labels1)
+		df_cluster1 = df_cluster1.join(labels1)
+		df_cluster1["groupe"] = df_cluster1[0]
+		df_cluster1 = df_cluster1.drop(0, axis = 1)
 		# Fusionner le DF "df_cluster" avec le précédent DF servira à la cartographie
-		df_geo = df_geo.join(df_cluster["groupe"])
-
-
+		df_geo1 = df_geo1.join(df_cluster1["groupe"])
 		# affichage des sites de comptage sur la carte en utilisant la librairie Folium
-		carte = folium.Map(location = [48.86, 2.341886], zoom_start = 12, min_zoom=12)
+		carte1 = folium.Map(location = [48.86, 2.341886], zoom_start = 12, min_zoom=12)
 
-		for nom, comptage, latitude, longitude, image, groupe in zip(df_geo["Nom du site de comptage"],
-		                                                             df_geo["Comptage horaire"],
-		                                                             df_geo["lat"],
-		                                                             df_geo["long"],
-		                                                             df_geo["Lien vers photo du site de comptage"],
-		                                                             df_geo["groupe"]):
-			if groupe == 0:
-				couleur = "#d9152a"
-			elif groupe == 1:
+		for nom1, comptage1, latitude1, longitude1, image1, groupe1 in zip(df_geo1["Nom du site de comptage"],
+		                                                             df_geo1["Comptage horaire"],
+		                                                             df_geo1["lat"],
+		                                                             df_geo1["long"],
+		                                                             df_geo1["Lien vers photo du site de comptage"],
+		                                                             df_geo1["groupe"]):
+			if groupe1 == 0:
+				couleur1 = "#d9152a"
+			elif groupe1 == 1:
+				couleur1 = "#368fe5"
+			else:
+				couleur1 = "#129012"
+			if comptage1 == 0:
+				rayon1 = 0.5
+			else:
+				rayon1 = comptage1
+			pp1 = "<strong>" + nom1 + "</strong>" + "<br>nombre moyen de vélos/heure/site : " + str(round(comptage1,2)) + "<br><img src='" + image1 + "', width=100%>"
+			folium.CircleMarker(location=[latitude1, longitude1],
+			                    radius=rayon1/10,
+			                    popup = folium.Popup(pp1, max_width = 300),
+			                    tooltip= "<strong>" + nom1 + "</strong>",
+			                    color=couleur1,
+			                    fill_color=couleur1,
+			                    fill_opacity=0.3
+			                   ).add_to(carte1)
+		folium_static(carte1)
+		st.markdown(			
+		"<p style='font-style: italic ; text-align: justify'>"
+		"En cliquant sur les cercles, vous pouvez faire apparaître l’adresse, l’identifiant, "
+		"la photo et le nombre moyen de vélos / heure pour chaque site de comptage. "
+		"</p>", unsafe_allow_html=True)
+		st.subheader("Remarques préliminaires")
+		st.markdown(			
+		"<p style='text-align: justify'>"
+		"Lors de la période étudiée (septembre 2019 - décembre 2020), 69 sites de comptage ont produit des données. "
+		"Cependant, certains n’ont pas été présents tout au long des 16 mois. "
+		"Il y a eu des créations de site, mais aussi des travaux ou des pannes empêchant d’autres sites de fonctionner."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"Chaque site de comptage comporte un ou deux compteurs. Un si la circulation est à sens unique. Deux si elle est à double sens. "
+		"Mais dans certains cas, notamment quand la piste cyclable se situe de part et d'autre d'un boulevard, "
+		"deux sites de comptage ont été créés au lieu de deux compteurs pour un seul site. "
+		"</p>"
+		"<p style='text-align: justify'>"
+		"Notre analyse porte sur les 69 sites de comptages (à sens unique ou à double sens) et non sur chaque compteur."
+		"</p>"
+		, unsafe_allow_html=True)
+		st.subheader("Répartition des sites de comptage")
+		st.markdown(			
+		"<p style='text-align: justify'>"
+		"<strong>Point forts</strong>"
+		"<ul>"
+			  "<li>La couverture générale : les sites sont disséminés un peu partout dans Paris</li>"
+			  "<li>Des axes majeurs bien couverts :"
+			    "<ul>"
+			      "<li>Les quais de Seine</li>"
+			      "<li>L’axe Nord-Sud : Gare du Nord/Gare de l'Est - Châtelet - Odéon - Alésia</li>"
+			     "</ul>"
+			  "</li>"
+		"</ul></p>"
+		"<p style='text-align: justify'>"
+		"<strong>Point faibles</strong>"
+		"<ul>"
+			  "<li>Faible maillage : 3,5 sites/arrondissement</li>"
+			  "<li>Des arrondissements peu ou pas couverts : 1er, 2e, 9e, 16e, 18e, 20e"			  
+			  "<li>Des axes Est-Ouest, pourtant très fréquentés, non couverts :"
+			    "<ul>"
+			      "<li>Porte de Vincennes - Nation - Bastille - Saint-Paul</li>"
+			      "<li>Porte de Bagnolet - Père-Lachaise - République - Saint-Lazare</li>"
+			     "</ul>"
+			  "</li>"
+		"</ul>""</p>"
+		, unsafe_allow_html=True)
+		st.subheader("Analyse géographique du trafic (nombre moyen de vélos/heure/site)")
+		st.markdown(			
+		"<p style='text-align: justify'>"
+		"Les trois catégories de sites de comptage permettent une première analyse géographique du trafic cycliste à Paris lors de la période étudiée."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"<strong>Zones à trafic élevé</strong>"
+		"<ul>"
+			  "<li>Hypercentre de Paris : Sébastopol, Châtelet, Odéon</li>"
+			  "<li>10e : Gare du Nord, Gare de l'Est</li>"
+			  "<li>11e : Popincourt, Père-Lachaise</li>"
+			  "<li>17e : Avenue de Clichy</li>"
+		"</ul></p>"
+		"<p style='text-align: justify'>"
+		"<br><strong>Zones à trafic modéré</strong><br>"
+		"<ul>"
+			  "<li>Le long des quais de Seine</li>"
+			  "<li>8e : Champs-Elysées</li>"
+			  "<li>14e : Denfert-Rochereau, Porte de Vanves"
+			  "<li>15e : Lecourbe, Javel</li>"
+			  "<li>19e : La Villette</li>"			  
+		"</ul></p>"
+		"<p style='text-align: justify'>"		
+		"<br><strong>Zones à trafic faible</strong><br>"
+		"<ul>"
+			  "<li>Quartiers périphériques : Porte de la Chapelle, Porte de Bagnolet, Porte de Charenton, Porte d’Italie, Porte d'Orléans, Porte Maillot</li>"
+			  "<li>6e, 7e : Duroc, Boulevard du Montparnasse</li>"
+			  "<li>13e : Place d’Italie</li>"		  
+		"</ul></p>"
+		"</p>"
+		"<p style='text-align: justify'>"
+		"On note des contrastes centre/périphérie et rive droite/rive gauche. "
+		"Le trafic est globalement plus dense dans le centre et rive droite. "
+		"Ce sont en effet des quartiers plus animés, plus denses en activités économiques, commerciales et lieux de sortie. "
+		"La distance à parcourir pour les activités quotidiennes est plus courte et le trafic routier souvent congestionné, ce qui favorise l’usage du vélo. "
+		"Les axes Nord-Sud, Est-Ouest ou le long des quais sont quant à eux des points de passage obligés pour traverser Paris à vélo. "
+		"Les quartiers périphériques et la rive gauche sont plus résidentiels et le trafic cycliste semble en pâtir."
+		"</p>"
+		, unsafe_allow_html=True)
+		st.subheader("Top/flop du trafic")
+		df_top_flop = df_comptages.groupby(['Identifiant du site de comptage'], as_index = False).agg({'Comptage horaire':'mean'})
+		df_top_flop = df_top_flop.merge(right = df_site, on = "Identifiant du site de comptage")
+		df_top = df_top_flop[['Nom du site de comptage', 'Comptage horaire']].sort_values(by='Comptage horaire', ascending = True).tail(10).reset_index()
+		df_flop = df_top_flop[['Nom du site de comptage', 'Comptage horaire']].sort_values(by='Comptage horaire', ascending = True).head(10).reset_index()
+		fig = plt.figure(figsize = (4, 6))
+		plt.subplot(2, 1, 1)
+		plt.barh(df_top['Nom du site de comptage'], df_top['Comptage horaire'], color="#1ca2d1")
+		plt.xlim(0, 180)
+		plt.ylabel('Site de comptage', fontsize = 6)
+		plt.xlabel('Nombre moyen de vélos / heure / site', fontsize = 6)
+		plt.xticks(fontsize = 6)
+		plt.yticks(fontsize = 6)
+		plt.title("Top 10", fontsize = 9)
+		plt.text(25, 9-0.15, df_top['Comptage horaire'][9].round(1), fontsize=7, color="white", weight="bold")
+		plt.text(25, 8-0.15, df_top['Comptage horaire'][8].round(1), fontsize=7, color="white", weight="bold")
+		plt.text(25, 7-0.15, df_top['Comptage horaire'][7].round(1), fontsize=7, color="white", weight="bold")
+		plt.text(25, 6-0.15, df_top['Comptage horaire'][6].round(1), fontsize=7, color="white", weight="bold")
+		plt.text(25, 5-0.15, df_top['Comptage horaire'][5].round(1), fontsize=7, color="white", weight="bold")
+		plt.text(25, 4-0.15, df_top['Comptage horaire'][4].round(1), fontsize=7, color="white", weight="bold")
+		plt.text(25, 3-0.15, df_top['Comptage horaire'][3].round(1), fontsize=7, color="white", weight="bold")
+		plt.text(25, 2-0.15, df_top['Comptage horaire'][2].round(1), fontsize=7, color="white", weight="bold")
+		plt.text(25, 1-0.15, df_top['Comptage horaire'][1].round(1), fontsize=7, color="white", weight="bold")
+		plt.text(25, 0-0.15, df_top['Comptage horaire'][0].round(1), fontsize=7, color="white", weight="bold")
+		plt.gcf().subplots_adjust(hspace = 0.4)
+		plt.subplot(2, 1, 2)
+		plt.barh(df_flop['Nom du site de comptage'], df_flop['Comptage horaire'], color="#d52b52")
+		plt.xlim(0, 180)
+		plt.ylabel('Site de comptage', fontsize = 6)
+		plt.xlabel('Nombre moyen de vélos / heure / site', fontsize = 6)
+		plt.xticks(fontsize = 6)
+		plt.yticks(fontsize = 6)		
+		plt.title("Flop 10", fontsize = 9)
+		plt.text(25, 9-0.15, df_flop['Comptage horaire'][9].round(1), fontsize=7, color="#d52b52", weight="bold")
+		plt.text(25, 8-0.15, df_flop['Comptage horaire'][8].round(1), fontsize=7, color="#d52b52", weight="bold")
+		plt.text(25, 7-0.15, df_flop['Comptage horaire'][7].round(1), fontsize=7, color="#d52b52", weight="bold")
+		plt.text(25, 6-0.15, df_flop['Comptage horaire'][6].round(1), fontsize=7, color="#d52b52", weight="bold")
+		plt.text(25, 5-0.15, df_flop['Comptage horaire'][5].round(1), fontsize=7, color="#d52b52", weight="bold")
+		plt.text(25, 4-0.15, df_flop['Comptage horaire'][4].round(1), fontsize=7, color="#d52b52", weight="bold")
+		plt.text(25, 3-0.15, df_flop['Comptage horaire'][3].round(1), fontsize=7, color="#d52b52", weight="bold")
+		plt.text(25, 2-0.15, df_flop['Comptage horaire'][2].round(1), fontsize=7, color="#d52b52", weight="bold")
+		plt.text(25, 1-0.15, df_flop['Comptage horaire'][1].round(1), fontsize=7, color="#d52b52", weight="bold")
+		plt.text(25, 0-0.15, df_flop['Comptage horaire'][0].round(1), fontsize=7, color="#d52b52", weight="bold")
+		st.pyplot(fig)
+		st.markdown(			
+		"<p style='text-align: justify'>"
+		"Le site du <strong>boulevard de Sébastopol</strong> (à double sens) semble le plus fréquenté avec <strong><span style='color: #1ca2d1'>171 vélos/heure</span></strong> en moyenne. "
+		"Mais les deux sites suivants correspondent aux deux voies à sens unique de part et d’autre du <strong>boulevard de Magenta</strong>. "
+		"</p>"
+		"<p style='text-align: justify'>"
+		"Celui-ci arrive donc en tête du classement avec un cumul de <strong><span style='color: #1ca2d1'>287 vélos/heure</span></strong> en moyenne "
+		"L’écart est énorme avec le site de comptage le moins fréquenté - <strong><span style='color: #1ca2d1'>3 vélos/heure</span></strong> en moyenne à <strong>Porte d’Orléans</strong>."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"Dans le reste du classement, on retrouve sans surprise les sites les plus et moins fréquentés cités précédemment."
+		"</p>"
+		, unsafe_allow_html=True)		
+
+
+	elif select_carte == carte_2:
+		#Choix de la période
+		####################
+		st.subheader("A votre tour !")
+		st.markdown(			
+		"<p style='font-style: italic ; text-align: justify'>"
+		"A l’aide des filtres ci-dessous, vous pouvez modifier tous les paramètres et ainsi afficher la carte qui vous intéresse, "
+		"par exemple : le trafic de jour ou de nuit, en semaine ou le week-end, pendant les vacances scolaires ou les jours fériés, "
+		"lors d’une grève ou d’un confinement…"
+		"</p>", unsafe_allow_html=True)	
+
+		st.header("Choix de la période étudiée")
+		#st.write("Sélectionnez une période entre le 01/09/2019 et le 31/12/2020")
+		col1, col2 = st.beta_columns([2.5, 2])
+		with col1:
+			date = st.date_input(
+				'Sélectionnez une période entre le 01/09/2019 et le 31/12/2020',
+				value=(dt.date(2019, 9, 1), dt.date(2020, 12, 31)),
+				min_value=dt.date(2019, 9, 1),
+				max_value=dt.date(2020, 12, 31))
+
+		st.header("Choix de la périodicité")
+		col1, col2 = st.beta_columns([1, 3])
+		with col1:
+			annee = st.multiselect("Sélectionnez l'année", [2019, 2020], default = [2019, 2020])
+		with col2:
+			liste_mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+			select_mois = st.multiselect("Sélectionnez le mois", liste_mois, default = liste_mois)
+			mois =[]
+			for i in np.arange(0,12):
+				if liste_mois[i] in select_mois :
+					mois.append(i+1)	
+		col1, col2 = st.beta_columns([3, 2])
+		with col1:
+			liste_jr_sem = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+			select_jr_sem = st.multiselect('Sélectionnez le jour de la semaine', liste_jr_sem, default = liste_jr_sem)
+			jr_sem =[]
+			for i in np.arange(0,7):
+				if liste_jr_sem[i] in select_jr_sem :
+					jr_sem.append(i)
+		with col2:		
+			heure = st.slider("Sélectionnez la tranche horaire", min_value=0, max_value=23, step=1, value=(0, 23))
+			heure2 = ()
+			tranche_hor2 = st.checkbox("Ajoutez une tranche horaire", value=False)
+			if tranche_hor2:
+				heure2 = st.slider("", min_value=0, max_value=23, step=1, value=(0, 23))
+
+		plus_filtres = st.checkbox("Plus de filtres", value = False)
+		if plus_filtres:
+			liste_semaine = np.arange(1,54).tolist()
+			semaine = st.multiselect('Sélectionnez le jour de la semaine (1 à 53)', liste_semaine, default=liste_semaine)
+			liste_jour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+			17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+			jour = st.multiselect('Sélectionnez le jour du mois (1 à 31)', liste_jour, default=liste_jour)
+
+		#Evénements récurrents
+		######################
+		st.header("Autres choix")
+
+		col1, col2, col3 = st.beta_columns(3)
+		#Weekend
+		with col1:
+			st.subheader("Week-ends")
+			weekend = st.checkbox("Du lundi au vendredi", value=True)
+			pas_weekend = st.checkbox("Week-ends", value=True)
+		#Férié
+		with col2:
+			st.subheader("Jours fériés")
+			ferie = st.checkbox("Hors jours fériés", value=True)
+			pas_ferie = st.checkbox("Jours fériés", value=True)
+
+		#Vacances
+		st.subheader("Vacances")
+		col1, col2, col3 = st.beta_columns(3)
+		with col1:
+			hors_vac = st.checkbox("Hors vacances scolaires", value=True)
+			fevrier = st.checkbox("Vacances de février", value=True)
+			printemps = st.checkbox("Vacances de Pâques", value=True)
+		with col2:		 
+			ascension = st.checkbox("Pont de l'Ascension", value=True)
+			ete = st.checkbox("Vacances d'été", value=True)
+		with col3:	
+			toussaint = st.checkbox("Vacances de la Toussaint", value=True)
+			noel = st.checkbox("Vacances de Noël ", value=True)
+
+		#Météo
+		st.subheader("Météo")
+		col1, col2, col3 = st.beta_columns([1, 1, 1])
+		with col1:
+			st.markdown("<strong>Pluie</strong>", unsafe_allow_html=True)
+			pas_de_pluie = st.checkbox("Hors jours de pluie (précipitations ≤ 10 mm)", value=True)
+			pluie = st.checkbox("Jours de pluie (précipitations > 10 mm)", value=True)
+		with col2:	
+			st.markdown("<strong>Froid</strong>", unsafe_allow_html=True)
+			inf_4 = st.checkbox("Hors jours de grand froid (t > 4 °C)", value=True)
+			sup_4 = st.checkbox("Jours de grand froid (t ≤ 4 °C)", value=True)
+		with col3:	
+			st.markdown("<strong>Chaleur</strong>", unsafe_allow_html=True)
+			sup_25 = st.checkbox("Hors jours de grosse chaleur (t  < 25 °C)", value=True)
+			inf_25 = st.checkbox("Jours de grosse chaleur (t ≥ 25 °C)", value=True)
+
+		#Evénements exceptionnels
+		##########################
+		col1, col2, col3 = st.beta_columns(3)
+		with col1:
+			st.subheader("Pandémie de Covid-19")
+			av_cov = st.checkbox("Avant la pandémie (< 17/03/2020)", value=True)
+			covid = st.checkbox("Depuis la pandémie (≥ 17/03/2020)", value=True)
+		with col2:
+			st.subheader("Confinement")
+			pas_conf = st.checkbox("Pas de confinement", value=True)
+			conf_1 = st.checkbox("1er confinement", value=True)
+			conf_2 = st.checkbox("2e confinement", value=True)
+		with col3:
+			st.subheader("Grève des tansports")
+			greve = st.checkbox("Hors grève", value=True)
+			pas_greve = st.checkbox("Jours de grève", value=True)	
+
+		st.header("Avec ou sans clustering")
+		st.markdown("Modèle de machine learning qui classe les sites selon l'intensité du trafic")
+		clustering = st.checkbox("Clustering", value=False)
+
+		#Filtres
+		########
+		df_filtre = df_date
+		df_filtre = df_filtre[(df_filtre["Date"] >= date[0]) & (df_filtre["Date"] <= date[1])]
+		df_filtre = df_filtre[df_filtre["Année"].isin(annee)]
+		df_filtre = df_filtre[df_filtre["Mois"].isin(mois)]
+		df_filtre = df_filtre[df_filtre["Jour_de_la_semaine"].isin(jr_sem)]
+		if tranche_hor2:
+			df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1]) | (df_filtre["Heure"] >= heure2[0]) & (df_filtre["Heure"] <= heure2[1])]
+		else:
+			df_filtre = df_filtre[(df_filtre["Heure"] >= heure[0]) & (df_filtre["Heure"] <= heure[1])]
+		if plus_filtres:
+			df_filtre = df_filtre[df_filtre["Jour"].isin(jour)]
+			df_filtre = df_filtre[df_filtre["Semaine"].isin(semaine)]
+		if weekend == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Weekend"] == 1].index, axis=0)
+		if pas_weekend == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Weekend"] == 0].index, axis=0)
+		if ferie == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 1].index, axis=0)
+		if pas_ferie == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Jour_férié"] == 0].index, axis=0)
+		if hors_vac == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Vacances"] == 0].index, axis=0)
+		if fevrier == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_fevrier"] == 1].index, axis=0)
+		if printemps == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_printemps"] == 1].index, axis=0)
+		if ascension == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_ascension"] == 1].index, axis=0)
+		if ete == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_juillet"] == 1].index, axis=0)
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_aout"] == 1].index, axis=0)
+		if toussaint == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_toussaint"] == 1].index, axis=0)
+		if noel == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["vac_noel"] == 1].index, axis=0)
+		if pas_de_pluie == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 0].index, axis=0)
+		if pluie == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 1].index, axis=0)
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Pluie"] == 2].index, axis=0)
+		if sup_4 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 0].index, axis=0)
+		if inf_4 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Froid"] == 1].index, axis=0)
+		if sup_25 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 1].index, axis=0)
+		if inf_25 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Chaud"] == 0].index, axis=0)
+		if av_cov == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 0].index, axis=0)
+		if covid == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Covid"] == 1].index, axis=0)
+		if pas_conf == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 0].index, axis=0)
+		if conf_1 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 1].index, axis=0)
+		if conf_2 == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Confinement"] == 2].index, axis=0)
+		if greve == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Grève"] == 1].index, axis=0)
+		if pas_greve == False:
+			df_filtre = df_filtre.drop(df_filtre.loc[df_filtre["Grève"] == 0].index, axis=0)	
+
+		# création d'un nouveau df qui servira à la cartographie
+		df_geo = df_comptages[df_comptages["Date et heure de comptage"].isin(df_filtre["Date et heure de comptage"])]
+		df_geo = df_geo.groupby(['Identifiant du site de comptage'], as_index = False).agg({'Comptage horaire':'mean'})
+		df_geo = df_geo.merge(right=df_site, on="Identifiant du site de comptage", how="left")
+
+		# Clustering avec le modèle K-Means
+		if clustering:
+			from sklearn.cluster import KMeans
+			#Création d'un DF avec les coordonnées géographiques et le comptage horaire moyen pour chaque site de comptage
+			df_cluster = df_geo[['Identifiant du site de comptage','Comptage horaire', 'lat', 'long']]
+			kmeans = KMeans(n_clusters = 3)
+			kmeans.fit(df_cluster[["Comptage horaire", "lat", "long"]])
+			centroids = kmeans.cluster_centers_
+			labels = kmeans.labels_
+			# Ajouter les labels au DF "df_cluster"
+			labels = pd.DataFrame(labels)
+			df_cluster = df_cluster.join(labels)
+			df_cluster["groupe"] = df_cluster[0]
+			df_cluster = df_cluster.drop(0, axis = 1)
+			# Fusionner le DF "df_cluster" avec le précédent DF servira à la cartographie
+			df_geo = df_geo.join(df_cluster["groupe"])
+
+
+			# affichage des sites de comptage sur la carte en utilisant la librairie Folium
+			carte = folium.Map(location = [48.86, 2.341886], zoom_start = 12, min_zoom=12)
+
+			for nom, comptage, latitude, longitude, image, groupe in zip(df_geo["Nom du site de comptage"],
+			                                                             df_geo["Comptage horaire"],
+			                                                             df_geo["lat"],
+			                                                             df_geo["long"],
+			                                                             df_geo["Lien vers photo du site de comptage"],
+			                                                             df_geo["groupe"]):
+				if groupe == 0:
+					couleur = "#d9152a"
+				elif groupe == 1:
+					couleur = "#368fe5"
+				else:
+					couleur = "#129012"
+				if comptage == 0:
+					rayon = 0.5
+				else:
+					rayon = comptage
+				pp = "<strong>" + nom + "</strong>" + "<br>nombre moyen de vélos/heure/site : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
+				folium.CircleMarker(location=[latitude, longitude],
+				                    radius=rayon/10,
+				                    popup = folium.Popup(pp, max_width = 300),
+				                    tooltip= "<strong>" + nom + "</strong>",
+				                    color=couleur,
+				                    fill_color=couleur,
+				                    fill_opacity=0.3
+				                   ).add_to(carte)
+			folium_static(carte)
+		else :
+			# affichage des sites de comptage sur la carte en utilisant la librairie Folium
+			carte = folium.Map(location = [48.86, 2.341886], zoom_start = 12, min_zoom=12)
+
+			for nom, comptage, latitude, longitude, image in zip(df_geo["Nom du site de comptage"],
+			                                                             df_geo["Comptage horaire"],
+			                                                             df_geo["lat"],
+			                                                             df_geo["long"],
+			                                                             df_geo["Lien vers photo du site de comptage"]):
+				if comptage == 0:
+					rayon = 0.5
+				else:
+					rayon = comptage
 				couleur = "#368fe5"
-			else:
-				couleur = "#129012"
-			if comptage == 0:
-				rayon = 0.5
-			else:
-				rayon = comptage
-			pp = "<strong>" + nom + "</strong>" + "<br>nombre moyen de vélos/heure/site : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
-			folium.CircleMarker(location=[latitude, longitude],
-			                    radius=rayon/10,
-			                    popup = folium.Popup(pp, max_width = 300),
-			                    tooltip= "<strong>" + nom + "</strong>",
-			                    color=couleur,
-			                    fill_color=couleur,
-			                    fill_opacity=0.3
-			                   ).add_to(carte)
-		folium_static(carte)
-	else :
-		# affichage des sites de comptage sur la carte en utilisant la librairie Folium
-		carte = folium.Map(location = [48.86, 2.341886], zoom_start = 12, min_zoom=12)
-
-		for nom, comptage, latitude, longitude, image in zip(df_geo["Nom du site de comptage"],
-		                                                             df_geo["Comptage horaire"],
-		                                                             df_geo["lat"],
-		                                                             df_geo["long"],
-		                                                             df_geo["Lien vers photo du site de comptage"]):
-			if comptage == 0:
-				rayon = 0.5
-			else:
-				rayon = comptage
-			couleur = "#368fe5"
-			pp = "<strong>" + nom + "</strong>" + "<br>nombre moyen de vélos/heure/site : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
-			folium.CircleMarker(location=[latitude, longitude],
-			                    radius=rayon/10,
-			                    popup = folium.Popup(pp, max_width = 300),
-			                    tooltip= "<strong>" + nom + "</strong>",
-			                    color=couleur,
-			                    fill_color=couleur,
-			                    fill_opacity=0.3
-			                   ).add_to(carte)
-		folium_static(carte)
+				pp = "<strong>" + nom + "</strong>" + "<br>nombre moyen de vélos/heure/site : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
+				folium.CircleMarker(location=[latitude, longitude],
+				                    radius=rayon/10,
+				                    popup = folium.Popup(pp, max_width = 300),
+				                    tooltip= "<strong>" + nom + "</strong>",
+				                    color=couleur,
+				                    fill_color=couleur,
+				                    fill_opacity=0.3
+				                   ).add_to(carte)
+			folium_static(carte)
 
 ############################
 ####Évolution temporelle####
 ############################
-if select_page == page4:
+elif select_page == page4:
 	st.header(select_page)
 	temp1 = "Courbe générale"
 	temp2 = "Périodicité"
@@ -705,7 +846,7 @@ if select_page == page4:
 
 	#Evènements récurrents
 	######################
-	if dataviz_temp == temp2:
+	elif dataviz_temp == temp2:
 		st.subheader(dataviz_temp)
 		periodi1 = "Mensuelle"
 		periodi2 = "Journalière"
@@ -737,7 +878,7 @@ if select_page == page4:
 			"en décembre 2020. En effet, le deuxième confinement et le couvre-feu ont fait chuter le trafic, "
 			"alors qu’il était boosté par la grève en décembre 2019."
 			"</p>", unsafe_allow_html=True)				
-		if select_periodi == periodi2:
+		elif select_periodi == periodi2:
 			# jours de la semaine
 			df_jr0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 0]["Date et heure de comptage"])]
 			df_jr0["Jour_de_la_semaine"] = 0
@@ -820,7 +961,7 @@ if select_page == page4:
 			"Le week-end, on note en moyenne -32 % de vélos par rapport à la semaine : "
 			"-25 % le samedi et -40 % le dimanche."
 			"</p>", unsafe_allow_html=True)
-		if select_periodi == periodi3:
+		elif select_periodi == periodi3:
 			# jours de la semaine et heure
 			liste_jr_sem = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
 			select_jr_sem = st.multiselect('Sélectionnez le(s) jour(s) de la semaine :', liste_jr_sem,
@@ -877,7 +1018,7 @@ if select_page == page4:
 
 	#Evènements récurrents
 	######################
-	if dataviz_temp == temp3:
+	elif dataviz_temp == temp3:
 		st.subheader(dataviz_temp)
 		recur1 = "Jours fériés"
 		recur2 = "Vacances"
@@ -907,8 +1048,7 @@ if select_page == page4:
 			"Sur la période étudiée (septembre 2019 - décembre 2020), "
 			"les jours fériés font baisser le trafic de 46 % en moyenne."
 			"</p>", unsafe_allow_html=True)			
-		if select_recur == recur2:
-			#st.markdown(select_recur)
+		elif select_recur == recur2:
 			#Vacances
 			col1, col2, col3 = st.beta_columns([1,2,1])
 			with col2:
@@ -973,7 +1113,7 @@ if select_page == page4:
 			"En revanche, pour le pont de l’Ascension et les vacances en juillet, on observe une hausse significative : +18 % et 34 %. "
 			"Nous écartons les vacances de printemps 2020, le trafic étant alors fortement réduit par le premier confinement."
 			"</p>", unsafe_allow_html=True)						
-		if select_recur == recur3:
+		elif select_recur == recur3:
 			#st.markdown(select_recur)			
 			#insérer codes graphes Météo
 			col1, col2, col3 = st.beta_columns([1,2,1])
@@ -1044,7 +1184,7 @@ if select_page == page4:
 			, unsafe_allow_html=True)						
 	#Evènements exceptionnels
 	#########################
-	if dataviz_temp == temp4:
+	elif dataviz_temp == temp4:
 		st.subheader(dataviz_temp)
 		excep1 = "Grève des transports"
 		excep2 = "Covid-19"
@@ -1076,7 +1216,7 @@ if select_page == page4:
 			"Pendant la grève des transports de l’hiver 2019/2020, le trafic explose avec +58 % en moyenne."
 			"</p><br>"
 			, unsafe_allow_html=True)
-		if select_excep == excep2:
+		elif select_excep == excep2:
 			#Covid
 			col1, col2, col3 = st.beta_columns([1, 2, 1])
 			with col2:
@@ -1138,7 +1278,7 @@ if select_page == page4:
 ########################
 ## Trafic & accidents ##
 ########################
-if select_page == page5:
+elif select_page == page5:
 	st.header(select_page)
 	acc1 = "Liens entre le trafic et les accidents cyclistes"
 	acc2 = "Cartographie des accidents"
@@ -1150,7 +1290,7 @@ if select_page == page5:
 		st.subheader(dataviz_acc)
 
 	#cartographie accidents
-	if dataviz_acc == acc2:
+	elif dataviz_acc == acc2:
 		st.subheader(dataviz_acc)
 		df_acc["lat"] = df_acc["lat"].astype(float)
 		df_acc["long"] = df_acc["long"].astype(float)
@@ -1238,7 +1378,7 @@ if select_page == page5:
 		"<strong><font size=5><span style='color:black'>o</span></font></strong>  accident hors piste cyclable", unsafe_allow_html=True)
 	
 	#Statistiques personnes accidentées
-	if dataviz_acc == acc3:
+	elif dataviz_acc == acc3:
 		st.subheader(dataviz_acc)
 		#intitulés de la liste de choix :
 		diag1 = "du sexe / du niveau de gravité"
@@ -1250,74 +1390,74 @@ if select_page == page5:
 		#accidentés par sexe
 		####################
 		if select_diag == diag1:
-			option1_diag1 = "1. Cyclistes accidentés selon leur sexe"
-			option2_diag1 = "2. Cyclistes accidentés selon le niveau gravité"
-			select_diag1 = st.selectbox('', (option1_diag1, option2_diag1), index = 0)
+			#option1_diag1 = "1. Cyclistes accidentés selon leur sexe"
+			#option2_diag1 = "2. Cyclistes accidentés selon le niveau gravité"
+			#select_diag1 = st.selectbox('', (option1_diag1, option2_diag1), index = 0)
 			#graphe sexe
-			if select_diag1 == option1_diag1:
-				col1, col2, col3 = st.beta_columns([1, 2, 1])
-				with col2:
-					plt.rcParams['font.size'] = 7
-					fig = plt.figure(figsize=(3, 3))
-					plt.title("Cyclistes accidentés selon le sexe", fontsize=9)
-					df_sex = df_acc.groupby('sexe', as_index = False).agg({'sexe':'count'})
-					plt.pie(x = df_sex.sexe,
-					        labels = ['Homme', 'Femme'],
-					        explode = [0, 0],
-					        autopct = lambda x : str(round(x, 2)) + '%',
-					        pctdistance = 0.6,
-					        labeldistance = 1.1,
-					        shadow = False,
-					        radius= 1.1);
-					st.pyplot(fig)
-				st.markdown("<p style='text-align: justify'>3/4 des accidentés à vélo sont des hommes contre 1/4 de femmes. Le boom des livraisons à "
-				"vélo, métier majoritairement masculin, joue sur ces chiffres.</p>"
-				, unsafe_allow_html=True)
+			#if select_diag1 == option1_diag1:
+			col1, col2, col3 = st.beta_columns([1, 2, 1])
+			with col2:
+				plt.rcParams['font.size'] = 7
+				fig = plt.figure(figsize=(3, 3))
+				plt.title("Cyclistes accidentés selon le sexe", fontsize=9)
+				df_sex = df_acc.groupby('sexe', as_index = True).agg({'sexe':'count'})
+				plt.pie(x = df_sex.sexe,
+				        labels = ['Homme', 'Femme'],
+				        explode = [0, 0],
+				        autopct = lambda x : str(round(x, 2)) + '%',
+				        pctdistance = 0.6,
+				        labeldistance = 1.1,
+				        shadow = False,
+				        radius= 1.1);
+				st.pyplot(fig)
+			st.markdown("<p style='text-align: justify'>3/4 des accidentés à vélo sont des hommes contre 1/4 de femmes. Le boom des livraisons à "
+			"vélo, métier majoritairement masculin, joue sur ces chiffres.</p>"
+			, unsafe_allow_html=True)
 			#graphe femmes et gravité
-			if select_diag1 == option2_diag1:
-				#graphe hommes et gravité
-				col1, col2 = st.beta_columns(2)
-				with col1 :
-					plt.rcParams['font.size'] = 8
-					fig = plt.figure(figsize=(4, 4))
-					plt.title("Gravité pour les hommes", fontsize=12)
-					df_hom = df_acc[df_acc['sexe'] == 1]
-					df_hom = df_hom.groupby('grav', as_index = False).agg({'grav':'count'})
-					df_hom.loc[4,:] = df_hom.loc[1,:]
-					df_hom = df_hom.drop(df_hom.index[1])
-					plt.pie(x = df_hom.grav,
-					        labels = ['Indemne ', 'Blessé léger', 'Blessé hospitalisé', 'Tué'],
-					        explode = [0, 0, 0, 0],
-					        autopct = lambda x : str(round(x, 2)) + '%',
-					        pctdistance = 0.7,
-					        labeldistance = 1.1,
-					        shadow = False,
-					        colors = ("lightgreen", "lightyellow", "orange", "red"))
-					st.pyplot(fig)
-				with col2 :					
-					fig = plt.figure(figsize=(4, 4))
-					plt.title("Gravité pour les femmes", fontsize=12)
-					df_fem = df_acc[df_acc['sexe'] == 2]
-					df_fem = df_fem.groupby('grav', as_index = False).agg({'grav':'count'})
-					plt.pie(x = df_fem.grav,
-					        labels = ['Indemne ', 'Blessé hospitalisé', 'Blessé léger'],
-					        explode = [0, 0, 0],
-					        autopct = lambda x : str(round(x, 2)) + '%',
-					        pctdistance = 0.7,
-					        labeldistance = 1.1,
-					        shadow = False,
-					        colors = ("lightgreen", "orange", "lightyellow"),
-					        startangle=45);
-					st.pyplot(fig)
-				st.markdown("<p style='text-align: justify'>Pour les hommes, il y a environ la moitié des accidents sans blessure et une autre moitié "
-				"avec blessures légères. Pour les femmes, c’est plutôt 1/4 d’accidents sans blessure et 3/4 "
-				"avec des blessures légères. Pour les deux, la proportion d'accidents entraînant une "
-				"hospitalisation est assez faible, d’environ 2 %. Sur la période (4 mois et 644 accidents), il n’y "
-				"a eu qu’un seul mort, un homme.</p>"
-				, unsafe_allow_html=True)
+			#elif select_diag1 == option2_diag1:
+			#graphe hommes et gravité
+			col1, col2 = st.beta_columns(2)
+			with col1 :
+				plt.rcParams['font.size'] = 8
+				fig = plt.figure(figsize=(4, 4))
+				plt.title("Gravité pour les hommes", fontsize=12)
+				df_hom = df_acc[df_acc['sexe'] == 1]
+				df_hom = df_hom.groupby('grav', as_index = True).agg({'grav':'count'})
+				df_hom.loc[5,:] = df_hom.loc[2,:]
+				df_hom = df_hom.drop(df_hom.index[1])
+				plt.pie(x = df_hom.grav,
+				        labels = ['Indemne ', 'Blessé léger', 'Blessé hospitalisé', 'Tué'],
+				        explode = [0, 0, 0, 0],
+				        autopct = lambda x : str(round(x, 2)) + '%',
+				        pctdistance = 0.7,
+				        labeldistance = 1.1,
+				        shadow = False,
+				        colors = ("lightgreen", "lightyellow", "orange", "red"))
+				st.pyplot(fig)
+			with col2 :					
+				fig = plt.figure(figsize=(4, 4))
+				plt.title("Gravité pour les femmes", fontsize=12)
+				df_fem = df_acc[df_acc['sexe'] == 2]
+				df_fem = df_fem.groupby('grav', as_index = True).agg({'grav':'count'})
+				plt.pie(x = df_fem.grav,
+				        labels = ['Indemne ', 'Blessé hospitalisé', 'Blessé léger'],
+				        explode = [0, 0, 0],
+				        autopct = lambda x : str(round(x, 2)) + '%',
+				        pctdistance = 0.7,
+				        labeldistance = 1.1,
+				        shadow = False,
+				        colors = ("lightgreen", "orange", "lightyellow"),
+				        startangle=45);
+				st.pyplot(fig)
+			st.markdown("<p style='text-align: justify'>Pour les hommes, il y a environ la moitié des accidents sans blessure et une autre moitié "
+			"avec blessures légères. Pour les femmes, c’est plutôt 1/4 d’accidents sans blessure et 3/4 "
+			"avec des blessures légères. Pour les deux, la proportion d'accidents entraînant une "
+			"hospitalisation est assez faible, d’environ 2 %. Sur la période (4 mois et 644 accidents), il n’y "
+			"a eu qu’un seul mort, un homme.</p>"
+			, unsafe_allow_html=True)
 			#accidentés par âge
 			####################
-		if select_diag == diag2:
+		elif select_diag == diag2:
 			#graphe age
 			col1, col2, col3 = st.beta_columns([.5, 3, .5])
 			with col2:
@@ -1327,7 +1467,7 @@ if select_page == page5:
 				df_age = df_acc.groupby('age', as_index = False).agg({'Num_Acc':'count'})
 				bins = pd.IntervalIndex.from_tuples([(0, 12), (12, 18), (18, 30), (30, 40), (40, 50), (60,70), (70,150)])
 				df_age["cat_age"] = pd.cut(df_age["age"], bins)
-				df_age = df_age.groupby('cat_age', as_index = False).agg({'Num_Acc':'sum'})
+				df_age = df_age.groupby('cat_age', as_index = True).agg({'Num_Acc':'sum'})
 				plt.pie(x = df_age.Num_Acc,
 				        labels = ['Moins de 12 ans',
 				                  '12 - 18 ans',
@@ -1346,17 +1486,16 @@ if select_page == page5:
 			"d’âge qui roule le plus à vélo. Puis le nombre décroît avec l’âge (et l’usage).</p>", unsafe_allow_html=True)
 		#accidentés par trajet
 		####################
-		if select_diag == diag3:
+		elif select_diag == diag3:
 			#graphe trajet
 			col1, col2, col3 = st.beta_columns([.5, 3, .5])
 			with col2:
 				fig = plt.figure(figsize=(3, 3))
 				plt.rcParams['font.size'] = 5
 				plt.title("Cyclistes accidentés selon la nature du trajet", fontsize=9)
-				df_traj = df_acc.groupby('trajet', as_index = False).agg({'trajet':'count'})
-				df_traj.replace(-1, 0)
-				df_traj.loc[7,:] = df_traj.loc[2,:]
-				df_traj.loc[8,:] = df_traj.loc[6,:]
+				df_traj = df_acc.groupby('trajet', as_index = True).agg({'trajet':'count'})
+				df_traj.loc[10,:] = df_traj.loc[2,:]
+				df_traj.loc[11,:] = df_traj.loc[9,:]
 				df_traj = df_traj.drop(df_traj.index[2])
 				df_traj = df_traj.drop(df_traj.index[-3])
 				plt.pie(x = df_traj.trajet,
@@ -1378,15 +1517,14 @@ if select_page == page5:
 			"Promenade/loisirs et Domicile-travail semblent largement en tête.</p>", unsafe_allow_html=True)
 		#accidentés par voie
 		####################
-		if select_diag == diag4:
+		elif select_diag == diag4:
 			#graphe situation
 			fig = plt.figure(figsize=(3, 3))
 			col1, col2, col3 = st.beta_columns([.5, 3, .5])
 			with col2:
 				plt.rcParams['font.size'] = 6
 				plt.title("Cyclistes accidentés selon la voie utilisée", fontsize=9)
-				df_situ = df_acc.groupby('situ', as_index = False).agg({'situ':'count'})
-				df_situ.replace(-1, 0)
+				df_situ = df_acc.groupby('situ', as_index = True).agg({'situ':'count'})
 				plt.pie(x = df_situ.situ,
 				        labels = ['Sur chaussée',
 				                  'Sur trottoir',
@@ -1402,18 +1540,17 @@ if select_page == page5:
 			st.markdown("<p style='text-align: justify'>Une grosse moitié des accidents a eu lieu sur la chaussée contre 1/3 sur des pistes cyclables. "
 			"Ces dernières limiteraient donc le nombre d’accidents.</p>", unsafe_allow_html=True)
 		#graphe météo
-		if select_diag == diag5:
+		elif select_diag == diag5:
 			col1, col2, col3 = st.beta_columns([.5, 2, .5])
 			with col2:
 				fig = plt.figure(figsize=(3, 3))
 				plt.rcParams['font.size'] = 5
 				plt.title("Cyclistes accidentés selon la météo", fontsize=9)
-				df_atm = df_acc.groupby('atm', as_index = False).agg({'atm':'count'})
-				df_atm.loc[4,:] = df_atm.loc[4,:] + df_atm.loc[3,:]
+				df_atm = df_acc.groupby('atm', as_index = True).agg({'atm':'count'})
+				df_atm.loc[7,:] = df_atm.loc[7,:] + 1
 				df_atm = df_atm.drop(df_atm.index[3])
-				df_atm.loc[6,:] = df_atm.loc[4,:]
-				df_atm = df_atm.drop(df_atm.index[-3]) 
-
+				df_atm.loc[9,:] = df_atm.loc[7,:]
+				df_atm = df_atm.drop(df_atm.index[-3])
 				plt.pie(x = df_atm.atm,
 				        labels = ['Normale',
 				                  'Pluie légère',
@@ -1432,7 +1569,7 @@ if select_page == page5:
 ###########################
 ## Prédictions comptages ##
 ###########################
-if select_page == page6:
+elif select_page == page6:
 	st.header(select_page)
 
 	label1="Derniers jours du mois"
@@ -1688,7 +1825,7 @@ if select_page == page6:
 
 	#Prédiction des comptages pour les derniers mois de la période
 	################################################################
-	if select_pred_ml == label2:
+	elif select_pred_ml == label2:
 		st.subheader(select_pred_ml)
 
 
