@@ -1733,14 +1733,72 @@ elif select_page == page5:
 ###########################
 elif select_page == page6:
 	st.header(select_page)
+	@st.cache(suppress_st_warning=True)
+	def evaluation(variables, algo, taille_test, standardisation):
+	    """
+	    Fonction qui retourne pour un modèle de régression le score R² sur l'échantillon d'entraînement,
+	    le score R² sur l'échantillon de test, la rmse sur l'échantillon d'entraîenement,
+	    la rmse sur l'échantillon de test, les prédictions sur l'échantillon d'entraînement et
+	    les prédictions sur l'échantillon de test
+	    Paramètres :
+	    variables (liste) : liste des variables (colonnes) du df à prendre dans l'échantillon d'entraînement et de test
+	    algo (string) : nom de l'algorithme parmi la liste suivante : ['LinearRegression',
+	                                                                    'Ridge',
+	                                                                    'Lasso',
+	                                                                    'ElasticNet',
+	                                                                    'DecisionTreeRegressor*',
+	                                                                    'RandomForestRegressor*',
+	                                                                    'BaggingRegressor*',
+	                                                                    'GradientBoostingRegressor*']
+	    taille_test (float) : taille de l'échantillon de test
+	    standardisation (boolean) : True pour standardiser, sinon False
+	    """
+	    data = df_ml[liste_var]
+	    target = df_ml['Comptage_horaire']
+	    X_train, X_test, y_train, y_test = train_test_split(data, target, test_size = taille_test, shuffle = False)
+	    if algo == 'LinearRegression':
+	        modele = LinearRegression()
+	    elif algo == 'Ridge':
+	        modele = RidgeCV(alphas = (0.001, 0.01, 0.1, 0.3, 0.7, 1, 10, 50, 100))
+	    elif algo == 'Lasso':
+	        modele = LassoCV(alphas = (0.001, 0.01, 0.1, 0.3, 0.7, 1, 10, 50, 100))
+	    elif algo == 'ElasticNet':
+	        modele = ElasticNet()
+	    elif algo == 'DecisionTreeRegressor*':
+	        modele = DecisionTreeRegressor()
+	    elif algo == 'RandomForestRegressor*':
+	        modele = RandomForestRegressor(n_estimators = 10, criterion = 'mse')
+	    elif algo == 'BaggingRegressor*':
+	        modele = BaggingRegressor(n_estimators = 10)
+	    else :
+	        modele = GradientBoostingRegressor(n_estimators = 100)
+	    if standardisation:
+	        scaler = preprocessing.StandardScaler().fit(X_train) 
+	        X_train_scaled = scaler.transform(X_train)
+	        X_test_scaled = scaler.transform(X_test)
+	        modele.fit(X_train_scaled, y_train)
+	        pred_train_ = modele.predict(X_train_scaled)
+	        pred_test_ = modele.predict(X_test_scaled)
+	        r2_train_ = modele.score(X_train_scaled, y_train)
+	        r2_test_ = modele.score(X_test_scaled, y_test)
+	        rmse_train_ = np.sqrt(mean_squared_error(y_train, pred_train_))
+	        rmse_test_ = np.sqrt(mean_squared_error(y_test, pred_test_))
+	    else:
+	        modele.fit(X_train, y_train)
+	        pred_train_ = modele.predict(X_train)
+	        pred_test_ = modele.predict(X_test)
+	        r2_train_ = modele.score(X_train, y_train)
+	        r2_test_ = modele.score(X_test, y_test)
+	        rmse_train_ = np.sqrt(mean_squared_error(y_train, pred_train_))
+	        rmse_test_ = np.sqrt(mean_squared_error(y_test, pred_test_))
+	    return r2_train_, r2_test_, rmse_train_, rmse_test_, pred_test_, pred_train_
+
 	label1="Derniers jours du mois"
 	label2="Derniers mois de la période"
-
 	select_pred_ml = st.radio(
 	    "Sélectionnez la période à prédire :",
 	    (label1,
 	    label2))
-	#st.sidebar.markdown("<hr>", unsafe_allow_html=True)
 
 	#Prédiction sur les derniers jours de chaque mois
 	#################################################
@@ -1748,7 +1806,6 @@ elif select_page == page6:
 		st.subheader("Prédictions sur les derniers jours du mois")
 
 		st.markdown('<br><strong>Sélection des paramètres du modèle</strong><br>', unsafe_allow_html=True)
-		#st.sidebar.markdown("<hr>", unsafe_allow_html=True)
 
 		df_ml = df_ml.sort_values(by = ['Jour'])
 
@@ -1778,24 +1835,29 @@ elif select_page == page6:
 		with col3:
 			jour_deb_test = st.slider(label = "Sélectionnez le premier jour de prédictions :",
 			                          min_value = 20, max_value = 31, step = 1, value = 24)
-			#st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-			##calcul du % à prendre pour la taille de l'échantillon test :
-			#nb de lignes df_ml
-			len_df_ml = len(df_ml)
-			#nb de lignes échantillon test
-			len_df_test = len(df_ml[df_ml["Jour"] >= jour_deb_test])
-			test_size = len_df_test / len_df_ml
-			test_size_round = round(test_size*100, 2)
+			@st.cache(suppress_st_warning=True)
+			def calculating_test_size(jour):
+				##calcul du % à prendre pour la taille de l'échantillon test :
+				#nb de lignes df_ml
+				len_df_ml = len(df_ml)
+				#nb de lignes échantillon test
+				len_df_test = len(df_ml[df_ml["Jour"] >= jour])
+				test_size_ = len_df_test / len_df_ml
+				test_size_round_ = round(test_size_*100, 2)
+				return test_size_, test_size_round_
+			test_size, test_size_round = calculating_test_size(jour_deb_test)
+
+
+
 			st.markdown("<br>", unsafe_allow_html=True)		
 			st.write("Taille échantillon de test = ", (test_size_round), " %")
 			st.markdown("<br>", unsafe_allow_html=True)
-			#st.markdown("<br>", unsafe_allow_html=True)
-			stadardiser = st.checkbox("Standardiser les données", value=False)		
+			standardiser = st.checkbox("Standardiser les données", value=False)		
 		with col1:
 			data = df_ml[liste_var]
 			target = df_ml['Comptage_horaire']
 			X_train, X_test, y_train, y_test = train_test_split(data, target, test_size = test_size, shuffle = False)
-			algo = st.radio(
+			select_algo = st.radio(
 			    "Sélectionnez l'algorithme à tester :",
 			    ('LinearRegression',
 			    'Ridge',
@@ -1807,63 +1869,22 @@ elif select_page == page6:
 			    'GradientBoostingRegressor*'))
 			st.markdown('<p>* le calcul peut prendre plusieurs minutes</p>', unsafe_allow_html=True)
 
-		#col1, col2, col3 = st.beta_columns([1,2.1,1])
-		#with col2:
 		st.markdown("<br><strong>Score du modèle choisi</strong>", unsafe_allow_html=True)
+		r2_train, r2_test, rmse_train, rmse_test, pred_test, pred_train = evaluation(liste_var, select_algo, test_size, standardiser)
+		st.write(select_algo, " :")
+		arrondi = 3
+		st.write("score R² train = ", round(r2_train, arrondi), " / score R² test = ", round(r2_test, arrondi))
+		st.write("rmse train = ", round(rmse_train, arrondi), " / rmse test = ", round(rmse_test, arrondi))
 
-		if algo == 'LinearRegression':
-			modele = LinearRegression()
-		elif algo == 'Ridge':
-			modele = RidgeCV(alphas = (0.001, 0.01, 0.1, 0.3, 0.7, 1, 10, 50, 100))
-		elif algo == 'Lasso':
-			modele = LassoCV(alphas = (0.001, 0.01, 0.1, 0.3, 0.7, 1, 10, 50, 100))
-		elif algo == 'ElasticNet':
-			modele = ElasticNet()
-		elif algo == 'DecisionTreeRegressor*':
-			modele = DecisionTreeRegressor()
-		elif algo == 'RandomForestRegressor*':
-			modele = RandomForestRegressor(n_estimators = 10, criterion = 'mse')
-		elif algo == 'BaggingRegressor*':
-			modele = BaggingRegressor(n_estimators = 10)
-		else :
-			modele = GradientBoostingRegressor(n_estimators = 100)
-		arrondi = 3	
-		if stadardiser:
-			scaler = preprocessing.StandardScaler().fit(X_train) 
-			X_train_scaled = scaler.transform(X_train)
-			X_test_scaled = scaler.transform(X_test)
 
-			modele.fit(X_train_scaled, y_train)
-			pred_train = modele.predict(X_train_scaled)
-			pred_test = modele.predict(X_test_scaled)
-			st.write(algo, " :")
-			st.write("score R² train = ", round(modele.score(X_train_scaled, y_train),arrondi),
-					" / score R² test = ",round(modele.score(X_test_scaled, y_test),arrondi)
-					)
-			st.write("rmse train = ", round(np.sqrt(mean_squared_error(y_train, pred_train)),arrondi),
-				     " / rmse test = ", round(np.sqrt(mean_squared_error(y_test, pred_test)),arrondi)
-				     )
-		else:
-			modele.fit(X_train, y_train)
-			pred_train = modele.predict(X_train)
-			pred_test = modele.predict(X_test)
-			st.write(algo, " :")
-			st.write("score R² train = ", round(modele.score(X_train, y_train),arrondi),
-					" / score R² test = ",round(modele.score(X_test, y_test),arrondi)
-					)
-			st.write("rmse train = ", round(np.sqrt(mean_squared_error(y_train, pred_train)),arrondi),
-				     " / rmse test = ", round(np.sqrt(mean_squared_error(y_test, pred_test)),arrondi)
-				     )
-
-		#st.sidebar.markdown("<hr>", unsafe_allow_html=True)			
+		#Définition dumois et du site représenter les prévisions :		
 		st.markdown('<br><strong>Représentation graphique des prédictions</strong><br>', unsafe_allow_html=True)
+		#Définition du site et du mois pour représenter les prévisions :
 		col1, col2= st.beta_columns(2)
 		with col1:
 			liste_sites = sorted(df_ml['Nom du site de comptage'].unique().tolist())
 			site = st.selectbox('Sélectionnez le site de comptage :', (liste_sites), index = 3)
 		with col2:
-			#st.sidebar.markdown("<hr>", unsafe_allow_html=True)	
-			#Définition des variables pour représenter les prévisions :
 			select_mois = st.selectbox(
 			    "Sélectionnez le mois :",
 			    ('Octobre 2019',
@@ -2011,7 +2032,6 @@ elif select_page == page6:
 									       'Comptage_horaire_s_3',
 									       'Comptage_horaire_s_4'])
 		st.markdown("<br>", unsafe_allow_html=True)
-
 		col1, col2, col3, col4 = st.beta_columns([1, 0.1, 0.9, 0.1])
 		with col3:
 			select_mois_deb_test = st.radio("Sélectionnez le premier mois des prédictions :",
@@ -2044,13 +2064,17 @@ elif select_page == page6:
 			elif select_mois_deb_test == 'Décembre 2020':
 				mois_deb_test = 12
 			annee_deb_test = 2020
-			##calcul du % à prendre pour la taille de l'échantillon test :
-			#nb de lignes df_ml
-			len_df_ml = len(df_ml)
-			#nb de lignes échantillon test
-			len_df_test2 = len(df_ml[(df_ml["Mois"] >= mois_deb_test) & (df_ml["Année"] >= annee_deb_test)])
-			test_size2 = len_df_test2 / len_df_ml
-			test_size_round2 = round(test_size2*100, 2)
+			@st.cache(suppress_st_warning=True)
+			def calculating_test_size_2(annee, mois):
+				##calcul du % à prendre pour la taille de l'échantillon test :
+				#nb de lignes df_ml
+				len_df_ml = len(df_ml)
+				#nb de lignes échantillon test
+				len_df_test2 = len(df_ml[(df_ml["Mois"] >= mois) & (df_ml["Année"] >= annee)])
+				test_size2_ = len_df_test2 / len_df_ml
+				test_size_round2_ = round(test_size2_*100, 2)
+				return test_size2_, test_size_round2_
+			test_size2, test_size_round2 = calculating_test_size_2(annee_deb_test, mois_deb_test)
 
 			if mois_deb_test == 12:
 				st.write("Période de prédictions :<br>Décembre 2020", unsafe_allow_html=True)
@@ -2063,7 +2087,7 @@ elif select_page == page6:
 			data = df_ml[liste_var]
 			target = df_ml['Comptage_horaire']
 			X_train, X_test, y_train, y_test = train_test_split(data, target, test_size = test_size2, shuffle = False)
-			algo = st.radio(
+			select_algo = st.radio(
 			    "Sélectionnez l'algorithme à tester :",
 			    ('LinearRegression',
 			    'Ridge',
@@ -2073,62 +2097,20 @@ elif select_page == page6:
 			    'RandomForestRegressor*',
 			    'BaggingRegressor*',
 			    'GradientBoostingRegressor*'))
-			st.markdown('<p>* le calcul peut prendre plusieurs minutes</p>', unsafe_allow_html=True)		
+			st.markdown('<p>* le calcul peut prendre plusieurs minutes</p>', unsafe_allow_html=True)
 		st.markdown("<br><strong>Score du modèle choisi</strong>", unsafe_allow_html=True)
-		if algo == 'LinearRegression':
-			modele = LinearRegression()
-		elif algo == 'Ridge':
-			modele = RidgeCV(alphas = (0.001, 0.01, 0.1, 0.3, 0.7, 1, 10, 50, 100))
-		elif algo == 'Lasso':
-			modele = LassoCV(alphas = (0.001, 0.01, 0.1, 0.3, 0.7, 1, 10, 50, 100))
-		elif algo == 'ElasticNet':
-			modele = ElasticNet()
-		elif algo == 'DecisionTreeRegressor*':
-			modele = DecisionTreeRegressor()
-		elif algo == 'RandomForestRegressor*':
-			modele = RandomForestRegressor(n_estimators = 10, criterion = 'mse')
-		elif algo == 'BaggingRegressor*':
-			modele = BaggingRegressor(n_estimators = 10)
-		else :
-			modele = GradientBoostingRegressor(n_estimators = 100)
-
+		r2_train, r2_test, rmse_train, rmse_test, pred_test, pred_train = evaluation(liste_var, select_algo, test_size2, standardiser)
+		st.write(select_algo, " :")
 		arrondi = 3
+		st.write("score R² train = ", round(r2_train, arrondi), " / score R² test = ", round(r2_test, arrondi))
+		st.write("rmse train = ", round(rmse_train, arrondi), " / rmse test = ", round(rmse_test, arrondi))
 
-
-		if standardiser:
-			scaler = preprocessing.StandardScaler().fit(X_train) 
-			X_train_scaled = scaler.transform(X_train)
-			X_test_scaled = scaler.transform(X_test)
-
-			modele.fit(X_train_scaled, y_train)
-			pred_train = modele.predict(X_train_scaled)
-			pred_test = modele.predict(X_test_scaled)
-			st.write(algo, " :")
-			st.write("score R² train = ", round(modele.score(X_train_scaled, y_train),arrondi),
-					" / score R² test = ",round(modele.score(X_test_scaled, y_test),arrondi)
-					)
-			st.write("rmse train = ", round(np.sqrt(mean_squared_error(y_train, pred_train)),arrondi),
-				     " / rmse test = ", round(np.sqrt(mean_squared_error(y_test, pred_test)),arrondi)
-				     )
-		else:
-			modele.fit(X_train, y_train)
-			pred_train = modele.predict(X_train)
-			pred_test = modele.predict(X_test)
-			st.write(algo, " :")
-			st.write("score R² train = ", round(modele.score(X_train, y_train),arrondi),
-					" / score R² test = ",round(modele.score(X_test, y_test),arrondi)
-					)
-			st.write("rmse train = ", round(np.sqrt(mean_squared_error(y_train, pred_train)),arrondi),
-				     " / rmse test = ", round(np.sqrt(mean_squared_error(y_test, pred_test)),arrondi)
-				     )
-
-		#Définition des variables pour représenter les prévisions :
+		#Définition du mois et du site représenter les prévisions :
 		st.markdown('<br><strong>Représentation graphique des prédictions</strong><br>', unsafe_allow_html=True)
 		col1, col2= st.beta_columns(2)
 		with col1:	
 			liste_sites = sorted(df_ml['Nom du site de comptage'].unique().tolist())
 			site = st.selectbox('Sélectionnez le site de comptage :', (liste_sites), index = 3)
-			#st.sidebar.markdown("<hr>", unsafe_allow_html=True)
 		with col2:
 			if mois_deb_test == 9:
 				select_mois = st.selectbox(
@@ -2221,4 +2203,3 @@ elif select_page == page6:
 		plt.grid(True, linestyle = ':')
 		plt.legend();
 		st.pyplot(fig)
-
