@@ -52,7 +52,7 @@ df4_ml = pd.read_csv('df4_ml.csv', sep=';')
 df_ml = pd.concat([df1_ml, df2_ml, df3_ml, df4_ml], ignore_index=True)
 #concaténation des 4 fichiers sources du ML avec variables numériques préalablement créées
 
-plan_df_2019 = pd.read_csv('plan_df_2019.csv', sep=';')
+df_2019 = pd.read_csv('df_2019.csv', sep=';')
 #fichier sources cartographies, flitrés par sites, doublons url photos déjà traités
 
 #dates = pd.read_csv('dates.csv', sep=';')
@@ -1528,11 +1528,11 @@ elif select_page == page5:
 				                   ).add_to(carte)
 		#Affichage des sites de comptage
 		if trafic:
-			for nom, comptage, latitude, longitude, image in zip(plan_df_2019["Nom du site de comptage"],
-			                                                     plan_df_2019["Comptage horaire"],
-			                                                     plan_df_2019["lat"],
-			                                                     plan_df_2019["long"],
-			                                                     plan_df_2019["Lien vers photo du site de comptage"]):
+			for nom, comptage, latitude, longitude, image in zip(df_2019["Nom du site de comptage"],
+			                                                     df_2019["Comptage horaire"],
+			                                                     df_2019["lat"],
+			                                                     df_2019["long"],
+			                                                     df_2019["Lien vers photo du site de comptage"]):
 				pp = "<strong>" + nom + "</strong>" + "<br>Comptage horaire : " + str(round(comptage,2)) + "<br><img src='" + image + "', width=100%>"
 				folium.CircleMarker(location=[latitude, longitude],radius=comptage/8,popup = folium.Popup(pp, max_width = 300),tooltip= "<strong>" + nom + "</strong>",color = "#368fe5",fill_color = "#368fe5",fill_opacity=0.3).add_to(carte)
 		folium_static(carte)
