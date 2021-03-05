@@ -1738,7 +1738,7 @@ elif select_page == page5:
 ###########################
 elif select_page == page6:
 	st.header(select_page)
-	@st.cache(suppress_st_warning=True, max_entries=10, ttl=300)
+	@st.cache(suppress_st_warning=True, max_entries=50, ttl=180)
 	def evaluation(variables, algo, taille_test, standardisation):
 	    """
 	    Fonction qui retourne pour un modèle de régression le score R² sur l'échantillon d'entraînement,
@@ -1840,7 +1840,7 @@ elif select_page == page6:
 		with col3:
 			jour_deb_test = st.slider(label = "Sélectionnez le premier jour de prédictions :",
 			                          min_value = 20, max_value = 31, step = 1, value = 24)
-			@st.cache(suppress_st_warning=True, max_entries=10, ttl=300)
+			@st.cache(suppress_st_warning=True, max_entries=5, ttl=180)
 			def calculating_test_size(jour):
 				##calcul du % à prendre pour la taille de l'échantillon test :
 				#nb de lignes df_ml
@@ -2069,7 +2069,7 @@ elif select_page == page6:
 			elif select_mois_deb_test == 'Décembre 2020':
 				mois_deb_test = 12
 			annee_deb_test = 2020
-			@st.cache(suppress_st_warning=True, max_entries=10, ttl=300)
+			@st.cache(suppress_st_warning=True, max_entries=5, ttl=180)
 			def calculating_test_size_2(annee, mois):
 				##calcul du % à prendre pour la taille de l'échantillon test :
 				#nb de lignes df_ml
