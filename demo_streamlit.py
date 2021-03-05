@@ -45,7 +45,12 @@ df_date['Date'] = df_date['Date et heure de comptage'].dt.date
 df_acc = pd.read_csv('df_acc.csv', sep=';')
 #concaténation des 4 fichiers sources du NB, déjà retraité des NA, filtré sur la période sept 2019 à déc 2019 et accidents vélo
 
-df_ml = pd.read_csv('df_ml.csv', sep=';')
+df1_ml = pd.read_csv('df1_ml.csv', sep=';')
+df2_ml = pd.read_csv('df2_ml.csv', sep=';')
+df3_ml = pd.read_csv('df3_ml.csv', sep=';')
+df4_ml = pd.read_csv('df4_ml.csv', sep=';')
+df_ml = pd.concat([df1_ml, df2_ml, df3_ml, df4_ml], ignore_index=True)
+#concaténation des 4 fichiers sources du ML avec variables numériques préalablement créées
 
 plan_df_2019 = pd.read_csv('plan_df_2019.csv', sep=';')
 #fichier sources cartographies, flitrés par sites, doublons url photos déjà traités
