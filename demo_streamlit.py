@@ -1733,7 +1733,6 @@ elif select_page == page5:
 ###########################
 elif select_page == page6:
 	st.header(select_page)
-
 	label1="Derniers jours du mois"
 	label2="Derniers mois de la période"
 
@@ -1741,19 +1740,19 @@ elif select_page == page6:
 	    "Sélectionnez la période à prédire :",
 	    (label1,
 	    label2))
-	st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+	#st.sidebar.markdown("<hr>", unsafe_allow_html=True)
 
 	#Prédiction sur les derniers jours de chaque mois
 	#################################################
 	if select_pred_ml == label1:
-		st.subheader(select_pred_ml)
+		st.subheader("Prédictions sur les derniers jours du mois")
 
-		st.sidebar.subheader('Sélectionnez les paramètres du modèle :')
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+		st.markdown('<br><strong>Sélection des paramètres du modèle</strong><br>', unsafe_allow_html=True)
+		#st.sidebar.markdown("<hr>", unsafe_allow_html=True)
 
 		df_ml = df_ml.sort_values(by = ['Jour'])
 
-		liste_var = st.sidebar.multiselect('Sélectionnez les variables :',
+		liste_var = st.multiselect('Sélectionnez les variables :',
 									['Année', 'Mois', 'Jour',
 								    'Jour_de_la_semaine', 'Heure', 'Grève', 'Confinement',
 								    'Jour_férié', 'Vacances',
@@ -1773,42 +1772,44 @@ elif select_page == page6:
 									       'Comptage_horaire_s_2',
 									       'Comptage_horaire_s_3',
 									       'Comptage_horaire_s_4'])
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+		st.markdown("<br>", unsafe_allow_html=True)
 
-		jour_deb_test = st.sidebar.slider(label = "Sélectionnez le premier jour de prédictions :",
-		    min_value = 20, max_value = 31, step = 1, value = 24)
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+		col1, col2, col3, col4 = st.beta_columns([1, 0.1, 0.9, 0.1])
+		with col3:
+			jour_deb_test = st.slider(label = "Sélectionnez le premier jour de prédictions :",
+			                          min_value = 20, max_value = 31, step = 1, value = 24)
+			#st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+			##calcul du % à prendre pour la taille de l'échantillon test :
+			#nb de lignes df_ml
+			len_df_ml = len(df_ml)
+			#nb de lignes échantillon test
+			len_df_test = len(df_ml[df_ml["Jour"] >= jour_deb_test])
+			test_size = len_df_test / len_df_ml
+			test_size_round = round(test_size*100, 2)
+			st.markdown("<br>", unsafe_allow_html=True)		
+			st.write("Taille échantillon de test = ", (test_size_round), " %")
+			st.markdown("<br>", unsafe_allow_html=True)
+			#st.markdown("<br>", unsafe_allow_html=True)
+			stadardiser = st.checkbox("Standardiser les données", value=False)		
+		with col1:
+			data = df_ml[liste_var]
+			target = df_ml['Comptage_horaire']
+			X_train, X_test, y_train, y_test = train_test_split(data, target, test_size = test_size, shuffle = False)
+			algo = st.radio(
+			    "Sélectionnez l'algorithme à tester :",
+			    ('LinearRegression',
+			    'Ridge',
+			    'Lasso',
+			    'ElasticNet',
+			    'DecisionTreeRegressor*',
+			    'RandomForestRegressor*',
+			    'BaggingRegressor*',
+			    'GradientBoostingRegressor*'))
+			st.markdown('<p>* le calcul peut prendre plusieurs minutes</p>', unsafe_allow_html=True)
 
-		##calcul du % à prendre pour la taille de l'échantillon test :
-		#nb de lignes df_ml
-		len_df_ml = len(df_ml)
-		#nb de lignes échantillon test
-		len_df_test = len(df_ml[df_ml["Jour"] >= jour_deb_test])
-		test_size = len_df_test / len_df_ml
-		test_size_round = round(test_size*100, 2)
-
-		st.write("Taille échantillon de test = ", (test_size_round), " %")
-
-
-		data = df_ml[liste_var]
-		target = df_ml['Comptage_horaire']
-		X_train, X_test, y_train, y_test = train_test_split(data, target, test_size = test_size, shuffle = False)
-
-
-
-		algo = st.sidebar.radio(
-		    "Sélectionnez l'algorithme à tester :",
-		    ('LinearRegression',
-		    'Ridge',
-		    'Lasso',
-		    'ElasticNet',
-		    'DecisionTreeRegressor',
-		    'RandomForestRegressor',
-		    'BaggingRegressor',
-		    'GradientBoostingRegressor'))
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)		
-
-		st.subheader('Affichage du score du modèle choisi :')
+		#col1, col2, col3 = st.beta_columns([1,2.1,1])
+		#with col2:
+		st.markdown("<br><strong>Score du modèle choisi</strong>", unsafe_allow_html=True)
 
 		if algo == 'LinearRegression':
 			modele = LinearRegression()
@@ -1818,18 +1819,16 @@ elif select_page == page6:
 			modele = LassoCV(alphas = (0.001, 0.01, 0.1, 0.3, 0.7, 1, 10, 50, 100))
 		elif algo == 'ElasticNet':
 			modele = ElasticNet()
-		elif algo == 'DecisionTreeRegressor':
+		elif algo == 'DecisionTreeRegressor*':
 			modele = DecisionTreeRegressor()
-		elif algo == 'RandomForestRegressor':
+		elif algo == 'RandomForestRegressor*':
 			modele = RandomForestRegressor(n_estimators = 10, criterion = 'mse')
-		elif algo == 'BaggingRegressor':
+		elif algo == 'BaggingRegressor*':
 			modele = BaggingRegressor(n_estimators = 10)
 		else :
 			modele = GradientBoostingRegressor(n_estimators = 100)
-
-		arrondi = 3
-
-		if st.sidebar.checkbox("Standardiser les données", value=False):
+		arrondi = 3	
+		if stadardiser:
 			scaler = preprocessing.StandardScaler().fit(X_train) 
 			X_train_scaled = scaler.transform(X_train)
 			X_test_scaled = scaler.transform(X_test)
@@ -1855,34 +1854,33 @@ elif select_page == page6:
 			st.write("rmse train = ", round(np.sqrt(mean_squared_error(y_train, pred_train)),arrondi),
 				     " / rmse test = ", round(np.sqrt(mean_squared_error(y_test, pred_test)),arrondi)
 				     )
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)			
 
-
-
-		liste_sites = sorted(df_ml['Nom du site de comptage'].unique().tolist())
-
-		site = st.sidebar.selectbox('Sélectionnez le site de comptage à prédire :', (liste_sites), index = 3)
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)	
-
-
-		#Définition des variables pour représenter les prévisions :
-		select_mois = st.sidebar.radio(
-		    "Sélectionnez le mois à prédire :",
-		    ('Octobre 2019',
-		    'Novembre 2019',
-		    'Décembre 2019',
-		    'Janvier 2020',
-		    'Février 2020',
-		    'Mars 2020',
-		    'Avril 2020',
-		    'Mai 2020',
-		    'Juin 2020',
-		    'Juillet 2020',
-		    'Août 2020',
-		    'Septembre 2020',
-		    'Octobre 2020',
-		    'Novembre 2020',
-		    'Décembre 2020'))
+		#st.sidebar.markdown("<hr>", unsafe_allow_html=True)			
+		st.markdown('<br><strong>Représentation graphique des prédictions</strong><br>', unsafe_allow_html=True)
+		col1, col2= st.beta_columns(2)
+		with col1:
+			liste_sites = sorted(df_ml['Nom du site de comptage'].unique().tolist())
+			site = st.selectbox('Sélectionnez le site de comptage :', (liste_sites), index = 3)
+		with col2:
+			#st.sidebar.markdown("<hr>", unsafe_allow_html=True)	
+			#Définition des variables pour représenter les prévisions :
+			select_mois = st.selectbox(
+			    "Sélectionnez le mois :",
+			    ('Octobre 2019',
+			    'Novembre 2019',
+			    'Décembre 2019',
+			    'Janvier 2020',
+			    'Février 2020',
+			    'Mars 2020',
+			    'Avril 2020',
+			    'Mai 2020',
+			    'Juin 2020',
+			    'Juillet 2020',
+			    'Août 2020',
+			    'Septembre 2020',
+			    'Octobre 2020',
+			    'Novembre 2020',
+			    'Décembre 2020'))
 
 		if select_mois == 'Octobre 2019':
 			mois = 10
@@ -1929,8 +1927,6 @@ elif select_page == page6:
 		else :
 			mois = 12
 			annee = 2020
-
-		st.subheader('Représentation graphique des prédictions :')	
 
 		# graphe mensuel détail jours
 		df_test = pd.DataFrame({'Comptages_prédits' : pred_test.astype('int32')}, index = X_test.index)
@@ -1988,15 +1984,13 @@ elif select_page == page6:
 	#Prédiction des comptages pour les derniers mois de la période
 	################################################################
 	elif select_pred_ml == label2:
-		st.subheader(select_pred_ml)
+		st.subheader("Prédictions sur les derniers mois de la période")
 
-
-		st.sidebar.subheader('Sélectionnez les paramètres du modèle :')
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)	
+		st.markdown('<br><strong>Sélection des paramètres du modèle</strong><br>', unsafe_allow_html=True)
 
 		df_ml = df_ml.sort_values(by = ['Année', 'Mois', 'Jour'])
 
-		liste_var = st.sidebar.multiselect('Sélectionnez les variables :',
+		liste_var = st.multiselect('Sélectionnez les variables :',
 									['Année', 'Mois', 'Jour',
 								    'Jour_de_la_semaine', 'Heure', 'Grève', 'Confinement',
 								    'Jour_férié', 'Vacances',
@@ -2016,83 +2010,71 @@ elif select_page == page6:
 									       'Comptage_horaire_s_2',
 									       'Comptage_horaire_s_3',
 									       'Comptage_horaire_s_4'])
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+		st.markdown("<br>", unsafe_allow_html=True)
 
+		col1, col2, col3, col4 = st.beta_columns([1, 0.1, 0.9, 0.1])
+		with col3:
+			select_mois_deb_test = st.radio("Sélectionnez le premier mois des prédictions :",
+										    ('Septembre 2020',
+										    'Octobre 2020',
+										    'Novembre 2020',
+										    'Décembre 2020'), index = 1)
+			if select_mois_deb_test == 'Janvier 2020':
+				mois_deb_test = 1
+			elif select_mois_deb_test == 'Février 2020':
+				mois_deb_test = 2
+			elif select_mois_deb_test == 'Mars 2020':
+				mois_deb_test = 3
+			elif select_mois_deb_test == 'Avril 2020':
+				mois_deb_test = 4
+			elif select_mois_deb_test == 'Mai 2020':
+				mois_deb_test = 5
+			elif select_mois_deb_test == 'Juin 2020':
+				mois_deb_test = 6
+			elif select_mois_deb_test == 'Juillet 2020':
+				mois_deb_test = 7
+			elif select_mois_deb_test == 'Août 2020':
+				mois_deb_test = 8
+			elif select_mois_deb_test == 'Septembre 2020':
+				mois_deb_test = 9
+			elif select_mois_deb_test == 'Octobre 2020':
+				mois_deb_test = 10
+			elif select_mois_deb_test == 'Novembre 2020':
+				mois_deb_test = 11
+			elif select_mois_deb_test == 'Décembre 2020':
+				mois_deb_test = 12
+			annee_deb_test = 2020
+			##calcul du % à prendre pour la taille de l'échantillon test :
+			#nb de lignes df_ml
+			len_df_ml = len(df_ml)
+			#nb de lignes échantillon test
+			len_df_test2 = len(df_ml[(df_ml["Mois"] >= mois_deb_test) & (df_ml["Année"] >= annee_deb_test)])
+			test_size2 = len_df_test2 / len_df_ml
+			test_size_round2 = round(test_size2*100, 2)
 
-		select_mois_deb_test = st.sidebar.radio("Sélectionnez le premier mois des prédictions :",
-									    ('Septembre 2020',
-									    'Octobre 2020',
-									    'Novembre 2020',
-									    'Décembre 2020'), index = 1)
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+			if mois_deb_test == 12:
+				st.write("Période de prédictions :<br>Décembre 2020", unsafe_allow_html=True)
+			else :
+				st.write("Période de prédictions :<br>De ", select_mois_deb_test, "à Décembre 2020", unsafe_allow_html=True)
 
-
-		if select_mois_deb_test == 'Janvier 2020':
-			mois_deb_test = 1
-		elif select_mois_deb_test == 'Février 2020':
-			mois_deb_test = 2
-		elif select_mois_deb_test == 'Mars 2020':
-			mois_deb_test = 3
-		elif select_mois_deb_test == 'Avril 2020':
-			mois_deb_test = 4
-		elif select_mois_deb_test == 'Mai 2020':
-			mois_deb_test = 5
-		elif select_mois_deb_test == 'Juin 2020':
-			mois_deb_test = 6
-		elif select_mois_deb_test == 'Juillet 2020':
-			mois_deb_test = 7
-		elif select_mois_deb_test == 'Août 2020':
-			mois_deb_test = 8
-		elif select_mois_deb_test == 'Septembre 2020':
-			mois_deb_test = 9
-		elif select_mois_deb_test == 'Octobre 2020':
-			mois_deb_test = 10
-		elif select_mois_deb_test == 'Novembre 2020':
-			mois_deb_test = 11
-		elif select_mois_deb_test == 'Décembre 2020':
-			mois_deb_test = 12
-
-		annee_deb_test = 2020,
-
-
-		##calcul du % à prendre pour la taille de l'échantillon test :
-
-		#nb de lignes df_ml
-		len_df_ml = len(df_ml)
-		#nb de lignes échantillon test
-		len_df_test2 = len(df_ml[(df_ml["Mois"] >= mois_deb_test) & (df_ml["Année"] >= annee_deb_test)])
-		test_size2 = len_df_test2 / len_df_ml
-		test_size_round2 = round(test_size2*100, 2)
-
-		if mois_deb_test == 12:
-			st.write("Période de prédictions : Décembre 2020")
-		else :
-			st.write("Période de prédictions : De ", select_mois_deb_test, "à Décembre 2020")
-
-		st.write("Taille échantillon de test = ", (test_size_round2), " %")
-
-
-
-		data = df_ml[liste_var]
-		target = df_ml['Comptage_horaire']
-		X_train, X_test, y_train, y_test = train_test_split(data, target, test_size = test_size2, shuffle = False)
-
-
-
-		algo = st.sidebar.radio(
-		    "Sélectionnez l'algorithme à tester :",
-		    ('LinearRegression',
-		    'Ridge',
-		    'Lasso',
-		    'ElasticNet',
-		    'DecisionTreeRegressor',
-		    'RandomForestRegressor',
-		    'BaggingRegressor',
-		    'GradientBoostingRegressor'))
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-
-		st.subheader('Score du modèle choisi :')
-
+			st.write("Taille échantillon de test = ", (test_size_round2), " %")
+			standardiser = st.checkbox("Standardiser les données", value=False)
+		with col1:
+			data = df_ml[liste_var]
+			target = df_ml['Comptage_horaire']
+			X_train, X_test, y_train, y_test = train_test_split(data, target, test_size = test_size2, shuffle = False)
+			algo = st.radio(
+			    "Sélectionnez l'algorithme à tester :",
+			    ('LinearRegression',
+			    'Ridge',
+			    'Lasso',
+			    'ElasticNet',
+			    'DecisionTreeRegressor*',
+			    'RandomForestRegressor*',
+			    'BaggingRegressor*',
+			    'GradientBoostingRegressor*'))
+			st.markdown('<p>* le calcul peut prendre plusieurs minutes</p>', unsafe_allow_html=True)		
+		st.markdown("<br><strong>Score du modèle choisi</strong>", unsafe_allow_html=True)
 		if algo == 'LinearRegression':
 			modele = LinearRegression()
 		elif algo == 'Ridge':
@@ -2101,11 +2083,11 @@ elif select_page == page6:
 			modele = LassoCV(alphas = (0.001, 0.01, 0.1, 0.3, 0.7, 1, 10, 50, 100))
 		elif algo == 'ElasticNet':
 			modele = ElasticNet()
-		elif algo == 'DecisionTreeRegressor':
+		elif algo == 'DecisionTreeRegressor*':
 			modele = DecisionTreeRegressor()
-		elif algo == 'RandomForestRegressor':
+		elif algo == 'RandomForestRegressor*':
 			modele = RandomForestRegressor(n_estimators = 10, criterion = 'mse')
-		elif algo == 'BaggingRegressor':
+		elif algo == 'BaggingRegressor*':
 			modele = BaggingRegressor(n_estimators = 10)
 		else :
 			modele = GradientBoostingRegressor(n_estimators = 100)
@@ -2113,7 +2095,7 @@ elif select_page == page6:
 		arrondi = 3
 
 
-		if st.sidebar.checkbox("Standardiser les données", value=False):
+		if standardiser:
 			scaler = preprocessing.StandardScaler().fit(X_train) 
 			X_train_scaled = scaler.transform(X_train)
 			X_test_scaled = scaler.transform(X_test)
@@ -2139,43 +2121,36 @@ elif select_page == page6:
 			st.write("rmse train = ", round(np.sqrt(mean_squared_error(y_train, pred_train)),arrondi),
 				     " / rmse test = ", round(np.sqrt(mean_squared_error(y_test, pred_test)),arrondi)
 				     )
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-
-
 
 		#Définition des variables pour représenter les prévisions :
-
-		liste_sites = sorted(df_ml['Nom du site de comptage'].unique().tolist())
-
-		site = st.sidebar.selectbox('Sélectionnez le site de comptage à prédire', (liste_sites), index = 3)
-		st.sidebar.markdown("<hr>", unsafe_allow_html=True)
-
-
-		if mois_deb_test == 9:
-			select_mois = st.sidebar.radio(
-		    "Sélectionnez le mois à prédire :",
-		    ('Septembre 2020',
-		    'Octobre 2020',
-		    'Novembre 2020',
-		    'Décembre 2020'))
-		elif mois_deb_test == 10:
-			select_mois = st.sidebar.radio(
-		    "Sélectionnez du mois à prédire :",
-		    ('Octobre 2020',
-		    'Novembre 2020',
-		    'Décembre 2020'))
-		elif mois_deb_test == 11:
-			select_mois = st.sidebar.radio(
-		    "Sélectionnez du mois à prédire :",
-		    ('Novembre 2020',
-		    'Décembre 2020'))
-		elif mois_deb_test == 12:
-			select_mois = 'Décembre 2020'
-			st.write("Mois à prédire : Décembre 2020")
-
-
-
-
+		st.markdown('<br><strong>Représentation graphique des prédictions</strong><br>', unsafe_allow_html=True)
+		col1, col2= st.beta_columns(2)
+		with col1:	
+			liste_sites = sorted(df_ml['Nom du site de comptage'].unique().tolist())
+			site = st.selectbox('Sélectionnez le site de comptage :', (liste_sites), index = 3)
+			#st.sidebar.markdown("<hr>", unsafe_allow_html=True)
+		with col2:
+			if mois_deb_test == 9:
+				select_mois = st.selectbox(
+			    "Sélectionnez le mois :",
+			    ('Septembre 2020',
+			    'Octobre 2020',
+			    'Novembre 2020',
+			    'Décembre 2020'))
+			elif mois_deb_test == 10:
+				select_mois = st.selectbox(
+			    "Sélectionnez du mois :",
+			    ('Octobre 2020',
+			    'Novembre 2020',
+			    'Décembre 2020'))
+			elif mois_deb_test == 11:
+				select_mois = st.selectbox(
+			    "Sélectionnez du mois :",
+			    ('Novembre 2020',
+			    'Décembre 2020'))
+			elif mois_deb_test == 12:
+				select_mois = 'Décembre 2020'
+	#			st.write("Mois : Décembre 2020")
 		if select_mois == 'Octobre 2019':
 			mois = 10
 			annee = 2019
@@ -2222,9 +2197,6 @@ elif select_page == page6:
 			mois = 12
 			annee = 2020
 
-
-		st.subheader('Représentation graphique des prédictions :')	
-
 		# graphe mensuel prévisions mois
 		df_test = pd.DataFrame({'Comptages_prédits' : pred_test.round(0).astype('int32')}, index = X_test.index)
 		df_pred = df_ml.join(df_test)
@@ -2249,3 +2221,4 @@ elif select_page == page6:
 		plt.grid(True, linestyle = ':')
 		plt.legend();
 		st.pyplot(fig)
+
