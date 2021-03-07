@@ -1011,7 +1011,7 @@ elif select_page == page4:
 		"</p>"
 		, unsafe_allow_html=True)
 
-	#Evènements récurrents
+	#Périodicité
 	######################
 	elif dataviz_temp == temp2:
 		st.subheader(dataviz_temp)
@@ -1020,7 +1020,7 @@ elif select_page == page4:
 		periodi3 = "Horaire"
 		select_periodi = st.radio("", (periodi1, periodi2, periodi3))
 		if select_periodi == periodi1:
-			#Mois
+			#Mensuelle
 			df_comptages["Mois"] = df_comptages['Date et heure de comptage'].dt.month
 			df_comptages["Année"] = df_comptages['Date et heure de comptage'].dt.year
 			df_mois = df_comptages.groupby(['Mois', 'Année'], as_index = False)['Comptage horaire'].mean()
@@ -1046,7 +1046,7 @@ elif select_page == page4:
 			"alors qu’il était boosté par la grève en décembre 2019."
 			"</p>", unsafe_allow_html=True)				
 		elif select_periodi == periodi2:
-			# jours de la semaine
+			# Journalière
 			df_jr0 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 0]["Date et heure de comptage"])]
 			df_jr0["Jour_de_la_semaine"] = 0
 			df_jr1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Jour_de_la_semaine"] == 1]["Date et heure de comptage"])]
@@ -1087,7 +1087,7 @@ elif select_page == page4:
 			"<p style='text-align: justify'>"
 			"<br>Quantifions les différences entre le trafic en semaine et le week-end. "
 			"</p>", unsafe_allow_html=True)
-			#Weekend vs jours semaine
+			#Horaire
 			col1, col2 = st.beta_columns(2)
 			with col1 :
 				df_weekend1 = df_comptages[df_comptages["Date et heure de comptage"].isin(df_date[df_date["Weekend"] == 1]["Date et heure de comptage"])]
@@ -1738,7 +1738,7 @@ elif select_page == page5:
 ###########################
 elif select_page == page6:
 	st.header(select_page)
-	@st.cache(suppress_st_warning=True, max_entries=50, ttl=180)
+	@st.cache(suppress_st_warning=True, max_entries=50, ttl=120)
 	def evaluation(variables, algo, taille_test, standardisation):
 	    """
 	    Fonction qui retourne pour un modèle de régression le score R² sur l'échantillon d'entraînement,
@@ -1840,7 +1840,7 @@ elif select_page == page6:
 		with col3:
 			jour_deb_test = st.slider(label = "Sélectionnez le premier jour de prédictions :",
 			                          min_value = 20, max_value = 31, step = 1, value = 24)
-			@st.cache(suppress_st_warning=True, max_entries=5, ttl=180)
+			@st.cache(suppress_st_warning=True, max_entries=5, ttl=120)
 			def calculating_test_size(jour):
 				##calcul du % à prendre pour la taille de l'échantillon test :
 				#nb de lignes df_ml
@@ -2069,7 +2069,7 @@ elif select_page == page6:
 			elif select_mois_deb_test == 'Décembre 2020':
 				mois_deb_test = 12
 			annee_deb_test = 2020
-			@st.cache(suppress_st_warning=True, max_entries=5, ttl=180)
+			@st.cache(suppress_st_warning=True, max_entries=5, ttl=120)
 			def calculating_test_size_2(annee, mois):
 				##calcul du % à prendre pour la taille de l'échantillon test :
 				#nb de lignes df_ml
