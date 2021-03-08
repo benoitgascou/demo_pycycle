@@ -1667,7 +1667,18 @@ elif select_page == page5:
 		"<strong><font size=20><span style='color:red'>.</span></font></strong>   accident avec décés<br>"
 		"<strong><font size=5><span style='color:yellow'>o</span></font></strong>  accident sur piste cyclable  - "
 		"<strong><font size=5><span style='color:black'>o</span></font></strong>  accident hors piste cyclable", unsafe_allow_html=True)
-	
+		st.markdown("<p style='text-align: justify'>"
+		"<strong>Les accidents sont plus nombreux aux grands carrefours</strong> (Opéra, Saint Lazare, Gare de l'Est, Châtelet) "
+		"<strong>et sur les grands axes</strong> (Sébastopol, Convention, Lafayette, Belleville), pourtant équipés de pistes cyclables. "
+		"Idem sur le boulevard des Maréchaux, dans le sud de Paris. "
+		"L'explication est à chercher du côté des véhicules en circulation, bien plus nombreux à ces endroits."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"Il y a eu des accidents partout, mais <strong>l'est parisien est plus touché, par rapport aux 7e et 16e arrondissements</strong> par exemple, "
+		"où il y a eu le moins d'accidents. Cela reflète la proportion d'usagers du vélo. "
+		"A l'est, les quartiers sont plus jeunes et plus animés que dans l’ouest parisien."
+		"</p>"
+		, unsafe_allow_html=True)
 	#Statistiques personnes accidentées
 	elif dataviz_acc == acc3:
 		st.subheader(dataviz_acc)
@@ -1701,12 +1712,9 @@ elif select_page == page5:
 				        shadow = False,
 				        radius= 1.1);
 				st.pyplot(fig)
-			st.markdown("<p style='text-align: justify'>3/4 des accidentés à vélo sont des hommes contre 1/4 de femmes. Le boom des livraisons à "
-			"vélo, métier majoritairement masculin, joue sur ces chiffres.</p>"
+			st.markdown("<p style='text-align: justify'>Parmi les cyclistes accidentés, 74 % d’hommes et 26 % de femmes.</p>"
 			, unsafe_allow_html=True)
-			#graphe femmes et gravité
-			#elif select_diag1 == option2_diag1:
-			#graphe hommes et gravité
+			#graphe hommes/femmes et gravité
 			col1, col2 = st.beta_columns(2)
 			with col1 :
 				plt.rcParams['font.size'] = 8
@@ -1828,8 +1836,8 @@ elif select_page == page5:
 				        shadow = False,
 				        startangle = 90);
 				st.pyplot(fig)
-			st.markdown("<p style='text-align: justify'>Une grosse moitié des accidents a eu lieu sur la chaussée contre 1/3 sur des pistes cyclables. "
-			"Ces dernières limiteraient donc le nombre d’accidents.</p>", unsafe_allow_html=True)
+			st.markdown("<p style='text-align: justify'>54% des accidents ont eu lieu sur la chaussée contre 37 % sur une piste cyclable."
+			"</p>", unsafe_allow_html=True)
 		#graphe météo
 		elif select_diag == diag5:
 			col1, col2, col3 = st.beta_columns([.5, 2, .5])
@@ -1855,8 +1863,6 @@ elif select_page == page5:
 				st.pyplot(fig)
 			st.markdown("<p style='text-align: justify'>Les 3/4 des accidents ont lieu sous une météo normale. Le 1/4 restant a lieu sous la pluie ou "
 			"par temps couvert.</p>", unsafe_allow_html=True)
-
-
 ###########################
 ## Prédictions comptages ##
 ###########################
