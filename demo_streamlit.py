@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import datetime as dt
+import statsmodels.api
 
 from streamlit_folium import folium_static
 import folium
@@ -1579,6 +1580,137 @@ elif select_page == page5:
 	# Liens trafic accidents
 	if dataviz_acc == acc1:
 		st.subheader(dataviz_acc)
+		st.markdown(			
+		"<p style='text-align: justify'>"
+		"Si l'évolution des <strong>comptages horaires par site</strong> reflète l'évolution du trafic cycliste à Paris, "
+		"ces comptages en eux-mêmes ne représentent pas la circulation réelle.  "
+		"En effet, tous les vélos ne sont pas comptés et certains vélos peuvent être comptés par plusieurs sites durant la même heure. "
+		"De plus, le nombre de sites de comptage n'est pas constant lors de la période étudiée (septembre-décembre 2019). "
+		"aux règles plus souples (écoles et magasins ouverts). "
+		"Nous devons donc utiliser le <span style='color: #1ca2d1; font-weight: bold'>Comptage moyen/site/heure</span>."
+		"</p>"
+		"<p style='text-align: justify'>"
+		"La base de données accidents, en revanche, nous donne le "
+		"<span style='color: #1ca2d1; font-weight: bold'>nombre réel d'accidents impliquant des vélos à Paris/heure.</span>"
+		"</p>"
+		"<p style='text-align: justify'>"
+		"<span style='color: #1ca2d1; font-weight: bold'>Ratio Accidents-Trafic</span> = "
+		"<span style='color: #1ca2d1'>Nb d'accidents à Paris/heure</span> "
+		"/ <span style='color: #1ca2d1'>Comptage moyen/site/heure</span>"
+		"</p>"
+		, unsafe_allow_html=True)
+		#création du df "df_2019_acc"
+		df_comptages["Date et heure de comptage"] = pd.to_datetime(df_comptages["Date et heure de comptage"])
+		df_comptages['Date'] = df_comptages['Date et heure de comptage'].dt.date
+		df_comptages['Année'] = df_comptages['Date et heure de comptage'].dt.year
+		df_comptages['Mois'] = df_comptages['Date et heure de comptage'].dt.month
+		df_comptages['Jour_de_la_semaine'] = df_comptages['Date et heure de comptage'].dt.weekday
+		df_comptages['Semaine'] = df_comptages['Date et heure de comptage'].dt.week
+		df_comptages['Jour'] = df_comptages['Date et heure de comptage'].dt.day
+		df_comptages_2019 = df_comptages[df_comptages["Année"] == 2019]
+		df_comptages_2019 = df_comptages_2019.groupby(['Date et heure de comptage', 'Date', 'Heure', 'Année', 'Mois', 'Jour_de_la_semaine', 'Semaine', 'Jour'], as_index = False).agg({'Comptage horaire':'mean'})
+		df_comptages_2019["jour_mois"] = df_comptages_2019["Jour"].map(str) + " / " + df_comptages_2019["Mois"].map(str) + df_comptages_2019["Heure"].map(str)
+		df_acc["heure"] = df_acc["hrmn"].str[:2].astype(int)
+		df_acc = df_acc.groupby(["jour", "mois", "an", "heure"], as_index = False).agg({'Num_Acc':'count'})
+		df_acc["jour_mois"] = df_acc["jour"].map(str) + " / " + df_acc["mois"].map(str) + df_acc["heure"].map(str)
+		df = df_comptages_2019.merge(df_acc, how = 'left', on = 'jour_mois')
+		df = df.drop(columns = ['jour', 'mois', 'an', 'jour_mois', 'heure'])
+		df = df.fillna(0)
+		df_2019_acc = df[["Date", "Mois", "Semaine", "Jour", "Jour_de_la_semaine", "Heure", "Comptage horaire", "Num_Acc"]]
+		df_2019_acc = df_2019_acc.rename(columns = {'Comptage horaire':'Comptage_moyen/site/heure','Num_Acc':'Nb_Acc/Paris/heure'})
+		df_2019_acc['Ratio Accidents-Trafic'] = df_2019_acc['Nb_Acc/Paris/heure'] / df_2019_acc['Comptage_moyen/site/heure']
+		st.dataframe(df_2019_acc.head())
+		st.write('Total Nb_Acc :',df_2019_acc['Nb_Acc/Paris/heure'].sum().astype(int))
+		st.markdown(			
+		"<p style='text-align: justify'>"
+		"<strong>L'étude porte sur un petit échantillon (644 accidents, 4 mois), dont voici les tendances. "
+		"Elles seront à confirmer sur un plus grand échantillon.</strong>"
+		"</p>"
+		, unsafe_allow_html=True)
+		st.subheader("ANALYSE PAR HEURE")
+		st.markdown("<br><strong>1. Statistiques descriptives</strong>", unsafe_allow_html=True)
+		st.dataframe(df_2019_acc.describe())
+		st.markdown("<br><strong>2. Distribution de la variable <span style='color: #1ca2d1'>Nombre d’accidents à Paris/heure</span></strong>", unsafe_allow_html=True)
+		# REPARTITION DU NOMBRE D'ACCIDENTS/HEURE
+		fig = plt.figure(figsize=(8, 5))
+		plt.hist(df_2019_acc['Nb_Acc/Paris/heure'], bins = [0,1,2,3,4,5,6,7,8],rwidth = 0.6, color = '#EE3459', density = True)
+		plt.xlabel('Nb accidents/heure')
+		plt.ylabel("Fréquence")
+		plt.title("Distribution du Nombre d'accidents à Paris/heure")
+		st.pyplot(fig)
+		st.markdown("<br><strong>3. Nuage de points entre les variables <span style='color: #1ca2d1'>Nombre d’accidents à Paris/heure</span> et <span style='color: #1ca2d1'>Comptage moyen/site/heure</span></strong>", unsafe_allow_html=True)
+		# NUAGE DE POINTS POUR COMPARER NB ACCIDENTS & TRAFIC
+		fig = plt.figure(figsize=(8,5))
+		plt.scatter(df_2019_acc["Comptage_moyen/site/heure"], df_2019_acc['Nb_Acc/Paris/heure'], marker = "H", c = "#338aff", s = 30, alpha = .5)
+		plt.xlabel('Comptage moyen/site/heure')
+		plt.ylabel("Accidents à Paris/heure")
+		plt.title("Accidents & trafic par heure")
+		plt.axhline(y = 0.22, color = 'red', label = 'Moyenne accidents', lw = 1)
+		plt.legend(loc = 'upper right')
+		st.pyplot(fig)
+		st.markdown("<br><strong>4. Test ANOVA entre les variables <span style='color: #1ca2d1'>Nombre d’accidents à Paris/heure</span> et <span style='color: #1ca2d1'>Comptage moyen/site/heure</span></strong>", unsafe_allow_html=True)
+		df_2019_acc = df_2019_acc.rename(columns = {'Nb_Acc/Paris/heure':'Acc','Comptage_moyen/site/heure':'Comptage'})
+		result = statsmodels.formula.api.ols('Acc ~ Comptage', data = df_2019_acc).fit()
+		table = statsmodels.api.stats.anova_lm(result)
+		st.dataframe(table)
+		st.markdown(			
+		"<p style='text-align: justify'>"
+		"<strong>Conclusion</strong><br>"
+		"Lors de la période étudiée :"
+		"<ul>"
+		  "<li>En moyenne, on observe <span style='color: #1ca2d1'><strong>0,22 accidents de vélos/heure à Paris</span></strong>.</li>"
+		  "<li>Dans 90% des cas, il n’y a pas d’accident.</li>"
+		  "<li><span style='color: #1ca2d1'><strong>Dans 8 % des cas, il y a 1 à 2 accidents de vélos/heure</span></strong>.</li>"
+		  "<li>La p-value du test ANOVA est inférieure à 5%, on rejette donc l'hypothèse selon laquelle le <strong>comptage moyen/site/heure</strong> n'influe pas sur le <strong>nombre d'accidents à Paris/heure</strong>.</li>"
+		"</ul>"
+		"</p>"
+		, unsafe_allow_html=True)
+		st.markdown("<br><strong>5. Distribution du <span style='color: #1ca2d1'>Ratio Accidents-Trafic</span> en fonction de l’heure</strong>", unsafe_allow_html=True)
+		df_comptages_2019 = df_comptages[df_comptages["Année"] == 2019]
+		df_comptages_2019 = df_comptages_2019.groupby(['Heure'], as_index = False).agg({'Comptage horaire':'mean'})
+		df_acc = df_acc.rename(columns = {'heure':'Heure'})
+		df_acc = df_acc.groupby(["Heure"], as_index = False).agg({'Num_Acc':'sum'})
+		df = df_comptages_2019.merge(df_acc, how = 'left', on = 'Heure')
+		df = df.fillna(0)
+		df_ratio_h = df[["Heure", "Comptage horaire", "Num_Acc"]]
+		df_ratio_h = df_ratio_h.rename(columns = {'Comptage horaire':'Comptage_moyen/site/heure','Num_Acc':'Nb_Acc/Paris/heure'})
+		df_ratio_h['Ratio Accidents-Trafic'] = df_ratio_h['Nb_Acc/Paris/heure'] / df_ratio_h['Comptage_moyen/site/heure']
+		med = df_ratio_h["Ratio Accidents-Trafic"].median()
+		moy = df_ratio_h["Ratio Accidents-Trafic"].mean()
+		# REPARTITION DU RATIO EN FONCTION DE L'HEURE (BARPLOT)
+		fig = plt.figure(figsize=(14, 8))
+		ax1 = fig.add_subplot()
+		ax1.set_xlabel('\nHeure', fontsize=15)
+		ax1.set_ylabel("Ratio Accidents-Trafic", fontsize=15)
+		ax1.bar(df_ratio_h['Heure'], df_ratio_h['Ratio Accidents-Trafic'])
+		ax1.set_title("Ratio Accidents-Trafic par heure", fontsize=20)
+		ax1.yaxis.set_tick_params(width = 2, length = 10, labelsize = 10)
+		ax1.xaxis.set_tick_params(width = 2, length = 10, labelsize = 10)
+		ax1.axhline(y = moy, xmin = 0.05, xmax = 0.95, color = 'red', label = 'Moyenne', lw = 4)
+		ax1.axhline(y = med, xmin = 0.05, xmax = 0.95, color = 'yellow', label = 'Médiane', lw = 4)
+		ax1.legend(fontsize = 15)
+		plt.xticks([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], ['minuit',' ',' ',' ','4h',' ',' ',' ','8h',' ',' ',' ','midi',' ',' ',' ','16h',' ',' ',' ','20h',' ',' ','23h'])
+		fig.tight_layout()
+		st.pyplot(fig)
+		st.markdown(			
+		"<p style='text-align: justify'>"
+		"<strong>Conclusion</strong><br>"
+		"<ul>"
+		  "<li><span style='color: #1ca2d1'><strong>Les heures de pointes (8-9h et 17-20h), où le trafic cycliste est pourtant le plus intense, semblent moins accidentogènes que les autres heures de la journée</strong></span>. "
+		  "Les usagers utilisant le vélo quotidiennement pour aller travailler seraient-ils plus aguerris ?</li>"
+		  "<li><span style='color: #1ca2d1'><strong>La différence la plus notable se situe entre le jour et la nuit</strong></span> : "
+		  "les ratios accidents-trafic les plus élevés se situent tous entre minuit et 6h du matin. Le manque de visibilité et la conduite en état d'ivresse sont des pistes à étudier</li>"
+
+		"</ul>"
+		"</p>"
+		, unsafe_allow_html=True)
+
+
+
+
+
+		st.subheader("ANALYSE PAR JOUR")
+
 
 	#cartographie accidents
 	elif dataviz_acc == acc2:
