@@ -86,9 +86,8 @@ st.sidebar.info(
 "Joséphine Vaton "
 "[linkedIn](https://www.linkedin.com/in/josephine-vaton-3a311695/)"
 "\n\n"
-"En formation de Data Analyst, "
-"[DataScientest](https://datascientest.com/), "
-"Bootcamp novembre 2020"
+"Bootcamp Data Analyst Novembre 2020, "
+"[DataScientest](https://datascientest.com/)"
 "\n\n"
 "Données :"
 "\n"
@@ -199,9 +198,9 @@ if select_page == page1:
 		st.image(graphe_2, use_column_width=True)
 	st.markdown(
 	"<ul>"
-	  "<li>Automne 2020 : <span style='color: #1ca2d1; font-weight: bold'>+21 %</span> (vs automne 2019), avec un pic de <span style='color: #1ca2d1; font-weight: bold'>+66 %</span> en septembre</li>"
 	  "<li>Du lundi au vendredi : <span style='color: #1ca2d1; font-weight: bold'>2 pics aux heures de pointe</span> (8-9h et 17-19h) qui disparaissent le week-end</li>"
 	  "<li>Week-end : <span style='color: #1ca2d1; font-weight: bold'>-32 %</span> (-25 % le samedi, -40 % le dimanche vs du lundi au vendredi)</li>"
+	  "<li>Automne 2020 : <span style='color: #1ca2d1; font-weight: bold'>+21 %</span> (vs automne 2019), avec un pic de <span style='color: #1ca2d1; font-weight: bold'>+66 %</span> en septembre</li>"
 	"</ul></p><br>"
 	, unsafe_allow_html=True)
 	graphe_3 = Image.open('images/graphe_3.png')	
@@ -413,18 +412,6 @@ if select_page == page1:
 	"</p>"
 	"<p style='text-align: justify'>"
 	"Si le développement de notre projet vous intéresse, n'hésitez pas à nous contacter !"
-	"</p>"
-	, unsafe_allow_html=True)
-	st.markdown("<p style='text-align: justify'>"
-	"L’étape suivante consiste à <span style='color: #1ca2d1; font-weight: bold'>monitorer le trafic cycliste à Paris</span>, "
-	"en récoltant les données en temps réel. Pour analyser plus finement les causes et les conséquences de la variation du trafic, "
-	"il est aussi important d’<span style='color: #1ca2d1; font-weight: bold'>élargir la période étudiée aux données archivées</span>. "
-	"Nous pouvons aussi <span style='color: #1ca2d1; font-weight: bold'>pousser plus loin les études d’impact</span> "
-	"sur les accidents de vélos et sur d’autres thèmes, comme les retombées sur l’usage de la voiture ou des transports publics."
-	"</p>"
-	"<p style='text-align: justify'>"
-	"Concernant les prédictions, il nous faut à présent "
-	"<span style='color: #1ca2d1; font-weight: bold'>passer à une phase de prévision du trafic</span> à court et moyen termes.</span>"
 	"</p>"
 	, unsafe_allow_html=True)
 ##########################
