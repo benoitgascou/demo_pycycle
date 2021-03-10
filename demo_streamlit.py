@@ -23,7 +23,7 @@ from datetime import timedelta
 from PIL import Image
 
 #entête
-image = Image.open('velo.jpg')
+image = Image.open('images/velo.jpg')
 st.image(image, use_column_width=True, width=500)
 st.markdown(
 "<h2 style='text-align: center'>"
@@ -103,7 +103,7 @@ st.sidebar.info(
 if select_page == page1:
 	#Titres, auterus, sources
 	#st.markdown("<h2 style='text-align: center; color: black;'>Évolution du trafic cycliste à Paris<br> de septembre 2019 à décembre 2020</h3>", unsafe_allow_html=True)
-	st.markdown("<div style='border: 1px solid black; padding: 5px;'>"
+	st.markdown("<div style='border: 1px solid black; padding: 5px; border-radius: 0.25rem;'>"
 		"<p style='text-align: center; color: black;'>Projet réalisé dans le cadre de la formation <strong>Data Analyst</strong> de <a href='https://www.linkedin.com/school/datascientest/'>DataScientest.com</a>"
 		"<br>Promotion Bootcamp novembre 2020</p>"
 		"<p style='text-align: center; color: black;'>Auteurs :"
@@ -117,7 +117,7 @@ if select_page == page1:
 		"<br></p>"
 		"</div>", unsafe_allow_html=True)
 	#CONTEXTE
-	st.markdown("<h4 style='text-align: left; color: black;'><br>I. CONTEXTE</h4>", unsafe_allow_html=True)
+	st.markdown("<h3 style='text-align: left; font-weight: bold;'><br>I. CONTEXTE</h3>", unsafe_allow_html=True)
 	st.markdown("<br><p style='text-align: justify'>"
 	"Lors du premier déconfinement en mai 2020, la Mairie de Paris a créé ex nihilo cinquante kilomètres de pistes cyclables. "
 	"Le but ? Désengorger les transports en commun pour éviter la propagation du virus tout en limitant le report sur les voitures particulières. "
@@ -125,23 +125,29 @@ if select_page == page1:
 	"Aujourd’hui, il suffit de descendre dans la rue pour le constater : il n’y a jamais eu autant de vélos à Paris. "
 	"</p>", unsafe_allow_html=True)
 	st.markdown("<p style='text-align: justify'>"
-	"Nous avons voulu étudier et quantifier cette évolution du trafic cycliste à partir des données disponibles sur le site de la Mairie de Paris, "
+	"Nous voulons étudier et quantifier cette évolution du trafic cycliste à partir des données disponibles sur le site de la Mairie de Paris, "
 	"pour la période du 1er septembre 2019 au 31 décembre 2020. "
+	"Nous anglons nos analyses selon quatre axes :<br>"
 	"</p>", unsafe_allow_html=True)
-	st.markdown("<p style='text-align: justify'>"
-	"Nous avons anglé nos analyses selon quatre axes :<br>"
-	"<strong><span style='color: #1ca2d1'>1. Cartographie</span></strong> : le trafic est-il le même partout ?<br>"
-	"<strong><span style='color: #1ca2d1'>2. Évolution temporelle</span></strong> : quels facteurs influencent le trafic ?<br>"
-	"<strong><span style='color: #1ca2d1'>3. Trafic & accidents</span></strong> : quelles relations ?<br>"
-	"<strong><span style='color: #1ca2d1'>4. Prédiction du trafic</span></strong> : modèles de machine learning"
+	st.markdown(		
+	"<p style='text-align: justify'>"
+	"<strong><span style='color: #1ca2d1'>"
+	"1. Cartographie : le trafic est-il le même partout ?<br>"
+	"2. Évolution temporelle : quels facteurs influencent le trafic ?<br>"
+	"3. Trafic & accidents : quelles relations ?<br>"
+	"4. Prédiction du trafic : modèles de machine learning</span></strong>"
 	"</p>", unsafe_allow_html=True)
-	st.markdown("<br><p style='font-style: italic'>"
-	"Pour accéder à nos analyses détaillées (Data visualisation, Machine learning), cliquez dans le menu de gauche. "
-	"Quant à nos résultats, vous les trouverez ci-dessous. "
-	"</p>", unsafe_allow_html=True)
+	st.markdown(
+	"<div style='border: 1px solid rgba(0, 104, 201, 0.1); padding: 5px; font-style: italic;"
+	"padding: 5px; font-style: italic; text-align: justify; background-color: rgba(0, 104, 201, 0.1); "
+	"color: #1e6777; border-radius: 0.25rem; font-size: 15px'>"	
+	"Pour accéder à nos analyses détaillées et interactives (Cartographie dynamique, Data visualisation, Machine learning), cliquez dans le menu de gauche. "
+	"Quant à nos conclusions, vous les trouverez ci-dessous."
+	"</div>", unsafe_allow_html=True)
 	#RESULTATS
-	st.markdown("<h4 style='text-align: left; color: black;'><br>II. RESULTATS</h4>", unsafe_allow_html=True)
-	st.markdown("<p style='font-size: large'><br><strong>1. Cartographie :</strong> le trafic est-il le même partout ?</p>", unsafe_allow_html=True)
+	st.markdown("<h3 style='text-align: left; font-weight: bold;'><br>II. RESULTATS</h3>", unsafe_allow_html=True)
+	st.markdown("<br><p style='font-size: large; color: #1ca2d1; font-weight:bold; text-transform: uppercase;'>"
+		"1. Cartographie : le trafic est-il le même partout ?</p>", unsafe_allow_html=True)
 	st.markdown("<p style='text-align: justify'>"
 	"Lors de la période étudiée (septembre 2019 - décembre 2020), "
 	"<strong><span style='color: #1ca2d1'>69 sites de comptage</span></strong> ont produit des données, "
@@ -149,7 +155,15 @@ if select_page == page1:
 	"C’est pourquoi nous utilisons comme indicateur du trafic le "
 	"<strong><span style='color: #1ca2d1'>Comptage moyen/site/heure</span></strong>."
 	"</p>"
-	"<p style = 'text-decoration: underline'><strong>Top/flop : une forte disparité géographique</strong></p>"
+	"<p style='text-align: justify'>"
+	"A notre carte dynamique Folium, nous avons ajouté un modèle de <strong>clustering, "
+	"l’algorithme des K-Means</strong>, pour classer les sites de comptage selon l’intensité du trafic."
+	"</p>", unsafe_allow_html=True)
+	carto_img = Image.open('images/carto.png')
+	col1, col2, col3 = st.beta_columns([0.5, 2, 0.5])
+	with col2:
+		st.image(carto_img, use_column_width=True)
+	st.markdown("<p style = 'font-size: 19px'>Top/flop : une forte disparité géographique</p>"
 	"<p style='text-align: justify'>"
 	"Le site du <strong>boulevard de Magenta</strong> arrive en tête du classement avec un cumul de "
 	"<strong><span style='color: #1ca2d1'>289 vélos/heure en moyenne</span></strong>. "
@@ -157,39 +171,7 @@ if select_page == page1:
 	"qu’à <strong>Porte d’Orléans</strong>, le site le moins fréquenté, avec <strong>"
 	"<span style='color: #1ca2d1'>3 vélos/heure en moyenne.</span></strong>"
 	"</p>"
-	"<p style = 'text-decoration: underline'><strong>De forts contrastes centre/périphérie et rive droite/rive gauche</strong></p>"
-	"<p style='text-align: justify'>"
-	"A notre carte dynamique Folium, nous avons ajouté un modèle de <strong>clustering, "
-	"l’algorithme des K-Means</strong>, pour classer les sites de comptage selon l’intensité du trafic."
-	"</p>"
-	"<p style='text-align: justify'>"
-	"<strong>Zones à trafic élevé</strong>"
-	"</ul>"
-	"<li>Hypercentre de Paris : Sébastopol, Châtelet, Odéon</li>"
-	"<li>10e : Gare du Nord, Gare de l'Est</li>"
-	"<li>11e : Popincourt, Père-Lachaise</li>"
-	"<li>17e : Avenue de Clichy</li>"
-	"<ul>"
-	"</p>"
-	"<p style='text-align: justify'>"
-	"<strong>Zones à trafic modéré</strong>"
-	"</ul>"
-	"<li>Les quais de Seine</li>"
-	"<li>8e : Champs-Elysées</li>"
-	"<li>14e : Denfert-Rochereau, Porte de Vanves</li>"
-	"<li>15e : Lecourbe, Javel</li>"
-	"<li>19e : La Villette</li>"	
-	"<ul>"
-	"</p>"
-	"<p style='text-align: justify'>"
-	"<strong>Zones à trafic faible</strong>"
-	"</ul>"
-	"<li>Quartiers périphériques : Porte de la Chapelle, Porte de Bagnolet, Porte de Charenton, Porte d’Italie, Porte d'Orléans, Porte Maillot</li>"
-	"<li>6e, 7e : Duroc, Boulevard du Montparnasse</li>"
-	"<li>13e : Place d’Italie</li>"	
-	"<ul>"
-	"</p>"
-	"<p style='text-align: justify'>"
+	"<p style = 'font-size: 19px'>De forts contrastes centre/périphérie et rive droite/rive gauche</p>"
 	"<strong><span style='color: #1ca2d1'>"
 	"Le trafic est plus intense dans le centre et rive droite, plus faible dans les quartiers périphériques et rive gauche</span></strong>. "
 	"D’un côté des quartiers plus denses en activités économiques, commerciales et lieux de sortie, "
@@ -199,26 +181,40 @@ if select_page == page1:
 	"<p style='text-align: justify'>"
 	"<strong><span style='color: #1ca2d1'>Les axes Nord-Sud, Est-Ouest et les quais de Seine</span></strong> "
 	"sont quant à eux des points de passage obligés pour traverser Paris à vélo."
-	"</p>"		
+	"</p>"
 	, unsafe_allow_html=True)
-	st.markdown("<p style='font-size: large'><br><strong>2. Évolution temporelle :</strong> quels facteurs influencent le trafic cycliste ?</p>", unsafe_allow_html=True)
+	st.markdown("<br><p style='font-size: large; color: #1ca2d1; font-weight:bold; text-transform: uppercase;'>"
+		"2. Évolution temporelle : quels facteurs influencent le trafic cycliste ?</p>", unsafe_allow_html=True)
 	st.markdown(
 	"<p>Voici les chiffres à retenir sur l’évolution du trafic cycliste en fonction des facteurs périodiques, récurrents et exceptionnels.</p>"
 	"<br>"
-	"<p style='text-decoration: underline'><strong>Périodicité : hausse annuelle et dissemblance semaine/week-end</strong>"
+	"<p style = 'font-size: 19px'>Périodicité : dissemblance semaine/week-end et hausse annuelle"
+	, unsafe_allow_html=True)
+	graphe_1 = Image.open('images/graphe_1.png')
+	graphe_2 = Image.open('images/graphe_2.png')	
+	col1, col2 = st.beta_columns(2)
+	with col1:
+		st.image(graphe_1, use_column_width=True)
+	with col2:
+		st.image(graphe_2, use_column_width=True)
+	st.markdown(
 	"<ul>"
 	  "<li>Automne 2020 : <span style='color: #1ca2d1; font-weight: bold'>+21 %</span> (vs automne 2019), avec un pic de <span style='color: #1ca2d1; font-weight: bold'>+66 %</span> en septembre</li>"
 	  "<li>Du lundi au vendredi : <span style='color: #1ca2d1; font-weight: bold'>2 pics aux heures de pointe</span> (8-9h et 17-19h) qui disparaissent le week-end</li>"
 	  "<li>Week-end : <span style='color: #1ca2d1; font-weight: bold'>-32 %</span> (-25 % le samedi, -40 % le dimanche vs du lundi au vendredi)</li>"
 	"</ul></p><br>"
-	"<p style='text-decoration: underline'><strong>Facteurs récurrents : baisse les jours chômés et puissant impact de la météo</strong>"
+	, unsafe_allow_html=True)
+	graphe_3 = Image.open('images/graphe_3.png')	
+	st.image(graphe_3, use_column_width=True)
+	st.markdown(
+	"<p style = 'font-size: 19px'>Facteurs récurrents : baisse les jours chômés et puissant impact de la météo"
 	"<ul>"
 	  "<li>Jours fériés : <span style='color: #1ca2d1; font-weight: bold'>-46 %</span></li>"
 	  "<li>Vacances : <span style='color: #1ca2d1; font-weight: bold'>-15 %</span> (-43 % à Noël, -33 % en février, + 34% en juillet)</li>"
 	  "<li>Météo : <span style='color: #1ca2d1; font-weight: bold'>-33 %</span> par temps pluvieux, "
 	  "<span style='color: #1ca2d1; font-weight: bold'>-27 %</span> sous 4 °C, <span style='color: #1ca2d1; font-weight: bold'>+50 %</span> au-delà de 25 °C</li>"
 	"</ul></p><br>"
-	"<p style='text-decoration: underline'><strong>Facteurs exceptionnels : coup de boost des grèves et Covid-19, baisse mitigée pour les confinements</strong>"
+	"<p style = 'font-size: 19px'>Facteurs exceptionnels : boom des grèves et Covid-19, réduction mitigée des confinements"
 	"<ul>"
 	  "<li>Grève des transports : <span style='color: #1ca2d1; font-weight: bold'><span style='color: #1ca2d1; font-weight: bold'><span style='color: #1ca2d1; font-weight: bold'><span style='color: #1ca2d1; font-weight: bold'>+58 %</span></li>"
 	  "<li>Pandémie de Covid-19 : <span style='color: #1ca2d1; font-weight: bold'><span style='color: #1ca2d1; font-weight: bold'><span style='color: #1ca2d1; font-weight: bold'>+23 %</span></li>"
@@ -228,9 +224,9 @@ if select_page == page1:
 	"<p style='text-align: justify'>Le facteur le plus pérenne sur la période étudiée est la pandémie de Covid-19. "
 	"D’après le <a href='https://www.insee.fr/fr/statistiques/5012724'>Bilan démographique de l’INSEE</a> paru en janvier 2021, "
 	"la part du vélo dans les moyens de transport atteignait début 2020, avant la pandémie, <strong>6 % à Paris</strong> et 3 % en France. "
-	"Soit une hausse de <strong>50 % en 5 ans.</strong></p>"
-	"<p style='text-align: justify'>Nous démontrons une hausse supplémentaire de <strong>23 %</strong> à Paris depuis le début de la pandémie. "
-	"Outre la création et l’aménagement de pistes cyclables par la Mairie de Paris, plusieurs causes peuvent l’expliquer :"
+	"Soit une hausse de <strong>50 % en 5 ans</strong>. "
+	"Nous notons une hausse supplémentaire de <strong>23 %</strong>. "
+	"Outre la création de pistes cyclables, plusieurs causes :"
 	"<ul>"
 	  "<li>évitement des transports publics,</li>"
 	  "<li>redécouverte de la proximité,</li>"
@@ -239,45 +235,72 @@ if select_page == page1:
 	"</ul>"
 	"</p>"
 	, unsafe_allow_html=True)
-	st.markdown("<p style='font-size: large'><br><strong>3. Trafic & accidents de vélos :</strong> quelles relations ?</p>", unsafe_allow_html=True)	
+	st.markdown("<br><p style='font-size: large; color: #1ca2d1; font-weight:bold; text-transform: uppercase;'>"
+		"3. Trafic & accidents de vélos : quelles relations ?</p>", unsafe_allow_html=True)	
 	st.markdown("<br><p style='text-align: justify'>"
-	"Les données 2020 n'étant pas disponibles, notre étude porte sur la période <strong>septembre - décembre 2020 (4 mois) : "
-	"644 accidents impliquant des vélos et avec des dommages corporels</strong>. "
+	"Les données 2020 n'étant pas disponibles, notre étude porte sur la période <span style='color: #1ca2d1; font-weight: bold'>septembre - décembre 2020 (4 mois) : "
+	"644 accidents impliquant des vélos et avec des dommages corporels</span>. "
 	"Les tendances observées seront à confirmer sur un plus grand échantillon."
 	"</p>"
-	"<p style='text-decoration: underline'><strong>Analyse par heure : heures de pointe moins accidentogènes, nuits plus accidentogènes</strong></p>"
+	, unsafe_allow_html=True)
+	graphe_4 = Image.open('images/graphe_4.png')	
+	st.image(graphe_4, use_column_width=True)
+	st.markdown(	
+	"<p style ='font-size: 19px'>Analyse par heure : les heures de pointe moins accidentogènes, 3h du matin l’heure la plus dangereuse</p>"	
 	"<p style='text-align: justify'>"
-	"En moyenne, on observe <span style='color: #1ca2d1; font-weight: bold'>0,22 accidents de vélos/heure</span> à Paris. "
-	"Dans 90% des cas, il n’y a pas d’accident. Dans <span style='color: #1ca2d1; font-weight: bold'>8 %</span> des cas,"
-	"il y a <span style='color: #1ca2d1; font-weight: bold'>1 à 2 accidents</span> de vélos/heure. "
+		"<ul>"
+		  "<li>"
+		  "En moyenne, on observe <span style='color: #1ca2d1; font-weight: bold'>0,22 accidents de vélos/heure</span> à Paris. "
+		  "Dans 90 % des cas, il n’y a pas d’accident. "
+		  "Dans <span style='color: #1ca2d1; font-weight: bold'>8 %</span> des cas, il y a <span style='color: #1ca2d1; font-weight: bold'>1 à 2</span> accidents de vélos/heure."
+		  "</li>"
+		  "<li>"
+		  "La p-value du test ANOVA est inférieure à 5%, on rejette donc l'hypothèse selon laquelle le <strong>comptage moyen/site/heure</strong> "
+		  "n'influe pas sur le <strong>nombre d'accidents à Paris/heure.</strong>"
+		  "</li>"
+		  "<li>"
+		  "<span style='color: #1ca2d1; font-weight: bold'>En journée, les heures de pointe (8-9h et 18-19h) ont un ratio Accidents-Trafic sous la moyenne, ce qui en fait des heures peu accidentogènes</span>. "
+		  "Les usagers utilisant le vélo quotidiennement pour aller travailler seraient-ils plus aguerris ?"
+		  "</li>"
+		  "<li>"
+		  "<span style='color: #1ca2d1; font-weight: bold'>La nuit, on observe les ratios les plus élevés. 3 heures est l’heure la plus accidentogène (7 fois la moyenne)</span>. "
+		  "A Paris, cela correspond à l’horaire de fermeture des bars. "
+		  "<span style='color: #1ca2d1; font-weight: bold'>A 6 heures, on observe un second pic (2 fois la moyenne)</span>. "
+		  "Le manque de visibilité et la conduite en état d'ivresse sont des pistes à étudier."
+		  "</li>"
+		"</ul>"
 	"</p>"
+	, unsafe_allow_html=True)
+	graphe_5 = Image.open('images/graphe_5.png')	
+	st.image(graphe_5, use_column_width=True)
+	st.markdown(	
 	"<p style='text-align: justify'>"
-	"La p-value du test ANOVA est inférieure à 5%, on rejette donc l'hypothèse selon laquelle le "
-	"<strong>comptage moyen/site/heure</strong> n'influe pas sur le <strong>nombre d'accidents à Paris/heure.</strong>"
+	"<p style = 'font-size: 19px'>Analyse par jour de septembre à décembre 2019 : "
+	"une forte variabilité du ratio Accidents-Trafic selon les jours, mais pas de périodicité hebdomadaire.</p>"
+	"<p style='text-align: justify'>"
+		"<ul>"
+		  "<li>"
+		  "En moyenne, on observe <span style='color: #1ca2d1; font-weight: bold'>5,3 accidents de vélos/jour</span> à Paris. "
+		  "Dans <span style='color: #1ca2d1; font-weight: bold'>95%</span> des cas, il y a "
+		  "<span style='color: #1ca2d1; font-weight: bold'>moins de 12 accidents/jour</span>."
+		  "</li>"
+		  "<li>"
+		  "On n’observe pas de périodicité jours de semaine/week-end. "
+		  "<span style='color: #1ca2d1; font-weight: bold'>Le dimanche est le jour le moins accidentogène, le mercredi est légèrement plus accidentogène</span>, "
+		  "mais les variations sont globalement faibles sur la semaine."
+		  "</li>"
+		  "<li>"
+		  "<span style='color: #1ca2d1; font-weight: bold'>La grève des transports en décembre, où le trafic cycliste a pourtant explosé (+58 %), est peu accidentogène</span> : "
+		  "la plupart des jours sont sous la moyenne et les pics moins nombreux. "
+		  "Serait-ce aussi lié au profil des usagers ?"
+		  "</li>"
+		  "<li>"
+		  "Ces tendances seront à confirmer quand les données 2020 seront disponibles, mais elles laissent supposer que "
+		  "<span style='color: #1ca2d1; font-weight: bold'>l’augmentation du trafic due à la pandémie de Covid n’entraînera pas forcément de hausse du ratio Accidents-Trafic, plus probablement une baisse.</span>"
+		  "</li>"
+		"</ul>"
 	"</p>"
-	"<p style='text-align: justify'>"
-	"<span style='color: #1ca2d1; font-weight: bold'>Les heures de pointes</span> (8-9h et 17-20h), où le trafic cycliste est pourtant le plus intense, "
-	"<span style='color: #1ca2d1; font-weight: bold'>semblent moins accidentogènes que les autres heures de la journée</span>. "
-	"Les usagers utilisant le vélo quotidiennement pour aller travailler seraient-ils plus aguerris ?"
-	"</p>"
-	"<p style='text-align: justify'>"
-	"<span style='color: #1ca2d1; font-weight: bold'>La différence la plus notable se situe entre le jour et la nuit</span> : les ratios accidents-trafic "
-	"les plus élevés se situent tous entre minuit et 6h du matin. "
-	"Le manque de visibilité et la conduite en état d'ivresse sont des pistes à étudier."
-	"</p>"
-	"<p style='text-decoration: underline'><strong>Analyse par jour : pas d’évolution majeure du ratio Accidents-Trafic</strong></p>"
-	"<p style='text-align: justify'>"
-	"En moyenne, on observe <span style='color: #1ca2d1; font-weight: bold'>5,3 accidents de vélos/jour</span> à Paris. "
-	"Dans <span style='color: #1ca2d1; font-weight: bold'>79 %</span> des cas, "
-	"il y a de <span style='color: #1ca2d1; font-weight: bold'>0 et 7 accidents</span> de vélos/jour. "
-	"Dans 95%, il y a moins de 12 accidents/jour, le maximum étant de 19."
-	"</p>"	
-	"<p style='text-align: justify'>"
-	"Entre le 1er septembre et le 31 décembre 2019, on ne note <strong>pas d'évolution majeure du ratio Accidents-Trafic.</strong> "
-	"Nous avons aussi regardé son évolution en fonction du mois, "
-	"de la semaine et du jour de la semaine, sans observer de changement notable."
-	"</p>"
-	"<p style='text-decoration: underline'><strong>Cartographie des accidents : ils augmentent avec la circulation</strong></p>"
+	"<p style = 'font-size: 19px'>Cartographie des accidents : ils augmentent avec le trafic des autres véhicules</p>"
 	"<p style='text-align: justify'>"
 	"<strong> Les accidents sont plus nombreux aux grands carrefours</strong> (Opéra, Saint Lazare, Gare de l'Est, Châtelet) "
 	"<strong>et sur les grands axes</strong> (Sébastopol, Convention, Lafayette, Belleville), pourtant équipés de pistes cyclables. "
@@ -290,7 +313,7 @@ if select_page == page1:
 	"Cela reflète la proportion d'usagers du vélo. "
 	"A l'est, les quartiers sont plus jeunes et plus animés que dans l’ouest parisien."
 	"</p>"
-	"<p style='text-decoration: underline'><strong>Statistiques sur les cyclistes accidentés</strong></p>"
+	"<p style = 'font-size: 19px'>Statistiques sur les cyclistes accidentés</p>"
 	"<p style='text-align: justify'>"
 	"<ul>"
 	  "<li><strong>Sexe</strong> : <span style='color: #1ca2d1; font-weight: bold'>74 % d’hommes, 26 % de femmes</span>.</li>"
@@ -308,9 +331,10 @@ if select_page == page1:
 	"</ul>"
 	"</p>"					
 	, unsafe_allow_html=True)
-	st.markdown("<p style='font-size: large'><br><strong>4. Prédiction du trafic</strong></p>", unsafe_allow_html=True)		
+	st.markdown("<br><p style='font-size: large; color: #1ca2d1; font-weight:bold; text-transform: uppercase;'>"
+		"4. Prédiction du trafic</p>", unsafe_allow_html=True)
 	st.markdown(
-	"<p style='text-decoration: underline'><strong>Démarche</strong></p>"
+	"<p style = 'font-size: 19px'>Démarche</p>"
 	"<p style='text-align: justify'>"
 	"<ul>"
 	  "<li><strong>Le but</strong> : prédire la variable cible <span style='color: #1ca2d1; font-weight: bold'>Comptage/heure/site</span>.</li>"
@@ -320,7 +344,7 @@ if select_page == page1:
 	  "(Comptage à Heure -1, -2, -3, à Jour -1, -2, -3, à Semaine -1, -2, -3, -4).</li>"
 	"</ul>"
 	"</p>"
-	"<p style='text-decoration: underline'><strong>Prédictions sur la dernière semaine de chaque mois</strong></p>"
+	"<p style = 'font-size: 19px'>Prédictions sur la dernière semaine de chaque mois</p>"
 	"<p style='text-align: justify'>"
 	"<ul>"
 	  "<li><strong>Choix des variables</strong> (SelectKBest et SelectFrom Model) : nous gardons les 10 variables numériques, mais pas les autres.</li>"
@@ -332,15 +356,15 @@ if select_page == page1:
 	"</ul>"
 	"</p>"
 	, unsafe_allow_html=True)
-	graphe_1 = Image.open('graphe_1.png')
-	graphe_2 = Image.open('graphe_2.png')	
-	st.image(graphe_1, use_column_width=True, width=500)
-	st.image(graphe_2, use_column_width=True, width=500)	
+	graphe_6 = Image.open('images/graphe_6.png')
+	graphe_7 = Image.open('images/graphe_7.png')	
+	st.image(graphe_6, use_column_width=True, width=500)
+	st.image(graphe_7, use_column_width=True, width=500)	
 	st.markdown(
-	"<p style='text-decoration: underline'><strong>Prédictions sur les derniers mois de la période</strong></p>"
+	"<p style = 'font-size: 19px'>Prédictions sur les derniers mois de la période</p>"
 	"<p style='text-align: justify'>"
 	"<ul>"
-	  "<li><strong>Choix des variables</strong> : nous ajoutons 3 variables explicatives <span style='color: #1ca2d1; font-weight: bold'>(vac_noel, jours_fériés, jour_de_la_semaine)</span></li>"
+	  "<li><strong>Choix des variables</strong> : nous ajoutons 3 variables explicatives (Vacances de Noël, Jours fériés, Jour de la semaine)</li>"
 	  "<li><strong>Choix du modèle</strong> : LinearRegression, le plus robuste parmi les 8 modèles de régression testés.</li>"
 	  "<li><strong>Entrainement</strong> sur 12 mois (oct 2019 - sep 2020- et <strong>test</strong> sur 4 mois (sept - déc 2020)</li>"
 	  "<li><strong>Performance ++</strong> : "
@@ -349,10 +373,10 @@ if select_page == page1:
 	"</ul>"
 	"</p>"
 	, unsafe_allow_html=True)
-	graphe_3 = Image.open('graphe_3.png')
-	st.image(graphe_3, use_column_width=True, width=500)
+	graphe_8 = Image.open('images/graphe_8.png')
+	st.image(graphe_8, use_column_width=True, width=500)
 	st.markdown(
-	"<p style='text-decoration: underline'><strong>Conclusions</strong></p>"
+	"<p style = 'font-size: 19px'>Conclusions</p>"
 	"<p style='text-align: justify'>"
 	"<ul>"
 	  "<li>Nous avons obtenu un très bon modèle “théorique” de régression linéaire.</li>"
@@ -362,11 +386,35 @@ if select_page == page1:
 	"</p>"
 	, unsafe_allow_html=True)
 	#PERSPECTIVES
-	st.markdown("<h4 style='text-align: left; color: black;'><br>III. PERSPECTIVES</h4>", unsafe_allow_html=True)
+	st.markdown("<h3 style='text-align: left; font-weight: bold;'><br>III. PERSPECTIVES</h3>", unsafe_allow_html=True)
 	st.markdown("<br><p style='text-align: justify'>"
 	"Pour accompagner la <strong>Mairie de Paris</strong> et la <strong>Sécurité Routière</strong> dans leurs décisions en matière d’aménagement urbain, "
 	"il nous semble important de poursuivre et approfondir cette étude. "
-	"</p>", unsafe_allow_html=True)
+	"</p>"
+	"<p style='text-align: justify'>"
+	"<ul>"
+	  "<li>"
+	  "L’étape suivante consiste à <span style='color: #1ca2d1; font-weight: bold'>monitorer le trafic cycliste à Paris</span>, "
+	  "en récoltant les données en temps réel."
+	  "</li>"
+	  "<li>"
+	  "Pour analyser plus finement les causes et les conséquences de la variation du trafic, "
+	  "il est aussi important d’<span style='color: #1ca2d1; font-weight: bold'>élargir la période étudiée aux données archivées</span>."
+	  "</li>"
+	  "<li>"
+	  "Nous pouvons aussi <span style='color: #1ca2d1; font-weight: bold'>pousser plus loin les études d’impact</span> "
+	  "sur les accidents de vélos et sur d’autres thèmes, comme les retombées sur l’usage de la voiture ou des transports publics."
+	  "</li>"
+	  "<li>"
+	  "Concernant les prédictions, il nous faut à présent "
+	  "<span style='color: #1ca2d1; font-weight: bold'>passer à une phase de prévisions du trafic</span> à court et moyen termes."
+	  "</li>"
+	"</ul>"
+	"</p>"
+	"<p style='text-align: justify'>"
+	"Si le développement de notre projet vous intéresse, n'hésitez pas à nous contacter !"
+	"</p>"
+	, unsafe_allow_html=True)
 	st.markdown("<p style='text-align: justify'>"
 	"L’étape suivante consiste à <span style='color: #1ca2d1; font-weight: bold'>monitorer le trafic cycliste à Paris</span>, "
 	"en récoltant les données en temps réel. Pour analyser plus finement les causes et les conséquences de la variation du trafic, "
@@ -376,39 +424,9 @@ if select_page == page1:
 	"</p>"
 	"<p style='text-align: justify'>"
 	"Concernant les prédictions, il nous faut à présent "
-	"<span style='color: #1ca2d1; font-weight: bold'>passer à une phase de prévisions du trafic</span> à court et moyen termes.</span>"
+	"<span style='color: #1ca2d1; font-weight: bold'>passer à une phase de prévision du trafic</span> à court et moyen termes.</span>"
 	"</p>"
 	, unsafe_allow_html=True)
-	st.markdown("<p style='text-align: justify'>"
-	"A cette fin, nous identifions plusieurs pistes d’amélioration :"	
-	"<ul>"
-	  "<li>"
-	  "<strong>Relevé des données “Comptage vélos / heure / site”</strong>"
-	    "<ul>"
-	      "<li>Renforcer le maillage des sites de comptage</li>"
-	      "<li>Équiper les axes Est-Ouest, sous-exploités</li>"
-	     "</ul>"
-	  "</li>"
-	  "<li>"
-	  "<strong>Ajout de données extérieures (historiques et actuelles)</strong>"
-	    "<ul>"
-	      "<li>Accidents impliquant des vélos / heure</li>"
-	      "<li>Relevés météorologiques / heure</li>"
-	      "<li>Trafic routier / heure</li>"
-	      "<li>Affluence dans les transports en commun / heure</li>"
-	     "</ul>"
-	  "</li>"
-	  "<li>"
-	  "<strong>Machine et deep learning</strong>"
-	    "<ul>"
-	      "<li>Créer de nouvelles variables explicatives numériques et indépendantes, grâce aux données extérieures</li>"
-	      "<li>Relevés météorologiques / heure</li>"
-	      "<li>Tester d’autres types de modèles, capables de prévisions sur les séries temporelles, comme les Microsoft Time Series ou les Réseaux de Neurones.</li>"
-	     "</ul>"
-	  "</li>"
-	"</ul>"
-	"</p>", unsafe_allow_html=True)
-
 ##########################
 ####Jeux de données   ####
 ##########################
@@ -578,9 +596,9 @@ elif select_page == page2:
 		"</p>", unsafe_allow_html=True)
 		st.markdown("<br><strong> Extrait du DataFrame</strong>", unsafe_allow_html=True)
 		st.dataframe(df_acc.head(10))
-############################
-## Évolution géographique ##
-############################
+##################
+## Cartographie ##
+##################
 elif select_page == page3:
 	st.header(select_page)
 	carte_1 = "Cartographie générale"
@@ -1703,7 +1721,6 @@ elif select_page == page5:
 		st.pyplot(fig)
 		st.markdown(			
 		"<p style='text-align: justify'>"
-		"<strong>Conclusion</strong><br>"
 		"<ul>"
 		  "<li><span style='color: #1ca2d1'><strong>En journée, les heures de pointe (8-9h et 18-19h) ont un ratio Accidents-Trafic sous la moyenne, ce qui en fait des heures peu accidentogènes</strong></span>. "
 		  "Les usagers utilisant le vélo quotidiennement pour aller travailler seraient-ils plus aguerris ?</li>"
@@ -1734,8 +1751,8 @@ elif select_page == page5:
 		"Lors de la période étudiée :"
 		"<ul>"
 		  "<li>En moyenne, on observe <span style='color: #1ca2d1'><strong>5,3 accidents de vélos/jour à Paris</span></strong>.</li>"
-		  "<li><span style='color: #1ca2d1'><strong>Dans 79% des cas, il y a entre 0 et 7 accidents/jour</span></strong>.</li>"
-		  "<li>Dans 95%, il y a moins de 12 accidents/jour, le maximum étant 19.</li>"
+		  "<li><span style='color: #1ca2d1'><strong>Dans 79 % des cas, il y a entre 0 et 7 accidents/jour</span></strong>.</li>"
+		  "<li>Dans 95 %, il y a moins de 12 accidents/jour, le maximum étant 19.</li>"
 		"</ul>"
 		"</p>"
 		, unsafe_allow_html=True)
@@ -1813,9 +1830,6 @@ elif select_page == page5:
 		"</ul>"
 		"</p>"
 		, unsafe_allow_html=True)
-
-
-
 	#cartographie accidents
 	elif dataviz_acc == acc2:
 		st.subheader(dataviz_acc)
